@@ -57,7 +57,6 @@ export function Checklists({ onBack }: { onBack?: () => void } = {}) {
     photo_explanation_text: '',
   });
 
-  const [descriptionPhoto, setDescriptionPhoto] = useState<File[]>([]);
   const [explanationPhoto, setExplanationPhoto] = useState<File[]>([]);
 
   const uploadPhoto = async (file: File, bucket: string): Promise<string | null> => {
@@ -144,18 +143,6 @@ export function Checklists({ onBack }: { onBack?: () => void } = {}) {
     e.preventDefault();
     try {
       let explanationPhotoUrl: string[] | null = null;
-      let descriptionPhotoUrl: string[] | null = null;
-
-      if (descriptionPhoto && descriptionPhoto.length > 0) {
-        console.log('Description photos selected, uploading...');
-        const uploadedUrls: string[] = [];
-        for (const file of descriptionPhoto) {
-          const url = await uploadPhoto(file, 'checklist-explanations');
-          if (url) uploadedUrls.push(url);
-        }
-        descriptionPhotoUrl = uploadedUrls;
-        console.log('Description photo URLs:', descriptionPhotoUrl);
-      }
 
       if (explanationPhoto && explanationPhoto.length > 0) {
         console.log('Explanation photos selected, uploading...');
@@ -191,11 +178,8 @@ export function Checklists({ onBack }: { onBack?: () => void } = {}) {
           updated_at: new Date().toISOString(),
         };
 
-        if (descriptionPhotoUrl) {
-          updateData.description_photo = descriptionPhotoUrl;
-        }
         if (explanationPhotoUrl) {
-          updateData.explanation_photo = explanationPhotoUrl;
+          updateData.photo_explanation = explanationPhotoUrl;
         }
 
         console.log('Updating checklist with data:', updateData);
@@ -225,11 +209,8 @@ export function Checklists({ onBack }: { onBack?: () => void } = {}) {
           created_by: profile?.id,
         };
 
-        if (descriptionPhotoUrl) {
-          insertData.description_photo = descriptionPhotoUrl;
-        }
         if (explanationPhotoUrl) {
-          insertData.explanation_photo = explanationPhotoUrl;
+          insertData.photo_explanation = explanationPhotoUrl;
         }
 
         console.log('Inserting checklist with data:', insertData);
@@ -243,7 +224,6 @@ export function Checklists({ onBack }: { onBack?: () => void } = {}) {
 
       setShowModal(false);
       setEditingChecklist(null);
-      setDescriptionPhoto([]);
       setExplanationPhoto([]);
       setFormData({
         category: 'extras',
@@ -414,7 +394,6 @@ export function Checklists({ onBack }: { onBack?: () => void } = {}) {
           onClick={() => {
             setShowModal(false);
             setEditingChecklist(null);
-            setDescriptionPhoto([]);
             setExplanationPhoto([]);
           }}
         >
@@ -589,12 +568,12 @@ export function Checklists({ onBack }: { onBack?: () => void } = {}) {
                       type="file"
                       accept="image/*"
                       multiple
-                      onChange={(e) => setDescriptionPhoto(Array.from(e.target.files || []))}
+                      onChange={(e) => setExplanationPhoto(Array.from(e.target.files || []))}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
                     />
-                    {descriptionPhoto && descriptionPhoto.length > 0 && (
+                    {explanationPhoto && explanationPhoto.length > 0 && (
                       <p className="text-xs text-green-600 mt-1">
-                        ✓ {descriptionPhoto.length} Foto(s) ausgewählt
+                        ✓ {explanationPhoto.length} Foto(s) ausgewählt
                       </p>
                     )}
                   </div>

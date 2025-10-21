@@ -167,7 +167,6 @@ export function PerformanceMetrics({ onNavigate }: PerformanceMetricsProps = {})
             duration_minutes,
             description,
             photo_required,
-            explanation_photo,
             due_date
           )
         `)

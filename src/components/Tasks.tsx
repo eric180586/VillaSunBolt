@@ -242,7 +242,6 @@ export function Tasks({ onNavigate, filterStatus, onBack }: TasksProps = {}) {
       const dueDateTime = isRepairCategory ? null : combineDateAndTime(formData.due_date, formData.due_time);
 
       let descriptionPhotoUrl: string[] | null = null;
-      let explanationPhotoUrl: string[] | null = null;
 
       if (formData.description_photo && formData.description_photo.length > 0) {
         const uploadedUrls: string[] = [];
@@ -266,35 +265,12 @@ export function Tasks({ onNavigate, filterStatus, onBack }: TasksProps = {}) {
         descriptionPhotoUrl = uploadedUrls;
       }
 
-      if (formData.explanation_photo && formData.explanation_photo.length > 0) {
-        const uploadedUrls: string[] = [];
-        for (const file of formData.explanation_photo) {
-          const fileExt = file.name.split('.').pop();
-          const fileName = `explanation_${Math.random().toString(36).substring(2)}_${Date.now()}.${fileExt}`;
-          const filePath = `${fileName}`;
-
-          const { error: uploadError } = await supabase.storage
-            .from('checklist-explanations')
-            .upload(filePath, file);
-
-          if (uploadError) throw uploadError;
-
-          const { data: urlData } = supabase.storage
-            .from('checklist-explanations')
-            .getPublicUrl(filePath);
-
-          uploadedUrls.push(urlData.publicUrl);
-        }
-        explanationPhotoUrl = uploadedUrls;
-      }
-
       if (editingTask) {
         await updateTask(editingTask.id, {
           category: formData.category,
           title: formData.title,
           description: formData.description || null,
           description_photo: descriptionPhotoUrl || editingTask.description_photo,
-          explanation_photo: explanationPhotoUrl || editingTask.explanation_photo,
           due_date: dueDateTime,
           duration_minutes: formData.duration_minutes,
           points_value: isRepairCategory ? 0 : formData.points_value,
@@ -310,7 +286,6 @@ export function Tasks({ onNavigate, filterStatus, onBack }: TasksProps = {}) {
           title: formData.title,
           description: formData.description || null,
           description_photo: descriptionPhotoUrl,
-          explanation_photo: explanationPhotoUrl,
           due_date: dueDateTime,
           duration_minutes: formData.duration_minutes,
           points_value: isRepairCategory ? 0 : formData.points_value,
@@ -1096,17 +1071,6 @@ export function Tasks({ onNavigate, filterStatus, onBack }: TasksProps = {}) {
                         alt="Admin Erklärung"
                         className="rounded-lg max-w-full h-auto max-h-32 object-cover border border-green-400"
                       />
-                    </div>
-                  )}
-
-                  {checklist.explanation_photo && (
-                    <div className="mb-3">
-                      <img
-                        src={checklist.explanation_photo}
-                        alt="Beispiel"
-                        className="rounded-lg max-w-full h-auto max-h-48 object-cover border border-gray-300"
-                      />
-                      <p className="text-xs text-gray-500 mt-1">Beispiel-Foto</p>
                     </div>
                   )}
 
