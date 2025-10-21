@@ -1,10 +1,100 @@
-npm warn exec The following package was not found and will be installed: supabase@2.53.6
-npm warn deprecated node-domexception@1.0.0: Use your platform's native DOMException instead
-npm error code ECONNRESET
-npm error network aborted
-npm error network This is a problem related to network connectivity.
-npm error network In most cases you are behind a proxy or have bad network settings.
-npm error network
-npm error network If you are behind a proxy, please make sure that the
-npm error network 'proxy' config is set properly.  See: 'npm help config'
-npm error A complete log of this run can be found in: /tmp/.npm-cache/_logs/2025-10-21T19_58_22_585Z-debug-0.log
+export type Json =
+  | string
+  | number
+  | boolean
+  | null
+  | { [key: string]: Json | undefined }
+  | Json[]
+
+export interface Database {
+  public: {
+    Tables: {
+      tasks: {
+        Row: {
+          id: string
+          title: string
+          description: string | null
+          assigned_to: string | null
+          created_by: string | null
+          status: string | null
+          priority: string | null
+          due_date: string | null
+          points_value: number | null
+          completed_at: string | null
+          created_at: string | null
+          updated_at: string | null
+          deadline_bonus_awarded: boolean | null
+          initial_points_value: number | null
+          secondary_assigned_to: string | null
+          reopened_count: number | null
+          admin_notes: string | null
+          photo_url: string | null
+          duration_minutes: number | null
+          photo_explanation: string | null
+          photo_explanation_text: string | null
+          photo_urls: Json | null
+          admin_photos: Json | null
+          category: string | null
+          description_photo: Json | null
+          explanation_photo: Json | null
+        }
+        Insert: {
+          id?: string
+          title: string
+          description?: string | null
+          assigned_to?: string | null
+          created_by?: string | null
+          status?: string | null
+          priority?: string | null
+          due_date?: string | null
+          points_value?: number | null
+          completed_at?: string | null
+          created_at?: string | null
+          updated_at?: string | null
+          deadline_bonus_awarded?: boolean | null
+          initial_points_value?: number | null
+          secondary_assigned_to?: string | null
+          reopened_count?: number | null
+          admin_notes?: string | null
+          photo_url?: string | null
+          duration_minutes?: number | null
+          photo_explanation?: string | null
+          photo_explanation_text?: string | null
+          photo_urls?: Json | null
+          admin_photos?: Json | null
+          category?: string | null
+          description_photo?: Json | null
+          explanation_photo?: Json | null
+        }
+        Update: {
+          id?: string
+          title?: string
+          description?: string | null
+          assigned_to?: string | null
+          created_by?: string | null
+          status?: string | null
+          priority?: string | null
+          due_date?: string | null
+          points_value?: number | null
+          completed_at?: string | null
+          created_at?: string | null
+          updated_at?: string | null
+          deadline_bonus_awarded?: boolean | null
+          initial_points_value?: number | null
+          secondary_assigned_to?: string | null
+          reopened_count?: number | null
+          admin_notes?: string | null
+          photo_url?: string | null
+          duration_minutes?: number | null
+          photo_explanation?: string | null
+          photo_explanation_text?: string | null
+          photo_urls?: Json | null
+          admin_photos?: Json | null
+          category?: string | null
+          description_photo?: Json | null
+          explanation_photo?: Json | null
+        }
+      }
+    }
+  }
+}
