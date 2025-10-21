@@ -8,7 +8,7 @@ interface ChecklistInstance {
   instance_date: string;
   status: string;
   items: any[];
-  completed_by: string;
+  assigned_to: string;
   completed_at: string;
   photo_proof: string | null;
   admin_reviewed: boolean;
@@ -64,7 +64,7 @@ export function ChecklistReview({ onBack }: { onBack?: () => void } = {}) {
       .select(`
         *,
         checklists (title, category, points_value),
-        profiles:completed_by (full_name)
+        profiles:assigned_to (full_name)
       `)
       .eq('status', 'completed')
       .eq('admin_reviewed', false)

@@ -167,6 +167,11 @@ export interface Database {
           photo_required: boolean | null
           photo_required_sometimes: boolean | null
           photo_explanation_text: string | null
+          items: Json | null
+          due_date: string | null
+          recurrence: string | null
+          is_template: boolean | null
+          photo_optional: boolean | null
         }
         Insert: {
           id?: string
@@ -184,6 +189,11 @@ export interface Database {
           photo_required?: boolean | null
           photo_required_sometimes?: boolean | null
           photo_explanation_text?: string | null
+          items?: Json | null
+          due_date?: string | null
+          recurrence?: string | null
+          is_template?: boolean | null
+          photo_optional?: boolean | null
         }
         Update: {
           id?: string
@@ -201,6 +211,11 @@ export interface Database {
           photo_required?: boolean | null
           photo_required_sometimes?: boolean | null
           photo_explanation_text?: string | null
+          items?: Json | null
+          due_date?: string | null
+          recurrence?: string | null
+          is_template?: boolean | null
+          photo_optional?: boolean | null
         }
       }
       daily_point_goals: {
@@ -751,6 +766,7 @@ export interface Database {
           description_photo: Json | null
           photo_proof_required: boolean | null
           photo_required_sometimes: boolean | null
+          photo_optional: boolean | null
         }
         Insert: {
           id?: string
@@ -779,6 +795,7 @@ export interface Database {
           description_photo?: Json | null
           photo_proof_required?: boolean | null
           photo_required_sometimes?: boolean | null
+          photo_optional?: boolean | null
         }
         Update: {
           id?: string
@@ -807,6 +824,7 @@ export interface Database {
           description_photo?: Json | null
           photo_proof_required?: boolean | null
           photo_required_sometimes?: boolean | null
+          photo_optional?: boolean | null
         }
       }
       tutorial_slides: {
