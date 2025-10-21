@@ -3,6 +3,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { useProfiles } from '../hooks/useProfiles';
 import { supabase } from '../lib/supabase';
 import { Send, Image as ImageIcon, X, Loader, ArrowLeft } from 'lucide-react';
+import { toLocaleTimeStringCambodia, toLocaleDateStringCambodia } from '../lib/dateUtils';
 
 interface ChatMessage {
   id: string;
@@ -197,10 +198,10 @@ export function Chat({ onBack }: { onBack?: () => void } = {}) {
     const isToday = date.toDateString() === now.toDateString();
 
     if (isToday) {
-      return date.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
+      return toLocaleTimeStringCambodia(date, 'de-DE', { hour: '2-digit', minute: '2-digit' });
     } else {
-      return date.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit' }) + ' ' +
-             date.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
+      return toLocaleDateStringCambodia(date, 'de-DE', { day: '2-digit', month: '2-digit' }) + ' ' +
+             toLocaleTimeStringCambodia(date, 'de-DE', { hour: '2-digit', minute: '2-digit' });
     }
   };
 

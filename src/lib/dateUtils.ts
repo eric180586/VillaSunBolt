@@ -58,16 +58,26 @@ export function formatDateTimeForDisplay(date: Date | string): string {
 
 export function formatDateForInput(date: Date | string): string {
   const d = new Date(date);
-  const year = d.getFullYear();
-  const month = String(d.getMonth() + 1).padStart(2, '0');
-  const day = String(d.getDate()).padStart(2, '0');
-  return `${year}-${month}-${day}`;
+  const formatter = new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'Asia/Phnom_Penh',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit'
+  });
+  return formatter.format(d);
 }
 
 export function formatTimeForInput(date: Date | string): string {
   const d = new Date(date);
-  const hours = String(d.getHours()).padStart(2, '0');
-  const minutes = String(d.getMinutes()).padStart(2, '0');
+  const formatter = new Intl.DateTimeFormat('en-US', {
+    timeZone: 'Asia/Phnom_Penh',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false
+  });
+  const parts = formatter.formatToParts(d);
+  const hours = parts.find(p => p.type === 'hour')?.value || '00';
+  const minutes = parts.find(p => p.type === 'minute')?.value || '00';
   return `${hours}:${minutes}`;
 }
 
@@ -83,13 +93,15 @@ export function getTodayDateString(): string {
 }
 
 export function isSameDay(date1: Date | string, date2: Date | string): boolean {
-  const d1 = new Date(date1);
-  const d2 = new Date(date2);
-  return (
-    d1.getFullYear() === d2.getFullYear() &&
-    d1.getMonth() === d2.getMonth() &&
-    d1.getDate() === d2.getDate()
-  );
+  const formatter = new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'Asia/Phnom_Penh',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit'
+  });
+  const dateStr1 = formatter.format(new Date(date1));
+  const dateStr2 = formatter.format(new Date(date2));
+  return dateStr1 === dateStr2;
 }
 
 export function getTodayStart(): Date {
@@ -130,5 +142,109 @@ export function formatDateForInputFromUTC(date: Date | string): string {
     month: '2-digit',
     day: '2-digit'
   });
+  return formatter.format(d);
+}
+
+export function getCurrentCambodiaTime(): Date {
+  const now = new Date();
+  const formatter = new Intl.DateTimeFormat('en-US', {
+    timeZone: 'Asia/Phnom_Penh',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: false
+  });
+  const parts = formatter.formatToParts(now);
+  const getPart = (type: string) => parts.find(p => p.type === type)?.value || '0';
+
+  const year = parseInt(getPart('year'));
+  const month = parseInt(getPart('month')) - 1;
+  const day = parseInt(getPart('day'));
+  const hour = parseInt(getPart('hour'));
+  const minute = parseInt(getPart('minute'));
+  const second = parseInt(getPart('second'));
+
+  return new Date(Date.UTC(year, month, day, hour - 7, minute, second));
+}
+
+export function formatCambodiaDateTime(date: Date | string): string {
+  const d = new Date(date);
+  const formatter = new Intl.DateTimeFormat('de-DE', {
+    timeZone: 'Asia/Phnom_Penh',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false
+  });
+  return formatter.format(d);
+}
+
+export function formatCambodiaDate(date: Date | string): string {
+  const d = new Date(date);
+  const formatter = new Intl.DateTimeFormat('de-DE', {
+    timeZone: 'Asia/Phnom_Penh',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit'
+  });
+  return formatter.format(d);
+}
+
+export function formatCambodiaTime(date: Date | string): string {
+  const d = new Date(date);
+  const formatter = new Intl.DateTimeFormat('de-DE', {
+    timeZone: 'Asia/Phnom_Penh',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false
+  });
+  return formatter.format(d);
+}
+
+// Helper functions to replace toLocaleString/toLocaleDateString/toLocaleTimeString
+export function toLocaleStringCambodia(date: Date | string, locale: string = 'de-DE', options?: Intl.DateTimeFormatOptions): string {
+  const d = new Date(date);
+  const defaultOptions: Intl.DateTimeFormatOptions = {
+    timeZone: 'Asia/Phnom_Penh',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false,
+    ...options
+  };
+  const formatter = new Intl.DateTimeFormat(locale, defaultOptions);
+  return formatter.format(d);
+}
+
+export function toLocaleDateStringCambodia(date: Date | string, locale: string = 'de-DE', options?: Intl.DateTimeFormatOptions): string {
+  const d = new Date(date);
+  const defaultOptions: Intl.DateTimeFormatOptions = {
+    timeZone: 'Asia/Phnom_Penh',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    ...options
+  };
+  const formatter = new Intl.DateTimeFormat(locale, defaultOptions);
+  return formatter.format(d);
+}
+
+export function toLocaleTimeStringCambodia(date: Date | string, locale: string = 'de-DE', options?: Intl.DateTimeFormatOptions): string {
+  const d = new Date(date);
+  const defaultOptions: Intl.DateTimeFormatOptions = {
+    timeZone: 'Asia/Phnom_Penh',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false,
+    ...options
+  };
+  const formatter = new Intl.DateTimeFormat(locale, defaultOptions);
   return formatter.format(d);
 }

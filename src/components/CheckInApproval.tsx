@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../lib/supabase';
 import { CheckCircle, XCircle, Clock, User, AlertCircle, ArrowLeft, Home } from 'lucide-react';
+import { toLocaleTimeStringCambodia, toLocaleStringCambodia } from '../lib/dateUtils';
 
 interface CheckInWithProfile {
   id: string;
@@ -340,7 +341,7 @@ export function CheckInApproval({ onNavigate }: CheckInApprovalProps = {}) {
                       <div>
                         <p className="text-sm text-gray-600">Check-In Zeit</p>
                         <p className="font-semibold text-gray-900">
-                          {new Date(checkIn.check_in_time).toLocaleTimeString('de-DE')}
+                          {toLocaleTimeStringCambodia(checkIn.check_in_time, 'de-DE')}
                         </p>
                       </div>
                     </div>
@@ -592,7 +593,7 @@ export function CheckInApproval({ onNavigate }: CheckInApprovalProps = {}) {
                   <div>
                     <h3 className="font-bold text-gray-900">{request.profiles.full_name}</h3>
                     <p className="text-xs text-gray-500">
-                      {new Date(request.requested_at).toLocaleString('de-DE')}
+                      {toLocaleStringCambodia(request.requested_at, 'de-DE')}
                     </p>
                   </div>
                 </div>
