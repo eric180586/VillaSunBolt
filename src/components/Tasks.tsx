@@ -87,7 +87,6 @@ export function Tasks({ onNavigate, filterStatus, onBack }: TasksProps = {}) {
     description_photo: [] as File[],
     photo_proof_required: false,
     photo_required_sometimes: false,
-    explanation_photo: [] as File[],
     photo_explanation_text: '',
   });
 
@@ -354,7 +353,6 @@ export function Tasks({ onNavigate, filterStatus, onBack }: TasksProps = {}) {
         description_photo: [],
         photo_proof_required: false,
         photo_required_sometimes: false,
-        explanation_photo: [],
         photo_explanation_text: '',
       });
     } catch (error) {
@@ -989,7 +987,6 @@ export function Tasks({ onNavigate, filterStatus, onBack }: TasksProps = {}) {
                           description_photo: [],
                           photo_proof_required: task.photo_proof_required || false,
                           photo_required_sometimes: task.photo_required_sometimes || false,
-                          explanation_photo: [],
                           photo_explanation_text: task.photo_explanation_text || '',
                         });
                         setShowModal(true);
@@ -1901,16 +1898,6 @@ function TaskCreateModal({ formData, setFormData, profiles, onSubmit, onClose, o
               onChange={(e) => setFormData({ ...formData, description: e.target.value })}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg"
               rows={3}
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Photo Explanation</label>
-            <input
-              type="file"
-              accept="image/*"
-              onChange={(e) => setFormData({ ...formData, photo_explanation: e.target.files?.[0] || null })}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg"
             />
           </div>
 

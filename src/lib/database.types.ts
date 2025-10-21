@@ -30,13 +30,11 @@ export interface Database {
           admin_notes: string | null
           photo_url: string | null
           duration_minutes: number | null
-          photo_explanation: string | null
           photo_explanation_text: string | null
           photo_urls: Json | null
           admin_photos: Json | null
           category: string | null
           description_photo: Json | null
-          explanation_photo: Json | null
         }
         Insert: {
           id?: string
@@ -58,13 +56,11 @@ export interface Database {
           admin_notes?: string | null
           photo_url?: string | null
           duration_minutes?: number | null
-          photo_explanation?: string | null
           photo_explanation_text?: string | null
           photo_urls?: Json | null
           admin_photos?: Json | null
           category?: string | null
           description_photo?: Json | null
-          explanation_photo?: Json | null
         }
         Update: {
           id?: string
@@ -86,13 +82,11 @@ export interface Database {
           admin_notes?: string | null
           photo_url?: string | null
           duration_minutes?: number | null
-          photo_explanation?: string | null
           photo_explanation_text?: string | null
           photo_urls?: Json | null
           admin_photos?: Json | null
           category?: string | null
           description_photo?: Json | null
-          explanation_photo?: Json | null
         }
       }
     }
