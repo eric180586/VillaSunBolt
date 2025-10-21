@@ -749,6 +749,8 @@ export interface Database {
           admin_photos: Json | null
           category: string | null
           description_photo: Json | null
+          photo_proof_required: boolean | null
+          photo_required_sometimes: boolean | null
         }
         Insert: {
           id?: string
@@ -775,6 +777,8 @@ export interface Database {
           admin_photos?: Json | null
           category?: string | null
           description_photo?: Json | null
+          photo_proof_required?: boolean | null
+          photo_required_sometimes?: boolean | null
         }
         Update: {
           id?: string
@@ -801,6 +805,8 @@ export interface Database {
           admin_photos?: Json | null
           category?: string | null
           description_photo?: Json | null
+          photo_proof_required?: boolean | null
+          photo_required_sometimes?: boolean | null
         }
       }
       tutorial_slides: {
