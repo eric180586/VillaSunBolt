@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../lib/supabase';
 import { getTodayDateString } from '../lib/dateUtils';
-import { CheckCircle, XCircle, Clock, Award, AlertCircle, ArrowLeft } from 'lucide-react';
+import { CheckCircle, XCircle, Clock, Award, AlertCircle, ArrowLeft, Trophy } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { FortuneWheel } from './FortuneWheel';
 

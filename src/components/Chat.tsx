@@ -8,8 +8,6 @@ interface ChatMessage {
   id: string;
   user_id: string;
   message: string;
-  message_de: string;
-  message_km: string;
   photo_url: string | null;
   created_at: string;
   profiles?: {
@@ -26,11 +24,8 @@ export function Chat({ onBack }: { onBack?: () => void } = {}) {
   const [selectedPhoto, setSelectedPhoto] = useState<File | null>(null);
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
   const [sending, setSending] = useState(false);
-  const [showLanguage, setShowLanguage] = useState<'original' | 'de' | 'km'>('original');
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-
-  const userLanguage = profile?.preferred_language || 'de';
 
   useEffect(() => {
     fetchMessages();
@@ -115,19 +110,6 @@ export function Chat({ onBack }: { onBack?: () => void } = {}) {
     };
   };
 
-  const translateText = async (text: string, targetLang: 'de' | 'km'): Promise<string> => {
-    try {
-      const response = await fetch(
-        `https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=${targetLang}&dt=t&q=${encodeURIComponent(text)}`
-      );
-      const data = await response.json();
-      return data[0]?.map((item: any) => item[0]).join('') || text;
-    } catch (error) {
-      console.error('Translation error:', error);
-      return text;
-    }
-  };
-
   const uploadPhoto = async (file: File): Promise<string> => {
     const fileExt = file.name.split('.').pop();
     const fileName = `${profile?.id}/${Math.random().toString(36).substring(2)}_${Date.now()}.${fileExt}`;
@@ -156,28 +138,11 @@ export function Chat({ onBack }: { onBack?: () => void } = {}) {
         photoUrl = await uploadPhoto(selectedPhoto);
       }
 
-      const originalMessage = messageText.trim();
-      let messageDe = '';
-      let messageKm = '';
-
-      if (originalMessage) {
-        if (userLanguage === 'de') {
-          messageDe = originalMessage;
-          messageKm = await translateText(originalMessage, 'km');
-        } else if (userLanguage === 'km') {
-          messageKm = originalMessage;
-          messageDe = await translateText(originalMessage, 'de');
-        } else {
-          messageDe = await translateText(originalMessage, 'de');
-          messageKm = await translateText(originalMessage, 'km');
-        }
-      }
+      const messageContent = messageText.trim();
 
       const { error } = await supabase.from('chat_messages').insert({
         user_id: profile.id,
-        message: originalMessage || '[Photo]',
-        message_de: messageDe,
-        message_km: messageKm,
+        message: messageContent || '[Photo]',
         photo_url: photoUrl,
       });
 
@@ -223,8 +188,6 @@ export function Chat({ onBack }: { onBack?: () => void } = {}) {
   };
 
   const getDisplayMessage = (msg: ChatMessage) => {
-    if (showLanguage === 'de' && msg.message_de) return msg.message_de;
-    if (showLanguage === 'km' && msg.message_km) return msg.message_km;
     return msg.message;
   };
 
