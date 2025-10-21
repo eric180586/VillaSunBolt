@@ -1,0 +1,207 @@
+import { useEffect, useState } from 'react';
+import { useAuth } from '../contexts/AuthContext';
+import { useTasks } from '../hooks/useTasks';
+import { useHumorModules } from '../hooks/useHumorModules';
+import { supabase } from '../lib/supabase';
+import { Clock, MessageCircle, Sparkles, Smartphone, Home } from 'lucide-react';
+
+const iconMap = {
+  Clock,
+  MessageCircle,
+  Sparkles,
+  Smartphone,
+  Home,
+};
+
+const colorMap = {
+  pink: { bg: 'bg-pink-50', text: 'text-pink-600' },
+  blue: { bg: 'bg-blue-50', text: 'text-blue-600' },
+  purple: { bg: 'bg-purple-50', text: 'text-purple-600' },
+  green: { bg: 'bg-green-50', text: 'text-green-600' },
+  orange: { bg: 'bg-orange-50', text: 'text-orange-600' },
+};
+
+interface WeeklySchedule {
+  id: string;
+  staff_id: string;
+  week_start_date: string;
+  shifts: Array<{
+    day: string;
+    date: string;
+    shift: 'early' | 'late' | 'off';
+  }>;
+  is_published: boolean;
+}
+
+const formatMinutesToTime = (totalMinutes: number): string => {
+  const hours = Math.floor(totalMinutes / 60);
+  const minutes = Math.round(totalMinutes % 60);
+  return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+};
+
+export function ProgressBar() {
+  const { profile } = useAuth();
+  const { tasks } = useTasks();
+  const { activeModules } = useHumorModules();
+  const [displayTime, setDisplayTime] = useState('--:--');
+  const [totalMinutes, setTotalMinutes] = useState(0);
+  const [homeTime, setHomeTime] = useState('');
+
+  useEffect(() => {
+    const calculateTime = async () => {
+      if (!profile?.id) return;
+
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const todayStr = today.toISOString().split('T')[0];
+
+      const { data: checkedInUsers, error: checkInError } = await supabase
+        .from('check_ins')
+        .select('user_id')
+        .gte('check_in_time', today.toISOString())
+        .eq('status', 'approved');
+
+      if (checkInError) {
+        console.error('Error fetching check-ins:', checkInError);
+        setDisplayTime('--:--');
+        setTotalMinutes(0);
+        setHomeTime('');
+        return;
+      }
+
+      const checkedInCount = checkedInUsers?.length || 0;
+
+      if (checkedInCount === 0) {
+        setDisplayTime('--:--');
+        setTotalMinutes(0);
+        setHomeTime('');
+        return;
+      }
+
+      const todayTasks = tasks.filter((t) => {
+        if (!t.due_date) return false;
+        if (t.status === 'completed' || t.status === 'archived') return false;
+        const taskDate = new Date(t.due_date);
+        taskDate.setHours(0, 0, 0, 0);
+        return taskDate.getTime() === today.getTime();
+      });
+
+      const { data: checklistInstances, error: checklistError } = await supabase
+        .from('checklist_instances')
+        .select('checklists(duration_minutes), status')
+        .eq('instance_date', todayStr)
+        .neq('status', 'completed');
+
+      if (checklistError) {
+        console.error('Error fetching checklists:', checklistError);
+      }
+
+      const taskMinutes = todayTasks.reduce((sum, t) => {
+        const duration = t.duration_minutes || 30;
+        return sum + duration;
+      }, 0);
+
+      const checklistMinutes = (checklistInstances || []).reduce((sum, c: any) => {
+        return sum + (c.checklists?.duration_minutes || 0);
+      }, 0);
+
+      const total = taskMinutes + checklistMinutes;
+      const minutesPerPerson = total / checkedInCount;
+      const totalWithBuffer = minutesPerPerson + 120;
+
+      setTotalMinutes(totalWithBuffer);
+      const timeStr = formatMinutesToTime(totalWithBuffer);
+      setDisplayTime(timeStr);
+
+      const dayOfWeek = today.getDay();
+      const weekStart = new Date(today);
+      const daysFromMonday = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
+      weekStart.setDate(today.getDate() - daysFromMonday);
+      weekStart.setHours(0, 0, 0, 0);
+
+      const weekStartStr = weekStart.toISOString().split('T')[0];
+      const todayDayName = today.toLocaleDateString('en-US', { weekday: 'long' }).toLowerCase();
+
+      const { data: weeklySchedules } = await supabase
+        .from('weekly_schedules')
+        .select('*')
+        .eq('week_start_date', weekStartStr);
+
+      const currentUserSchedule = weeklySchedules?.find((s) => s.staff_id === profile.id);
+      if (!currentUserSchedule) {
+        setHomeTime('');
+        return;
+      }
+
+      const todayShift = (currentUserSchedule as WeeklySchedule).shifts.find(
+        (shift) => shift.day === todayDayName
+      );
+
+      if (todayShift && (todayShift.shift === 'early' || todayShift.shift === 'late')) {
+        const shiftStartTime = todayShift.shift === 'early'
+          ? { hours: 9, minutes: 0 }
+          : { hours: 15, minutes: 0 };
+
+        const baseTime = new Date();
+        baseTime.setHours(shiftStartTime.hours, shiftStartTime.minutes, 0, 0);
+        baseTime.setMinutes(baseTime.getMinutes() + totalWithBuffer);
+
+        const homeHours = baseTime.getHours().toString().padStart(2, '0');
+        const homeMinutes = baseTime.getMinutes().toString().padStart(2, '0');
+        setHomeTime(`${homeHours}:${homeMinutes}`);
+      } else {
+        setHomeTime('');
+      }
+    };
+
+    calculateTime();
+  }, [profile, tasks]);
+
+  return (
+    <div className="bg-gradient-to-br from-white to-gray-50 rounded-xl p-6 shadow-lg border border-gray-200">
+      <div className="space-y-6">
+        <div className="text-center">
+          <div className="flex items-center justify-center space-x-2 mb-2">
+            <Clock className="w-6 h-6 text-blue-500" />
+            <h3 className="text-sm font-medium text-gray-600">Estimated time for the daily ToDos</h3>
+          </div>
+          <div className="text-6xl font-bold text-blue-600 mb-1">
+            {displayTime}
+          </div>
+          <p className="text-2xl font-semibold text-gray-700">Hours</p>
+        </div>
+
+        {homeTime && (
+          <div className="bg-green-50 p-4 rounded-lg text-center">
+            <div className="flex items-center justify-center space-x-2 mb-1">
+              <Home className="w-5 h-5 text-green-600" />
+              <p className="text-sm font-medium text-gray-700">So could already go home at</p>
+            </div>
+            <p className="text-3xl font-bold text-green-600">{homeTime}</p>
+          </div>
+        )}
+
+        {activeModules.length > 0 && (
+          <div className="border-t border-gray-200 pt-4 space-y-3">
+            {activeModules.map((module) => {
+              const Icon = iconMap[module.icon_name as keyof typeof iconMap] || Clock;
+              const colors = colorMap[module.color_class as keyof typeof colorMap] || colorMap.pink;
+              const moduleMinutes = (totalMinutes * module.percentage) / 100;
+              const moduleTime = formatMinutesToTime(moduleMinutes);
+
+              return (
+                <div key={module.id} className={`flex items-center justify-between ${colors.bg} p-3 rounded-lg`}>
+                  <div className="flex items-center space-x-2">
+                    <Icon className={`w-5 h-5 ${colors.text}`} />
+                    <span className="text-sm font-medium text-gray-700">{module.label}</span>
+                  </div>
+                  <span className={`text-lg font-bold ${colors.text}`}>{moduleTime}</span>
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}

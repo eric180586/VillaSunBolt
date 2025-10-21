@@ -1,0 +1,179 @@
+import { useState } from 'react';
+import { useAuth } from '../contexts/AuthContext';
+import { useProfiles } from '../hooks/useProfiles';
+import { User, Mail, Award, Shield, Calendar, Globe, ArrowLeft } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
+
+export function Profile({ onBack }: { onBack?: () => void } = {}) {
+  const { profile, updateLanguage } = useAuth();
+  const { getPointsHistory } = useProfiles();
+  const { t } = useTranslation();
+  const [history, setHistory] = useState<any[]>([]);
+  const [showHistory, setShowHistory] = useState(false);
+
+  const loadHistory = async () => {
+    if (!profile) return;
+    try {
+      const data = await getPointsHistory(profile.id);
+      setHistory(data);
+      setShowHistory(true);
+    } catch (error) {
+      console.error('Error loading history:', error);
+    }
+  };
+
+  const handleLanguageChange = async (language: 'de' | 'en' | 'km') => {
+    try {
+      await updateLanguage(language);
+    } catch (error) {
+      console.error('Error updating language:', error);
+      alert(t('common.error'));
+    }
+  };
+
+  if (!profile) return null;
+
+  return (
+    <div className="space-y-6">
+      <h2 className="text-3xl font-bold text-gray-900">{t('profile.title')}</h2>
+
+      <div className="bg-white rounded-xl p-8 shadow-sm border border-gray-200">
+        <div className="flex items-start space-x-6">
+          <div className="w-24 h-24 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center text-white font-bold text-4xl">
+            {profile.full_name.charAt(0)}
+          </div>
+          <div className="flex-1">
+            <h3 className="text-2xl font-bold text-gray-900 mb-2">{profile.full_name}</h3>
+            <div className="space-y-2">
+              <div className="flex items-center space-x-2 text-gray-600">
+                <Mail className="w-5 h-5" />
+                <span>{profile.email}</span>
+              </div>
+              <div className="flex items-center space-x-2 text-gray-600">
+                <Shield className="w-5 h-5" />
+                <span className="capitalize">{profile.role}</span>
+              </div>
+              <div className="flex items-center space-x-2 text-gray-600">
+                <Calendar className="w-5 h-5" />
+                <span>{t('profile.memberSince')} {new Date(profile.created_at).toLocaleDateString()}</span>
+              </div>
+              <div className="flex items-center space-x-2 text-gray-600">
+                <Globe className="w-5 h-5" />
+                <select
+                  value={profile.preferred_language}
+                  onChange={(e) => handleLanguageChange(e.target.value as 'de' | 'en' | 'km')}
+                  className="px-3 py-1 border border-gray-300 rounded-lg bg-white text-gray-900 font-medium"
+                >
+                  <option value="de">{t('languages.de')}</option>
+                  <option value="en">{t('languages.en')}</option>
+                  <option value="km">{t('languages.km')}</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="bg-gradient-to-r from-yellow-500 to-yellow-600 rounded-xl p-8 text-white shadow-lg">
+        <div className="flex items-center justify-between">
+          <div>
+            <div className="flex items-center space-x-2 mb-2">
+              <Award className="w-6 h-6" />
+              <span className="text-lg font-medium">{t('profile.totalPoints')}</span>
+            </div>
+            <h3 className="text-5xl font-bold">{profile.total_points}</h3>
+          </div>
+          <button
+            onClick={loadHistory}
+            className="bg-white text-yellow-600 px-6 py-3 rounded-lg font-semibold hover:bg-yellow-50 transition-colors"
+          >
+            {t('profile.viewHistory')}
+          </button>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
+          <div className="text-center">
+            <User className="w-12 h-12 text-blue-500 mx-auto mb-3" />
+            <h4 className="text-lg font-semibold text-gray-900 mb-1">{t('profile.accountType')}</h4>
+            <p className="text-2xl font-bold text-blue-600 capitalize">{profile.role}</p>
+          </div>
+        </div>
+
+        <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
+          <div className="text-center">
+            <Award className="w-12 h-12 text-yellow-500 mx-auto mb-3" />
+            <h4 className="text-lg font-semibold text-gray-900 mb-1">{t('profile.pointsRank')}</h4>
+            <p className="text-2xl font-bold text-yellow-600">#1</p>
+          </div>
+        </div>
+
+        <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
+          <div className="text-center">
+            <Calendar className="w-12 h-12 text-green-500 mx-auto mb-3" />
+            <h4 className="text-lg font-semibold text-gray-900 mb-1">{t('profile.memberSince')}</h4>
+            <p className="text-sm font-medium text-green-600">
+              {new Date(profile.created_at).toLocaleDateString()}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {showHistory && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50"
+          onClick={() => setShowHistory(false)}
+        >
+          <div
+            className="bg-white rounded-xl p-6 w-full max-w-2xl max-h-[80vh] overflow-y-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-2xl font-bold text-gray-900">{t('profile.pointsHistory')}</h3>
+              <button
+                onClick={() => setShowHistory(false)}
+                className="text-gray-400 hover:text-gray-600"
+              >
+                ✕
+              </button>
+            </div>
+            {history.length === 0 ? (
+              <p className="text-center text-gray-600 py-8">{t('profile.noHistory')}</p>
+            ) : (
+              <div className="space-y-3">
+                {history.map((entry) => (
+                  <div
+                    key={entry.id}
+                    className="flex items-center justify-between p-4 bg-gray-50 rounded-lg"
+                  >
+                    <div className="flex-1">
+                      <p className="font-medium text-gray-900">{entry.reason}</p>
+                      <div className="flex items-center space-x-2 mt-1">
+                        <span className="text-sm text-gray-600 capitalize">
+                          {entry.category.replace('_', ' ')}
+                        </span>
+                        <span className="text-sm text-gray-400">•</span>
+                        <span className="text-sm text-gray-600">
+                          {new Date(entry.created_at).toLocaleDateString()}
+                        </span>
+                      </div>
+                    </div>
+                    <span
+                      className={`text-2xl font-bold ${
+                        entry.points_change > 0 ? 'text-green-600' : 'text-red-600'
+                      }`}
+                    >
+                      {entry.points_change > 0 ? '+' : ''}
+                      {entry.points_change}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
