@@ -189,9 +189,9 @@ export function AdminDashboard({ onNavigate, onBack }: AdminDashboardProps = {})
         setTeamAchievable(goalsData?.team_achievable_points || 0);
         setTeamAchieved(goalsData?.team_points_earned || 0);
 
-        // Fetch team task counts using new RPC function
+        // Fetch team task counts using new RPC function (uses Cambodia date automatically)
         const { data: totalsData, error: totalsError } = await supabase
-          .rpc('get_team_daily_task_counts', { p_date: today });
+          .rpc('get_team_daily_task_counts');
 
         if (!totalsError && totalsData && totalsData.length > 0) {
           setTotalTasksToday(totalsData[0].total_tasks || 0);

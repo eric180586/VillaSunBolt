@@ -179,10 +179,9 @@ export function PerformanceMetrics({ onNavigate }: PerformanceMetricsProps = {})
     };
 
     const fetchTeamTaskCounts = async () => {
-      const today = getTodayDateString();
-
+      // Call without parameter to use Cambodia's current date automatically
       const { data, error } = await supabase
-        .rpc('get_team_daily_task_counts', { p_date: today });
+        .rpc('get_team_daily_task_counts');
 
       if (!error && data && data.length > 0) {
         setTotalTasksToday(data[0].total_tasks || 0);
