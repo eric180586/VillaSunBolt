@@ -210,7 +210,8 @@ export function TaskCreateModal({ onClose, onComplete, profiles, editingTask }: 
 
           const { error } = await supabase
             .from('tasks')
-            .insert(tasksToCreate);
+            .insert(tasksToCreate)
+            .select();
 
           if (error) throw error;
         } else {
@@ -238,7 +239,8 @@ export function TaskCreateModal({ onClose, onComplete, profiles, editingTask }: 
 
           const { error } = await supabase
             .from('tasks')
-            .insert([taskData]);
+            .insert([taskData])
+            .select();
 
           if (error) throw error;
         }

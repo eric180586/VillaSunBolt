@@ -180,17 +180,9 @@ export function AdminDashboard({ onNavigate, onBack }: AdminDashboardProps = {})
           setCompletedTasksToday(0);
         }
 
-        // Fetch today's checklist instances using RPC (uses Cambodia date automatically)
-        const { data: checklistsData, error: checklistsError } = await supabase
-          .rpc('get_team_daily_checklist_counts');
-
-        if (!checklistsError && checklistsData && checklistsData.length > 0) {
-          setTotalChecklistsToday(checklistsData[0].total_checklists || 0);
-          setCompletedChecklistsToday(checklistsData[0].completed_checklists || 0);
-        } else {
-          setTotalChecklistsToday(0);
-          setCompletedChecklistsToday(0);
-        }
+        // Checklists are now integrated into Tasks
+        setTotalChecklistsToday(0);
+        setCompletedChecklistsToday(0);
       } catch (error) {
         console.error('Error fetching team points:', error);
       }
