@@ -131,6 +131,13 @@ export function TaskCreateModal({ onClose, onComplete, profiles, editingTask }: 
 
     setLoading(true);
     try {
+      // Get current user ID
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        alert('Nicht angemeldet!');
+        return;
+      }
+
       const photoUrls = await uploadPhotos();
       const dueDateTime = combineDateAndTime(formData.due_date, formData.due_time);
 
@@ -158,6 +165,7 @@ export function TaskCreateModal({ onClose, onComplete, profiles, editingTask }: 
           duration_minutes: formData.duration_minutes,
           points_value: formData.points_value,
           assigned_to: primaryStaff || null,
+          created_by: user.id,
           is_template: formData.is_template,
           recurrence: formData.recurrence,
           items: itemsData,
@@ -187,6 +195,7 @@ export function TaskCreateModal({ onClose, onComplete, profiles, editingTask }: 
             duration_minutes: formData.duration_minutes,
             points_value: formData.points_value,
             assigned_to: staffId,
+            created_by: user.id,
             is_template: formData.is_template,
             recurrence: formData.recurrence,
             items: itemsData,
@@ -214,6 +223,7 @@ export function TaskCreateModal({ onClose, onComplete, profiles, editingTask }: 
             duration_minutes: formData.duration_minutes,
             points_value: formData.points_value,
             assigned_to: null,
+            created_by: user.id,
             is_template: formData.is_template,
             recurrence: formData.recurrence,
             items: itemsData,
