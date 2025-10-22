@@ -27,6 +27,25 @@ const RECURRENCE_OPTIONS = [
 
 export function Checklists({ onBack }: { onBack?: () => void } = {}) {
   const { profile } = useAuth();
+
+  // FEATURE DISABLED - Checklists have been merged into Tasks
+  return (
+    <div className="p-6">
+      <div className="text-center text-gray-600">
+        <ClipboardList className="w-12 h-12 mx-auto mb-4 text-yellow-500" />
+        <p className="text-lg font-semibold mb-2">Checklist Templates Feature wurde deaktiviert</p>
+        <p className="text-sm">Diese Funktion wurde in das Tasks-System integriert.</p>
+        <p className="text-sm mt-2">Bitte verwenden Sie Tasks mit der "Template" Option.</p>
+        {onBack && (
+          <button onClick={onBack} className="mt-4 px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600">
+            <ArrowLeft className="w-4 h-4 inline mr-2" />
+            Zurück
+          </button>
+        )}
+      </div>
+    </div>
+  );
+
   const { checklists, refetch } = useChecklists();
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [showModal, setShowModal] = useState(false);

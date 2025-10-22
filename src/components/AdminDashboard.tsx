@@ -287,13 +287,7 @@ export function AdminDashboard({ onNavigate, onBack }: AdminDashboardProps = {})
       </div>
 
       {/* Zweite Reihe: New Template, New Note, Check-In Historie, Daily Reset */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <ActionButton
-          icon={FileText}
-          label="New Template"
-          onClick={() => onNavigate?.('checklists')}
-          color=""
-        />
+      <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
         <ActionButton
           icon={StickyNote}
           label="New Note"
