@@ -767,6 +767,12 @@ export interface Database {
           photo_proof_required: boolean | null
           photo_required_sometimes: boolean | null
           photo_optional: boolean | null
+          items: Json | null
+          recurrence: string | null
+          is_template: boolean | null
+          last_generated_date: string | null
+          template_id: string | null
+          completion_notes: string | null
         }
         Insert: {
           id?: string
@@ -796,6 +802,12 @@ export interface Database {
           photo_proof_required?: boolean | null
           photo_required_sometimes?: boolean | null
           photo_optional?: boolean | null
+          items?: Json | null
+          recurrence?: string | null
+          is_template?: boolean | null
+          last_generated_date?: string | null
+          template_id?: string | null
+          completion_notes?: string | null
         }
         Update: {
           id?: string
@@ -825,6 +837,12 @@ export interface Database {
           photo_proof_required?: boolean | null
           photo_required_sometimes?: boolean | null
           photo_optional?: boolean | null
+          items?: Json | null
+          recurrence?: string | null
+          is_template?: boolean | null
+          last_generated_date?: string | null
+          template_id?: string | null
+          completion_notes?: string | null
         }
       }
       tutorial_slides: {
