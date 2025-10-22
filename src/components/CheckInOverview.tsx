@@ -105,10 +105,14 @@ export function CheckInOverview({ onBack, onNavigate }: CheckInOverviewProps = {
 
       if (checkError) throw checkError;
 
+      const todayStartTs = `${today}T00:00:00+07:00`;
+      const todayEndTs = `${today}T23:59:59+07:00`;
+
       const { data: allDepartureRequests, error: depError } = await supabase
         .from('departure_requests')
         .select('*')
-        .eq('shift_date', today);
+        .gte('request_time', todayStartTs)
+        .lte('request_time', todayEndTs);
 
       if (depError) throw depError;
 
