@@ -20,6 +20,7 @@ export function EndOfDayRequest() {
       if (!profile) return;
 
       const today = getTodayDateString();
+      console.log('[EndOfDayRequest] Detecting shift for date:', today);
 
       const { data: checkIn, error } = await supabase
         .from('check_ins')
@@ -32,8 +33,16 @@ export function EndOfDayRequest() {
         .limit(1)
         .maybeSingle();
 
+      if (error) {
+        console.error('[EndOfDayRequest] Error fetching check-in:', error);
+        console.error('[EndOfDayRequest] Error details:', JSON.stringify(error, null, 2));
+      }
+
       if (checkIn) {
+        console.log('[EndOfDayRequest] Check-in found, shift_type:', checkIn.shift_type);
         setCurrentShift(checkIn.shift_type);
+      } else {
+        console.log('[EndOfDayRequest] No check-in found for today');
       }
     };
 
@@ -43,6 +52,8 @@ export function EndOfDayRequest() {
   const handleRequest = async () => {
     if (!profile) return;
 
+    console.log('[EndOfDayRequest] Handle request clicked, currentShift:', currentShift);
+
     if (!currentShift) {
       alert('No shift found for today. Please check in first.');
       return;
@@ -50,6 +61,7 @@ export function EndOfDayRequest() {
 
     const today = new Date();
     const shiftType = currentShift === 'early_shift' ? 'früh' : 'spät';
+    console.log('[EndOfDayRequest] Creating request for shift type:', shiftType);
 
     const hasPendingRequest = requests.some(
       (r) =>
@@ -59,21 +71,25 @@ export function EndOfDayRequest() {
     );
 
     if (hasPendingRequest) {
+      console.log('[EndOfDayRequest] Already has pending request for today');
       alert('You already have a pending departure request for today');
       return;
     }
 
     setIsSubmitting(true);
     try {
+      console.log('[EndOfDayRequest] Calling createRequest...');
       await createRequest({
         user_id: profile.id,
         shift_date: today.toISOString().split('T')[0],
         shift_type: shiftType as 'früh' | 'spät',
       });
+      console.log('[EndOfDayRequest] Request created successfully');
       setShowSuccess(true);
       setTimeout(() => setShowSuccess(false), 3000);
     } catch (error) {
-      console.error('Error creating departure request:', error);
+      console.error('[EndOfDayRequest] Error creating departure request:', error);
+      console.error('[EndOfDayRequest] Error details:', JSON.stringify(error, null, 2));
       alert('Error creating request');
     } finally {
       setIsSubmitting(false);
