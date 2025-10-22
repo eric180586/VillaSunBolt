@@ -94,10 +94,10 @@ export function Chat({ onBack }: { onBack?: () => void } = {}) {
                 )
               `)
               .eq('id', payload.new.id)
-              .single();
+              .maybeSingle();
 
-            if (newMessage) {
-              setMessages((prev) => [...prev, newMessage]);
+            if (newMessage.data) {
+              setMessages((prev) => [...prev, newMessage.data]);
             }
           } else if (payload.eventType === 'DELETE') {
             setMessages((prev) => prev.filter((msg) => msg.id !== payload.old.id));

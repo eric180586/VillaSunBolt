@@ -103,14 +103,17 @@ export function TaskCompletionModal({ task, items, onClose, onComplete, profiles
       if (error) throw error;
 
       // Create notification for admin
-      await supabase.from('notifications').insert({
-        user_id: (await supabase.from('profiles').select('id').eq('role', 'admin').single()).data?.id,
+      const adminResult = await supabase.from('profiles').select('id').eq('role', 'admin').maybeSingle();
+      if (adminResult.data) {
+        await supabase.from('notifications').insert({
+        user_id: adminResult.data.id,
         type: 'task_completed',
         title: 'Task zur Review',
         message: `${profile?.full_name} hat "${task.title}" abgeschlossen`,
         reference_id: task.id,
         priority: 'high'
       });
+      }
 
       if (error) throw error;
 

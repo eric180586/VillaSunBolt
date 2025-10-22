@@ -44,7 +44,7 @@ interface TasksProps {
 
 export function Tasks({ onNavigate, filterStatus, onBack }: TasksProps = {}) {
   const { profile } = useAuth();
-  const { tasks, createTask, updateTask, deleteTask } = useTasks();
+  const { tasks, createTask, updateTask, deleteTask, refetch } = useTasks();
   const { profiles } = useProfiles();
   const { checklists } = useChecklists();
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
@@ -956,8 +956,7 @@ export function Tasks({ onNavigate, filterStatus, onBack }: TasksProps = {}) {
             setSelectedTask(null);
           }}
           onComplete={async () => {
-            // Refresh tasks after completion
-            window.location.reload();
+            await refetch();
           }}
           onOpenHelperPopup={() => {
             // Items modal closed, now open helper modal
@@ -976,8 +975,7 @@ export function Tasks({ onNavigate, filterStatus, onBack }: TasksProps = {}) {
             setSelectedTask(null);
           }}
           onComplete={async () => {
-            // Refresh tasks after completion
-            window.location.reload();
+            await refetch();
           }}
           staffMembers={profiles.filter(p => p.role === 'staff' && p.id !== profile?.id)}
         />

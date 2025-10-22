@@ -86,7 +86,7 @@ export function HelperSelectionModal({
         .from('profiles')
         .select('id')
         .eq('role', 'admin')
-        .single();
+        .maybeSingle();
 
       if (adminQuery.data) {
         const helperName = helperChoice === 'helper' && selectedHelper
