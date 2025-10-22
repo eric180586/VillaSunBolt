@@ -9,6 +9,7 @@ import { formatDateTimeForDisplay, formatDateForInput, getTodayDateString, isSam
 import { PhotoRequirementDice } from './PhotoRequirementDice';
 import { TaskWithItemsModal } from './TaskWithItemsModal';
 import { HelperSelectionModal } from './HelperSelectionModal';
+import { TaskCreateModal } from './TaskCreateModal';
 
 const CATEGORIES = [
   { id: 'daily_morning', label: 'Daily Morning', color: 'bg-orange-500' },
