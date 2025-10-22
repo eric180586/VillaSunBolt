@@ -39,7 +39,7 @@ export function TaskCreateModal({ onClose, onComplete, profiles, editingTask }: 
     due_time: '23:59',
     duration_minutes: 30,
     points_value: 10,
-    assigned_to: '',
+    assigned_to: [] as string[],
     is_template: false,
     recurrence: 'one_time',
     has_items: false,
@@ -65,7 +65,7 @@ export function TaskCreateModal({ onClose, onComplete, profiles, editingTask }: 
         due_time: editingTask.due_date ? new Date(editingTask.due_date).toTimeString().slice(0, 5) : '23:59',
         duration_minutes: editingTask.duration_minutes || 30,
         points_value: editingTask.points_value || 10,
-        assigned_to: editingTask.assigned_to || '',
+        assigned_to: editingTask.assigned_to ? [editingTask.assigned_to] : [],
         is_template: editingTask.is_template || false,
         recurrence: editingTask.recurrence || 'one_time',
         has_items: editingTask.items && editingTask.items.length > 0,
@@ -122,8 +122,8 @@ export function TaskCreateModal({ onClose, onComplete, profiles, editingTask }: 
       return;
     }
 
-    if (!formData.is_template && !formData.assigned_to) {
-      alert('Bitte Mitarbeiter zuweisen!');
+    if (!formData.is_template && formData.assigned_to.length === 0) {
+      alert('Bitte mindestens einen Mitarbeiter zuweisen!');
       return;
     }
 
@@ -150,17 +150,20 @@ export function TaskCreateModal({ onClose, onComplete, profiles, editingTask }: 
           }))
         : [];
 
-      const taskData = {
-        ...formData,
-        due_date: dueDateTime,
-        items: itemsData,
-        description_photo: photoUrls,
-        ...photoSettings,
-        initial_points_value: formData.points_value,
-        status: formData.is_template ? 'pending' : 'pending',
-      };
-
       if (editingTask) {
+        // When editing, just update the one task
+        const primaryStaff = formData.assigned_to[0];
+        const taskData = {
+          ...formData,
+          assigned_to: primaryStaff,
+          due_date: dueDateTime,
+          items: itemsData,
+          description_photo: photoUrls,
+          ...photoSettings,
+          initial_points_value: formData.points_value,
+          status: formData.is_template ? 'pending' : 'pending',
+        };
+
         const { error } = await supabase
           .from('tasks')
           .update(taskData)
@@ -168,9 +171,27 @@ export function TaskCreateModal({ onClose, onComplete, profiles, editingTask }: 
 
         if (error) throw error;
       } else {
+        // When creating new, create one task per assigned staff member
+        const tasksToCreate = formData.assigned_to.map(staffId => ({
+          category: formData.category,
+          title: formData.title,
+          description: formData.description,
+          due_date: dueDateTime,
+          duration_minutes: formData.duration_minutes,
+          points_value: formData.points_value,
+          assigned_to: staffId,
+          is_template: formData.is_template,
+          recurrence: formData.recurrence,
+          items: itemsData,
+          description_photo: photoUrls,
+          ...photoSettings,
+          initial_points_value: formData.points_value,
+          status: 'pending',
+        }));
+
         const { error } = await supabase
           .from('tasks')
-          .insert([taskData]);
+          .insert(tasksToCreate);
 
         if (error) throw error;
       }
@@ -245,39 +266,88 @@ export function TaskCreateModal({ onClose, onComplete, profiles, editingTask }: 
             </select>
           </div>
 
-          {/* Assigned To */}
-          {!formData.is_template && (
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Zugewiesen an *
-              </label>
-              <select
-                value={formData.assigned_to}
-                onChange={(e) => setFormData({ ...formData, assigned_to: e.target.value })}
-                className="w-full p-2 border border-gray-300 rounded-lg"
-              >
-                <option value="">Auswählen...</option>
-                {staffProfiles.map(p => (
-                  <option key={p.id} value={p.id}>{p.full_name}</option>
-                ))}
-              </select>
-            </div>
-          )}
+          {/* Points */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Punkte
+            </label>
+            <input
+              type="number"
+              value={formData.points_value}
+              onChange={(e) => setFormData({ ...formData, points_value: parseInt(e.target.value) || 0 })}
+              className="w-full p-2 border border-gray-300 rounded-lg"
+            />
+          </div>
         </div>
 
-        {/* Title */}
-        <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Titel *
-          </label>
-          <input
-            type="text"
-            value={formData.title}
-            onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-            className="w-full p-2 border border-gray-300 rounded-lg"
-            placeholder="Z.B. Zimmer Venus reinigen"
-          />
-        </div>
+        {/* Assigned To - Multi-select */}
+        {!formData.is_template && (
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Zugewiesen an * (mehrere möglich)
+            </label>
+            <div className="border border-gray-300 rounded-lg p-3 space-y-2 max-h-32 overflow-y-auto">
+              {staffProfiles.map(p => (
+                <label key={p.id} className="flex items-center space-x-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={formData.assigned_to.includes(p.id)}
+                    onChange={(e) => {
+                      if (e.target.checked) {
+                        setFormData({ ...formData, assigned_to: [...formData.assigned_to, p.id] });
+                      } else {
+                        setFormData({ ...formData, assigned_to: formData.assigned_to.filter(id => id !== p.id) });
+                      }
+                    }}
+                    className="w-4 h-4 text-purple-600"
+                  />
+                  <span className="text-sm">{p.full_name}</span>
+                </label>
+              ))}
+            </div>
+            {formData.assigned_to.length > 0 && (
+              <p className="text-xs text-gray-500 mt-1">
+                Ausgewählt: {formData.assigned_to.map(id => staffProfiles.find(p => p.id === id)?.full_name).join(', ')}
+              </p>
+            )}
+          </div>
+        )}
+
+        {/* Title OR Room Dropdown */}
+        {(formData.category === 'room_cleaning' || formData.category === 'small_cleaning') ? (
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Zimmer auswählen *
+            </label>
+            <select
+              value={formData.title}
+              onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+              className="w-full p-2 border border-gray-300 rounded-lg"
+            >
+              <option value="">Zimmer wählen...</option>
+              <option value="Venus">Venus</option>
+              <option value="Jupiter">Jupiter</option>
+              <option value="Mars">Mars</option>
+              <option value="Saturn">Saturn</option>
+              <option value="Neptune">Neptune</option>
+              <option value="Mercury">Mercury</option>
+              <option value="Uranus">Uranus</option>
+            </select>
+          </div>
+        ) : (
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Titel *
+            </label>
+            <input
+              type="text"
+              value={formData.title}
+              onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+              className="w-full p-2 border border-gray-300 rounded-lg"
+              placeholder="Z.B. Wäsche waschen"
+            />
+          </div>
+        )}
 
         {/* Description */}
         <div className="mb-4">
@@ -338,8 +408,74 @@ export function TaskCreateModal({ onClose, onComplete, profiles, editingTask }: 
           )}
         </div>
 
-        <div className="grid grid-cols-3 gap-4 mb-4">
-          {/* Date & Time */}
+        {/* Photo Options */}
+        <div className="mb-6 p-4 bg-yellow-50 rounded-lg">
+          <label className="block text-sm font-medium text-gray-900 mb-3">
+            Foto-Anforderungen
+          </label>
+          <div className="space-y-2">
+            <label className="flex items-center space-x-2 cursor-pointer">
+              <input
+                type="radio"
+                checked={photoSettings.photo_proof_required}
+                onChange={() => setPhotoSettings({
+                  photo_proof_required: true,
+                  photo_required_sometimes: false,
+                  photo_optional: false,
+                  photo_explanation_text: photoSettings.photo_explanation_text,
+                })}
+                className="w-4 h-4 text-yellow-600"
+              />
+              <span className="text-sm">Foto immer erforderlich</span>
+            </label>
+            <label className="flex items-center space-x-2 cursor-pointer">
+              <input
+                type="radio"
+                checked={photoSettings.photo_required_sometimes}
+                onChange={() => setPhotoSettings({
+                  photo_proof_required: false,
+                  photo_required_sometimes: true,
+                  photo_optional: false,
+                  photo_explanation_text: photoSettings.photo_explanation_text,
+                })}
+                className="w-4 h-4 text-yellow-600"
+              />
+              <span className="text-sm">Foto manchmal erforderlich (Würfel)</span>
+            </label>
+            <label className="flex items-center space-x-2 cursor-pointer">
+              <input
+                type="radio"
+                checked={photoSettings.photo_optional || (!photoSettings.photo_proof_required && !photoSettings.photo_required_sometimes)}
+                onChange={() => setPhotoSettings({
+                  photo_proof_required: false,
+                  photo_required_sometimes: false,
+                  photo_optional: true,
+                  photo_explanation_text: photoSettings.photo_explanation_text,
+                })}
+                className="w-4 h-4 text-yellow-600"
+              />
+              <span className="text-sm">Foto optional</span>
+            </label>
+          </div>
+
+          {(photoSettings.photo_proof_required || photoSettings.photo_required_sometimes) && (
+            <div className="mt-3">
+              <label className="block text-xs text-gray-600 mb-1">
+                Foto-Erklärung (optional)
+              </label>
+              <textarea
+                value={photoSettings.photo_explanation_text}
+                onChange={(e) => setPhotoSettings({ ...photoSettings, photo_explanation_text: e.target.value })}
+                rows={2}
+                className="w-full p-2 border border-gray-300 rounded-lg text-sm"
+                placeholder="Z.B. Bitte Foto von sauberem Bett machen"
+              />
+            </div>
+          )}
+        </div>
+
+        <div className="grid grid-cols-4 gap-4 mb-4">
+          {/* Date */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Datum
@@ -352,6 +488,7 @@ export function TaskCreateModal({ onClose, onComplete, profiles, editingTask }: 
             />
           </div>
 
+          {/* Time */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Zeit
@@ -364,7 +501,22 @@ export function TaskCreateModal({ onClose, onComplete, profiles, editingTask }: 
             />
           </div>
 
-          {/* Points */}
+          {/* Duration */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Dauer (Min)
+            </label>
+            <input
+              type="number"
+              value={formData.duration_minutes}
+              onChange={(e) => setFormData({ ...formData, duration_minutes: parseInt(e.target.value) || 0 })}
+              className="w-full p-2 border border-gray-300 rounded-lg"
+              min="5"
+              step="5"
+            />
+          </div>
+
+          {/* Points moved here */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Punkte
