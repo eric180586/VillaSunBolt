@@ -216,6 +216,18 @@ export function Schedules({ onNavigate, onBack }: SchedulesProps = {}) {
     try {
       const weekStart = formatDate(currentWeekStart);
 
+      const { data: existingSchedules, error: fetchError } = await supabase
+        .from('weekly_schedules')
+        .select('id')
+        .eq('week_start_date', weekStart);
+
+      if (fetchError) throw fetchError;
+
+      if (!existingSchedules || existingSchedules.length === 0) {
+        alert('No schedules found for this week. Please create schedules first.');
+        return;
+      }
+
       const { error } = await supabase
         .from('weekly_schedules')
         .update({
@@ -225,6 +237,8 @@ export function Schedules({ onNavigate, onBack }: SchedulesProps = {}) {
         .eq('week_start_date', weekStart);
 
       if (error) throw error;
+
+      alert(`Successfully published ${existingSchedules.length} schedule(s) for this week!`);
 
       const staffIds = staffMembers.map((s) => s.id);
       await supabase.from('notifications').insert(
