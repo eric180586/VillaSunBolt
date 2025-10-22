@@ -8,8 +8,10 @@ export function useChecklists() {
   const fetchChecklists = useCallback(async () => {
     try {
       const { data, error } = await supabase
-        .from('checklists')
+        .from('tasks')
         .select('*')
+        .eq('is_template', true)
+        .not('items', 'is', null)
         .order('created_at', { ascending: false });
 
       if (error) throw error;
@@ -25,13 +27,14 @@ export function useChecklists() {
     fetchChecklists();
 
     const subscription = supabase
-      .channel('checklists_changes')
+      .channel('checklist_templates_changes')
       .on(
         'postgres_changes',
         {
           event: '*',
           schema: 'public',
-          table: 'checklists',
+          table: 'tasks',
+          filter: 'is_template=eq.true',
         },
         () => {
           fetchChecklists();

@@ -179,12 +179,12 @@ export function Checklists({ onBack }: { onBack?: () => void } = {}) {
         };
 
         if (explanationPhotoUrl) {
-          updateData.photo_explanation = explanationPhotoUrl;
+          updateData.description_photo = explanationPhotoUrl;
         }
 
-        console.log('Updating checklist with data:', updateData);
+        console.log('Updating checklist template with data:', updateData);
         const { error } = await supabase
-          .from('checklists')
+          .from('tasks')
           .update(updateData)
           .eq('id', editingChecklist.id);
 
@@ -200,21 +200,23 @@ export function Checklists({ onBack }: { onBack?: () => void } = {}) {
           items: itemsJson,
           due_date: dueDateTime,
           points_value: formData.points_value,
+          initial_points_value: formData.points_value,
           duration_minutes: formData.duration_minutes,
           recurrence: formData.recurrence,
-          photo_required: formData.photo_required,
+          photo_proof_required: formData.photo_required,
           photo_required_sometimes: formData.photo_required_sometimes,
           photo_explanation_text: formData.photo_explanation_text || null,
           is_template: true,
+          status: 'pending',
           created_by: profile?.id,
         };
 
         if (explanationPhotoUrl) {
-          insertData.photo_explanation = explanationPhotoUrl;
+          insertData.description_photo = explanationPhotoUrl;
         }
 
-        console.log('Inserting checklist with data:', insertData);
-        const { error } = await supabase.from('checklists').insert(insertData);
+        console.log('Inserting checklist template with data:', insertData);
+        const { error } = await supabase.from('tasks').insert(insertData);
 
         if (error) {
           console.error('Insert error:', error);
@@ -262,7 +264,7 @@ export function Checklists({ onBack }: { onBack?: () => void } = {}) {
       points_value: checklist.points_value,
       duration_minutes: checklist.duration_minutes || 30,
       recurrence: checklist.recurrence || 'one_time',
-      photo_required: checklist.photo_required || false,
+      photo_required: checklist.photo_proof_required || false,
       photo_required_sometimes: checklist.photo_required_sometimes || false,
       photo_explanation_text: checklist.photo_explanation_text || '',
     });
@@ -273,7 +275,7 @@ export function Checklists({ onBack }: { onBack?: () => void } = {}) {
     if (!confirm('Are you sure you want to delete this checklist template?')) return;
 
     try {
-      const { error } = await supabase.from('checklists').delete().eq('id', checklistId);
+      const { error } = await supabase.from('tasks').delete().eq('id', checklistId);
       if (error) throw error;
       await refetch();
     } catch (error) {

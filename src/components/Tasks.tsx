@@ -56,7 +56,7 @@ export function Tasks({ onNavigate, filterStatus, onBack }: TasksProps = {}) {
   const [selectedHelper, setSelectedHelper] = useState<string | null>(null);
   const [adminNotes, setAdminNotes] = useState('');
   const [adminPhoto, setAdminPhoto] = useState<File[]>([]);
-  const [checklistInstances, setChecklistInstances] = useState<any[]>([]);
+  const checklistInstances: any[] = [];
   const [showChecklistModal, setShowChecklistModal] = useState(false);
   const [selectedChecklist, setSelectedChecklist] = useState<any>(null);
   const [checklistItems, setChecklistItems] = useState<any[]>([]);
@@ -155,42 +155,25 @@ export function Tasks({ onNavigate, filterStatus, onBack }: TasksProps = {}) {
   }, [tasks]);
 
   const loadChecklistInstances = async () => {
-    try {
-      const today = getTodayDateString();
-      const { data, error } = await supabase
-        .from('checklist_instances')
-        .select(`
-          *,
-          checklists(*)
-        `)
-        .or(`status.in.(pending,in_progress),and(status.eq.completed,instance_date.eq.${today})`)
-        .order('instance_date', { ascending: true });
-
-      if (error) throw error;
-      setChecklistInstances(data || []);
-    } catch (error) {
-      console.error('Error loading checklist instances:', error);
-    }
+    // Checklist instances are now merged into tasks table
+    // This function is no longer needed but kept for compatibility
   };
 
   const getCategoryCounts = (categoryId: string) => {
     const today = new Date();
-    const categoryTasks = tasks.filter((t) => t.category === categoryId);
+    const categoryTasks = tasks.filter(
+      (t) => t.category === categoryId && t.is_template !== true
+    );
     const todayTasks = categoryTasks.filter(
       (t) => t.due_date && isSameDay(t.due_date, today)
     );
     const openTasks = todayTasks.filter((t) => t.status !== 'completed' && t.status !== 'archived');
 
-    const categoryInstances = checklistInstances.filter(
-      (inst: any) => inst.checklists?.category === categoryId
-    );
-    const openInstances = categoryInstances.filter((inst: any) => inst.status !== 'completed');
-
     return {
       totalTasks: todayTasks.length,
       openTasks: openTasks.length,
-      totalChecklists: categoryInstances.length,
-      openChecklists: openInstances.length,
+      totalChecklists: 0,
+      openChecklists: 0,
     };
   };
 
@@ -683,32 +666,7 @@ export function Tasks({ onNavigate, filterStatus, onBack }: TasksProps = {}) {
     });
   }
 
-  const categoryChecklistInstances = (selectedCategory
-    ? checklistInstances.filter((inst: any) => inst.checklists?.category === selectedCategory)
-    : checklistInstances)
-    .filter((inst: any) => {
-      if (filterStatus === 'today') {
-        const today = getTodayDateString();
-        return inst.instance_date === today && inst.status !== 'archived';
-      }
-      if (filterStatus === 'pending_review') {
-        return inst.status === 'completed' && !inst.admin_reviewed;
-      }
-      if (selectedCategory) {
-        if (inst.status === 'archived') return false;
-        if (inst.status === 'completed') {
-          const today = getTodayDateString();
-          return inst.instance_date === today;
-        }
-        return inst.admin_approved !== true;
-      }
-      if (inst.status === 'archived') return false;
-      if (inst.status === 'completed') {
-        const today = getTodayDateString();
-        return inst.instance_date === today;
-      }
-      return true;
-    });
+  const categoryChecklistInstances: any[] = [];
 
   const selectedCategoryData = CATEGORIES.find((c) => c.id === selectedCategory);
   const displayTitle = filterStatus === 'pending_review'
