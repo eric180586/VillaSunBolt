@@ -79,46 +79,67 @@ export function CheckInOverview({ onBack, onNavigate }: CheckInOverviewProps = {
     try {
       setLoading(true);
       const today = getTodayDateString();
+      console.log('[CheckInOverview] Fetching for date:', today);
 
       const staffProfiles = profiles.filter(p => p.role === 'staff');
+      console.log('[CheckInOverview] Staff profiles count:', staffProfiles.length);
+
       if (staffProfiles.length === 0) {
         setCheckInStatuses([]);
         setLoading(false);
         return;
       }
 
+      console.log('[CheckInOverview] Fetching weekly schedules...');
       const { data: allSchedules, error: schedError } = await supabase
         .from('weekly_schedules')
         .select('staff_id, shifts')
         .eq('is_published', true);
 
-      if (schedError) throw schedError;
+      if (schedError) {
+        console.error('[CheckInOverview] Schedule error:', schedError);
+        throw schedError;
+      }
+      console.log('[CheckInOverview] Schedules fetched:', allSchedules?.length);
 
       const todayStart = `${today}T00:00:00+07:00`;
       const todayEnd = `${today}T23:59:59+07:00`;
 
+      console.log('[CheckInOverview] Fetching check-ins...');
       const { data: allCheckIns, error: checkError } = await supabase
         .from('check_ins')
         .select('*')
         .gte('check_in_time', todayStart)
         .lte('check_in_time', todayEnd);
 
-      if (checkError) throw checkError;
+      if (checkError) {
+        console.error('[CheckInOverview] Check-in error:', checkError);
+        throw checkError;
+      }
+      console.log('[CheckInOverview] Check-ins fetched:', allCheckIns?.length);
 
       const todayStartTs = `${today}T00:00:00+07:00`;
       const todayEndTs = `${today}T23:59:59+07:00`;
 
+      console.log('[CheckInOverview] Fetching departure requests...');
       const { data: allDepartureRequests, error: depError } = await supabase
         .from('departure_requests')
         .select('*')
         .gte('request_time', todayStartTs)
         .lte('request_time', todayEndTs);
 
-      if (depError) throw depError;
+      if (depError) {
+        console.error('[CheckInOverview] Departure error:', depError);
+        throw depError;
+      }
+      console.log('[CheckInOverview] Departure requests fetched:', allDepartureRequests?.length);
 
       const statuses: CheckInStatus[] = [];
+      console.log('[CheckInOverview] Building statuses for staff...');
 
       for (const staffProfile of staffProfiles) {
+        console.log('[CheckInOverview] Processing:', staffProfile.full_name);
+
         const staffSchedules = allSchedules?.filter(s => s.staff_id === staffProfile.id) || [];
 
         let todayShift = null;
@@ -159,9 +180,11 @@ export function CheckInOverview({ onBack, onNavigate }: CheckInOverviewProps = {
         });
       }
 
+      console.log('[CheckInOverview] Statuses built successfully:', statuses.length);
       setCheckInStatuses(statuses);
     } catch (error) {
       console.error('Error fetching check-in statuses:', error);
+      console.error('Error details:', JSON.stringify(error, null, 2));
     } finally {
       setLoading(false);
     }
