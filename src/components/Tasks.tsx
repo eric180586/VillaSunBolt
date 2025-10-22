@@ -7,8 +7,8 @@ import { Plus, CheckCircle, Clock, Users, X, RefreshCw, ArrowLeft, Edit2 } from 
 import { supabase } from '../lib/supabase';
 import { formatDateTimeForDisplay, formatDateForInput, getTodayDateString, isSameDay, combineDateAndTime } from '../lib/dateUtils';
 import { PhotoRequirementDice } from './PhotoRequirementDice';
-import { TaskCompletionModal } from './TaskCompletionModal';
-import { TaskReviewModal } from './TaskReviewModal';
+import { TaskWithItemsModal } from './TaskWithItemsModal';
+import { HelperSelectionModal } from './HelperSelectionModal';
 
 const CATEGORIES = [
   { id: 'daily_morning', label: 'Daily Morning', color: 'bg-orange-500' },
@@ -48,14 +48,10 @@ export function Tasks({ onNavigate, filterStatus, onBack }: TasksProps = {}) {
   const { checklists } = useChecklists();
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [showModal, setShowModal] = useState(false);
-  const [showCompleteModal, setShowCompleteModal] = useState(false);
+  const [showItemsModal, setShowItemsModal] = useState(false);
+  const [showHelperModal, setShowHelperModal] = useState(false);
   const [showReviewModal, setShowReviewModal] = useState(false);
   const [selectedTask, setSelectedTask] = useState<any>(null);
-  const [completionNotes, setCompletionNotes] = useState('');
-  const [completionPhoto, setCompletionPhoto] = useState<File | null>(null);
-  const [photoRequiredThisTime, setPhotoRequiredThisTime] = useState(false);
-  const [hadHelper, setHadHelper] = useState(false);
-  const [selectedHelper, setSelectedHelper] = useState<string | null>(null);
   const [adminNotes, setAdminNotes] = useState('');
   const [adminPhoto, setAdminPhoto] = useState<File[]>([]);
   const [showDiceModal, setShowDiceModal] = useState(false);
@@ -700,7 +696,7 @@ export function Tasks({ onNavigate, filterStatus, onBack }: TasksProps = {}) {
       </div>
 
       <div className="space-y-4">
-        {categoryTasks.length === 0 && categoryChecklistInstances.length === 0 && (
+        {categoryTasks.length === 0 && (
           <div className="text-center py-16 bg-white rounded-xl border border-beige-200">
             <CheckCircle className="w-16 h-16 text-beige-300 mx-auto mb-4" />
             <h3 className="text-lg font-semibold text-gray-700 mb-2">Keine aktuellen ToDos</h3>
@@ -856,21 +852,14 @@ export function Tasks({ onNavigate, filterStatus, onBack }: TasksProps = {}) {
                   {isMyTask && (task.status === 'in_progress' || task.status === 'pending') && (
                     <button
                       onClick={() => {
-                        if (task.photo_proof_required) {
-                          setSelectedTask(task);
-                          setPhotoRequiredThisTime(true);
-                          setCompletionPhoto(null);
-                          setCompletionNotes('');
-                          setShowCompleteModal(true);
-                        } else if (task.photo_required_sometimes) {
-                          setPendingTaskCompletion(task);
-                          setShowDiceModal(true);
+                        setSelectedTask(task);
+                        // Check if task has items (was a checklist)
+                        if (task.items && task.items.length > 0) {
+                          // Open items modal for checking off items
+                          setShowItemsModal(true);
                         } else {
-                          setSelectedTask(task);
-                          setPhotoRequiredThisTime(false);
-                          setCompletionPhoto(null);
-                          setCompletionNotes('');
-                          setShowCompleteModal(true);
+                          // No items, go directly to helper selection
+                          setShowHelperModal(true);
                         }
                       }}
                       className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 whitespace-nowrap"
@@ -929,7 +918,8 @@ export function Tasks({ onNavigate, filterStatus, onBack }: TasksProps = {}) {
           );
         })}
 
-        {categoryChecklistInstances.map((instance: any) => {
+        {/* Checklist instances now merged into tasks */}
+        {false && [].map((instance: any) => {
           const checklist = instance.checklists;
           if (!checklist) return null;
 
@@ -1105,20 +1095,38 @@ export function Tasks({ onNavigate, filterStatus, onBack }: TasksProps = {}) {
         />
       )}
 
-      {showCompleteModal && selectedTask && (
-        <TaskCompletionModal
+      {showItemsModal && selectedTask && (
+        <TaskWithItemsModal
           task={selectedTask}
-          items={selectedTask.items || []}
           onClose={() => {
-            setShowCompleteModal(false);
+            setShowItemsModal(false);
             setSelectedTask(null);
           }}
           onComplete={async () => {
-            await tasks;
-            setShowCompleteModal(false);
+            // Refresh tasks after completion
+            window.location.reload();
+          }}
+          onOpenHelperPopup={() => {
+            // Items modal closed, now open helper modal
+            setShowItemsModal(false);
+            setShowHelperModal(true);
+          }}
+        />
+      )}
+
+      {showHelperModal && selectedTask && (
+        <HelperSelectionModal
+          isOpen={showHelperModal}
+          task={selectedTask}
+          onClose={() => {
+            setShowHelperModal(false);
             setSelectedTask(null);
           }}
-          profiles={profiles}
+          onComplete={async () => {
+            // Refresh tasks after completion
+            window.location.reload();
+          }}
+          staffMembers={profiles.filter(p => p.role === 'staff' && p.id !== profile?.id)}
         />
       )}
 
