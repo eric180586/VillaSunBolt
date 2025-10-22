@@ -46,7 +46,6 @@ export function Layout({ children, currentView, onViewChange }: LayoutProps) {
     { id: 'how-to', label: 'How-To', icon: BookOpen },
     { id: 'leaderboard', label: t('nav.leaderboard'), icon: Award },
     ...(isAdmin ? [
-      { id: 'checklists', label: t('nav.checklists'), icon: ClipboardList },
       { id: 'employees', label: t('nav.employees'), icon: Users },
       { id: 'humor-settings', label: t('nav.humorSettings'), icon: Smile },
       { id: 'daily-points', label: 'Punkteübersicht', icon: TrendingUp }
