@@ -3,12 +3,13 @@ import { X, Upload, Users } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { TaskItemsList } from './TaskItemsList';
 import { PhotoRequirementDice } from './PhotoRequirementDice';
+import { supabase } from '../lib/supabase';
 
 interface TaskCompletionModalProps {
   task: any;
   items: any[];
   onClose: () => void;
-  onComplete: (helperFile: File | null, photos: File[], notes: string) => Promise<void>;
+  onComplete: () => void;
   profiles: any[];
 }
 
@@ -31,6 +32,24 @@ export function TaskCompletionModal({ task, items, onClose, onComplete, profiles
     }
   };
 
+  const uploadPhotos = async () => {
+    const urls: string[] = [];
+    for (const file of photos) {
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${Math.random()}.${fileExt}`;
+
+      const { error } = await supabase.storage
+        .from('task-photos')
+        .upload(fileName, file);
+
+      if (!error) {
+        const { data } = supabase.storage.from('task-photos').getPublicUrl(fileName);
+        urls.push(data.publicUrl);
+      }
+    }
+    return urls;
+  };
+
   const handleSubmit = async () => {
     if (!allItemsCompleted) {
       alert('Bitte alle Aufgaben abhaken bevor du abschließt!');
@@ -42,17 +61,29 @@ export function TaskCompletionModal({ task, items, onClose, onComplete, profiles
       return;
     }
 
+    if (hasHelper && !selectedHelper) {
+      alert('Bitte Helfer auswählen!');
+      return;
+    }
+
     setLoading(true);
     try {
-      await onComplete(
-        hasHelper ? null : null, // Helper ID will be handled separately
-        photos,
-        notes
-      );
+      const photoUrls = await uploadPhotos();
+
+      const { error } = await supabase.rpc('complete_task_with_helper', {
+        p_task_id: task.id,
+        p_helper_id: hasHelper ? selectedHelper : null,
+        p_photo_urls: photoUrls,
+        p_notes: notes
+      });
+
+      if (error) throw error;
+
+      onComplete();
       onClose();
     } catch (error) {
       console.error('Error completing task:', error);
-      alert('Fehler beim Abschließen');
+      alert('Fehler beim Abschließen: ' + (error as any).message);
     } finally {
       setLoading(false);
     }
