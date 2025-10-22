@@ -447,17 +447,16 @@ export function Tasks({ onNavigate, filterStatus, onBack }: TasksProps = {}) {
 
         {showModal && (
           <TaskCreateModal
-            formData={formData}
-            setFormData={setFormData}
             profiles={profiles}
-            onSubmit={handleSubmit}
+            onComplete={() => {
+              setShowModal(false);
+              setEditingTask(null);
+              refetch();
+            }}
             onClose={() => {
               setShowModal(false);
               setEditingTask(null);
             }}
-            onCategoryChange={handleCategoryChange}
-            isRepairCategory={isRepairCategory}
-            isAdmin={isAdmin}
             editingTask={editingTask}
           />
         )}
@@ -940,14 +939,12 @@ export function Tasks({ onNavigate, filterStatus, onBack }: TasksProps = {}) {
 
       {showModal && (
         <TaskCreateModal
-          formData={formData}
-          setFormData={setFormData}
           profiles={profiles}
-          onSubmit={handleSubmit}
+          onComplete={() => {
+            setShowModal(false);
+            refetch();
+          }}
           onClose={() => setShowModal(false)}
-          onCategoryChange={handleCategoryChange}
-          isRepairCategory={isRepairCategory}
-          isAdmin={isAdmin}
         />
       )}
 
