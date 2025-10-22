@@ -154,28 +154,8 @@ export function PerformanceMetrics({ onNavigate }: PerformanceMetricsProps = {})
 
   useEffect(() => {
     const fetchChecklistInstances = async () => {
-      const today = getTodayDateString();
-
-      const { data, error } = await supabase
-        .from('checklist_instances')
-        .select(`
-          *,
-          checklists (
-            title,
-            category,
-            points_value,
-            duration_minutes,
-            description,
-            photo_required,
-            due_date
-          )
-        `)
-        .eq('instance_date', today)
-        .order('created_at', { ascending: false });
-
-      if (!error && data) {
-        setChecklistInstances(data);
-      }
+      // Checklists are now integrated into Tasks - return empty array
+      setChecklistInstances([]);
     };
 
     const fetchTeamTaskCounts = async () => {
@@ -279,16 +259,8 @@ export function PerformanceMetrics({ onNavigate }: PerformanceMetricsProps = {})
         const totalTaskMinutes = (tasksData || [])
           .reduce((sum, task) => sum + (task.duration_minutes || 0), 0);
 
-        const { data: checklistsData, error: checklistsError } = await supabase
-          .from('checklist_instances')
-          .select('checklists(duration_minutes), status')
-          .eq('instance_date', today)
-          .neq('status', 'completed');
-
-        if (checklistsError) throw checklistsError;
-
-        const totalChecklistMinutes = (checklistsData || [])
-          .reduce((sum, item: any) => sum + (item.checklists?.duration_minutes || 0), 0);
+        // Checklists are now integrated into Tasks
+        const totalChecklistMinutes = 0;
 
         const { data: checkInsData } = await supabase
           .from('check_ins')

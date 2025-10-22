@@ -33,6 +33,23 @@ export function ChecklistReview({ onBack }: { onBack?: () => void } = {}) {
   const [showRejectModal, setShowRejectModal] = useState<string | null>(null);
   const [expandedChecklist, setExpandedChecklist] = useState<string | null>(null);
 
+  // FEATURE TEMPORARILY DISABLED - Checklists merged into Tasks
+  return (
+    <div className="p-6">
+      <div className="text-center text-gray-600">
+        <AlertCircle className="w-12 h-12 mx-auto mb-4 text-yellow-500" />
+        <p>Checklist Review Feature ist vorübergehend deaktiviert.</p>
+        <p className="text-sm mt-2">Diese Funktion wurde in das Tasks-System integriert.</p>
+        {onBack && (
+          <button onClick={onBack} className="mt-4 px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600">
+            <ArrowLeft className="w-4 h-4 inline mr-2" />
+            Zurück
+          </button>
+        )}
+      </div>
+    </div>
+  );
+
   useEffect(() => {
     if (profile?.role === 'admin') {
       fetchPendingChecklists();

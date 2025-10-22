@@ -122,15 +122,8 @@ export function AdminDashboard({ onNavigate, onBack }: AdminDashboardProps = {})
     };
 
     const fetchPendingChecklists = async () => {
-      const { count, error } = await supabase
-        .from('checklist_instances')
-        .select('*', { count: 'exact', head: true })
-        .eq('status', 'completed')
-        .eq('admin_reviewed', false);
-
-      if (!error && count !== null) {
-        setPendingChecklists(count);
-      }
+      // Checklists are now integrated into Tasks
+      setPendingChecklists(0);
     };
 
     fetchPendingCheckIns();

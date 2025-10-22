@@ -86,22 +86,14 @@ export function ProgressBar() {
         return taskDate.getTime() === today.getTime();
       });
 
-      const { data: checklistInstances, error: checklistError } = await supabase
-        .from('checklist_instances')
-        .select('checklists(duration_minutes), status')
-        .eq('instance_date', todayStr)
-        .neq('status', 'completed');
-
-      if (checklistError) {
-        console.error('Error fetching checklists:', checklistError);
-      }
-
+      // Checklists are now integrated into Tasks
       const taskMinutes = todayTasks.reduce((sum, t) => {
         const duration = t.duration_minutes || 30;
         return sum + duration;
       }, 0);
 
-      const checklistMinutes = (checklistInstances || []).reduce((sum, c: any) => {
+      const checklistMinutes = 0; // Checklists merged into tasks
+      const legacyChecklistVariable = ([] || []).reduce((sum, c: any) => {
         return sum + (c.checklists?.duration_minutes || 0);
       }, 0);
 
