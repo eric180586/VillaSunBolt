@@ -151,14 +151,23 @@ export function TaskCreateModal({ onClose, onComplete, profiles, editingTask }: 
         // When editing, just update the one task
         const primaryStaff = formData.assigned_to[0];
         const taskData = {
-          ...formData,
-          assigned_to: primaryStaff,
+          category: formData.category,
+          title: formData.title,
+          description: formData.description,
           due_date: dueDateTime,
+          duration_minutes: formData.duration_minutes,
+          points_value: formData.points_value,
+          assigned_to: primaryStaff || null,
+          is_template: formData.is_template,
+          recurrence: formData.recurrence,
           items: itemsData,
           description_photo: photoUrls,
-          ...photoSettings,
+          photo_proof_required: photoSettings.photo_proof_required,
+          photo_required_sometimes: photoSettings.photo_required_sometimes,
+          photo_optional: photoSettings.photo_optional,
+          photo_explanation_text: photoSettings.photo_explanation_text,
           initial_points_value: formData.points_value,
-          status: formData.is_template ? 'pending' : 'pending',
+          status: 'pending',
         };
 
         const { error } = await supabase
@@ -182,7 +191,10 @@ export function TaskCreateModal({ onClose, onComplete, profiles, editingTask }: 
             recurrence: formData.recurrence,
             items: itemsData,
             description_photo: photoUrls,
-            ...photoSettings,
+            photo_proof_required: photoSettings.photo_proof_required,
+            photo_required_sometimes: photoSettings.photo_required_sometimes,
+            photo_optional: photoSettings.photo_optional,
+            photo_explanation_text: photoSettings.photo_explanation_text,
             initial_points_value: formData.points_value,
             status: 'pending',
           }));
@@ -206,7 +218,10 @@ export function TaskCreateModal({ onClose, onComplete, profiles, editingTask }: 
             recurrence: formData.recurrence,
             items: itemsData,
             description_photo: photoUrls,
-            ...photoSettings,
+            photo_proof_required: photoSettings.photo_proof_required,
+            photo_required_sometimes: photoSettings.photo_required_sometimes,
+            photo_optional: photoSettings.photo_optional,
+            photo_explanation_text: photoSettings.photo_explanation_text,
             initial_points_value: formData.points_value,
             status: 'pending',
           };
@@ -220,9 +235,10 @@ export function TaskCreateModal({ onClose, onComplete, profiles, editingTask }: 
       }
 
       onComplete();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error saving task:', error);
-      alert('Fehler beim Speichern!');
+      console.error('Error details:', error.message, error.details, error.hint);
+      alert('Fehler beim Speichern: ' + (error.message || 'Unbekannter Fehler'));
     } finally {
       setLoading(false);
     }
