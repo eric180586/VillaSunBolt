@@ -33,7 +33,7 @@ export function ChecklistReview({ onBack }: { onBack?: () => void } = {}) {
   const [showRejectModal, setShowRejectModal] = useState<string | null>(null);
   const [expandedChecklist, setExpandedChecklist] = useState<string | null>(null);
 
-  // FEATURE TEMPORARILY DISABLED - Checklists merged into Tasks
+  // FEATURE DISABLED - Checklists merged into Tasks
   return (
     <div className="p-6">
       <div className="text-center text-gray-600">
@@ -50,6 +50,8 @@ export function ChecklistReview({ onBack }: { onBack?: () => void } = {}) {
     </div>
   );
 
+  // ALL CODE BELOW IS DISABLED - DO NOT EXECUTE
+  /*
   useEffect(() => {
     if (profile?.role === 'admin') {
       fetchPendingChecklists();
@@ -378,4 +380,5 @@ export function ChecklistReview({ onBack }: { onBack?: () => void } = {}) {
       )}
     </div>
   );
+  */
 }

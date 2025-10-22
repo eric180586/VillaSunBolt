@@ -325,22 +325,11 @@ export function PerformanceMetrics({ onNavigate }: PerformanceMetricsProps = {})
     ? (completedMyTasks.length / myTasks.length) * 100
     : 0;
 
-  const myChecklistInstances = checklistInstances.filter((inst) => {
-    const checklist = inst.checklists;
-    if (!checklist) return false;
-    return true;
-  });
-
-  const completedChecklists = myChecklistInstances.filter((inst) =>
-    inst.status === 'completed' || (inst.admin_reviewed && inst.admin_approved)
-  );
-
-  const openChecklistInstances = myChecklistInstances.filter((inst) =>
-    inst.status !== 'completed' && !(inst.admin_reviewed && inst.admin_approved)
-  );
-
-  const checklistTimeMinutes = openChecklistInstances
-    .reduce((sum, inst) => sum + (inst.checklists?.duration_minutes || 0), 0);
+  // Checklists are now integrated into Tasks - all checklist variables set to empty/zero
+  const myChecklistInstances: any[] = [];
+  const completedChecklists: any[] = [];
+  const openChecklistInstances: any[] = [];
+  const checklistTimeMinutes = 0;
 
   const estimatedTimeMinutes = myTasks
     .filter((t) => t.status !== 'completed' && t.status !== 'archived')
@@ -431,8 +420,6 @@ export function PerformanceMetrics({ onNavigate }: PerformanceMetricsProps = {})
           showProgressBar={true}
           unit="tasks"
           onClick={() => onNavigate?.('tasks', 'today')}
-          checklistValue={completedChecklists.length.toString()}
-          checklistTotal={myChecklistInstances.length.toString()}
         />
 
         <MetricCard

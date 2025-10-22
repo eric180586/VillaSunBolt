@@ -144,24 +144,10 @@ export function AdminDashboard({ onNavigate, onBack }: AdminDashboardProps = {})
       )
       .subscribe();
 
-    const checklistsChannel = supabase
-      .channel(`checklist_instances_count_${Date.now()}`)
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'checklist_instances',
-        },
-        () => {
-          fetchPendingChecklists();
-        }
-      )
-      .subscribe();
+    // Checklists subscription removed - feature integrated into Tasks
 
     return () => {
       supabase.removeChannel(checkInsChannel);
-      supabase.removeChannel(checklistsChannel);
     };
   }, []);
 
