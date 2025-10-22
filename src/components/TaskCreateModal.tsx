@@ -122,10 +122,7 @@ export function TaskCreateModal({ onClose, onComplete, profiles, editingTask }: 
       return;
     }
 
-    if (!formData.is_template && formData.assigned_to.length === 0) {
-      alert('Bitte mindestens einen Mitarbeiter zuweisen!');
-      return;
-    }
+    // Staff assignment is now optional
 
     if (formData.has_items && items.filter(i => i.trim()).length === 0) {
       alert('Bitte mindestens eine Aufgabe hinzufügen!');
@@ -171,29 +168,55 @@ export function TaskCreateModal({ onClose, onComplete, profiles, editingTask }: 
 
         if (error) throw error;
       } else {
-        // When creating new, create one task per assigned staff member
-        const tasksToCreate = formData.assigned_to.map(staffId => ({
-          category: formData.category,
-          title: formData.title,
-          description: formData.description,
-          due_date: dueDateTime,
-          duration_minutes: formData.duration_minutes,
-          points_value: formData.points_value,
-          assigned_to: staffId,
-          is_template: formData.is_template,
-          recurrence: formData.recurrence,
-          items: itemsData,
-          description_photo: photoUrls,
-          ...photoSettings,
-          initial_points_value: formData.points_value,
-          status: 'pending',
-        }));
+        // When creating new, create one task per assigned staff member (or one unassigned task)
+        if (formData.assigned_to.length > 0) {
+          const tasksToCreate = formData.assigned_to.map(staffId => ({
+            category: formData.category,
+            title: formData.title,
+            description: formData.description,
+            due_date: dueDateTime,
+            duration_minutes: formData.duration_minutes,
+            points_value: formData.points_value,
+            assigned_to: staffId,
+            is_template: formData.is_template,
+            recurrence: formData.recurrence,
+            items: itemsData,
+            description_photo: photoUrls,
+            ...photoSettings,
+            initial_points_value: formData.points_value,
+            status: 'pending',
+          }));
 
-        const { error } = await supabase
-          .from('tasks')
-          .insert(tasksToCreate);
+          const { error } = await supabase
+            .from('tasks')
+            .insert(tasksToCreate);
 
-        if (error) throw error;
+          if (error) throw error;
+        } else {
+          // Create single unassigned task
+          const taskData = {
+            category: formData.category,
+            title: formData.title,
+            description: formData.description,
+            due_date: dueDateTime,
+            duration_minutes: formData.duration_minutes,
+            points_value: formData.points_value,
+            assigned_to: null,
+            is_template: formData.is_template,
+            recurrence: formData.recurrence,
+            items: itemsData,
+            description_photo: photoUrls,
+            ...photoSettings,
+            initial_points_value: formData.points_value,
+            status: 'pending',
+          };
+
+          const { error } = await supabase
+            .from('tasks')
+            .insert([taskData]);
+
+          if (error) throw error;
+        }
       }
 
       onComplete();
@@ -249,42 +272,26 @@ export function TaskCreateModal({ onClose, onComplete, profiles, editingTask }: 
           )}
         </div>
 
-        <div className="grid grid-cols-2 gap-4 mb-4">
-          {/* Category */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Kategorie *
-            </label>
-            <select
-              value={formData.category}
-              onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-              className="w-full p-2 border border-gray-300 rounded-lg"
-            >
-              {CATEGORIES.map(cat => (
-                <option key={cat.id} value={cat.id}>{cat.label}</option>
-              ))}
-            </select>
-          </div>
-
-          {/* Points */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Punkte
-            </label>
-            <input
-              type="number"
-              value={formData.points_value}
-              onChange={(e) => setFormData({ ...formData, points_value: parseInt(e.target.value) || 0 })}
-              className="w-full p-2 border border-gray-300 rounded-lg"
-            />
-          </div>
+        <div className="mb-4">
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Kategorie *
+          </label>
+          <select
+            value={formData.category}
+            onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+            className="w-full p-2 border border-gray-300 rounded-lg"
+          >
+            {CATEGORIES.map(cat => (
+              <option key={cat.id} value={cat.id}>{cat.label}</option>
+            ))}
+          </select>
         </div>
 
         {/* Assigned To - Multi-select */}
         {!formData.is_template && (
           <div className="mb-4">
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Zugewiesen an * (mehrere möglich)
+              Zugewiesen an (mehrere möglich, optional)
             </label>
             <div className="border border-gray-300 rounded-lg p-3 space-y-2 max-h-32 overflow-y-auto">
               {staffProfiles.map(p => (
@@ -330,8 +337,9 @@ export function TaskCreateModal({ onClose, onComplete, profiles, editingTask }: 
               <option value="Mars">Mars</option>
               <option value="Saturn">Saturn</option>
               <option value="Neptune">Neptune</option>
-              <option value="Mercury">Mercury</option>
               <option value="Uranus">Uranus</option>
+              <option value="Pluto">Pluto</option>
+              <option value="Earth">Earth</option>
             </select>
           </div>
         ) : (
@@ -361,6 +369,28 @@ export function TaskCreateModal({ onClose, onComplete, profiles, editingTask }: 
             className="w-full p-2 border border-gray-300 rounded-lg"
             placeholder="Zusätzliche Details..."
           />
+        </div>
+
+        {/* Description Photos */}
+        <div className="mb-4">
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Erklärungsfotos (optional)
+          </label>
+          <input
+            type="file"
+            accept="image/*"
+            multiple
+            onChange={(e) => {
+              const files = Array.from(e.target.files || []);
+              setDescriptionPhotos(files);
+            }}
+            className="w-full p-2 border border-gray-300 rounded-lg text-sm"
+          />
+          {descriptionPhotos.length > 0 && (
+            <p className="text-xs text-green-600 mt-1">
+              ✓ {descriptionPhotos.length} Foto(s) ausgewählt
+            </p>
+          )}
         </div>
 
         {/* Has Items Toggle */}
