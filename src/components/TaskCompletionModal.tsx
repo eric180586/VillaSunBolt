@@ -22,9 +22,16 @@ export function TaskCompletionModal({ task, items, onClose, onComplete, profiles
   const [showDice, setShowDice] = useState(false);
   const [photoRequired, setPhotoRequired] = useState(task.photo_proof_required);
   const [loading, setLoading] = useState(false);
+  const [taskItems, setTaskItems] = useState(items || []);
 
-  const hasItems = items && items.length > 0;
-  const allItemsCompleted = !hasItems || items.every(item => item.is_completed);
+  const hasItems = taskItems && taskItems.length > 0;
+  const allItemsCompleted = !hasItems || taskItems.every(item => item.is_completed);
+
+  const handleToggleItem = (index: number) => {
+    const newItems = [...taskItems];
+    newItems[index].is_completed = !newItems[index].is_completed;
+    setTaskItems(newItems);
+  };
 
   const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
@@ -70,11 +77,39 @@ export function TaskCompletionModal({ task, items, onClose, onComplete, profiles
     try {
       const photoUrls = await uploadPhotos();
 
-      const { error } = await supabase.rpc('complete_task_with_helper', {
-        p_task_id: task.id,
-        p_helper_id: hasHelper ? selectedHelper : null,
-        p_photo_urls: photoUrls,
-        p_notes: notes
+      // Update task with completed items
+      const updateData: any = {
+        status: 'pending_review',
+        completed_at: new Date().toISOString(),
+        photo_urls: photoUrls,
+        completion_notes: notes,
+      };
+
+      if (hasItems) {
+        updateData.items = taskItems;
+      }
+
+      if (hasHelper && selectedHelper) {
+        updateData.secondary_assigned_to = selectedHelper;
+        const halfPoints = Math.floor((task.points_value || task.initial_points_value || 10) / 2);
+        updateData.points_value = halfPoints;
+      }
+
+      const { error } = await supabase
+        .from('tasks')
+        .update(updateData)
+        .eq('id', task.id);
+
+      if (error) throw error;
+
+      // Create notification for admin
+      await supabase.from('notifications').insert({
+        user_id: (await supabase.from('profiles').select('id').eq('role', 'admin').single()).data?.id,
+        type: 'task_completed',
+        title: 'Task zur Review',
+        message: `${profile?.full_name} hat "${task.title}" abgeschlossen`,
+        reference_id: task.id,
+        priority: 'high'
       });
 
       if (error) throw error;
@@ -123,9 +158,10 @@ export function TaskCompletionModal({ task, items, onClose, onComplete, profiles
         {hasItems && (
           <div className="mb-6">
             <TaskItemsList
-              items={items}
-              readOnly={true}
-              showCompletedBy={true}
+              items={taskItems}
+              onToggleItem={handleToggleItem}
+              readOnly={false}
+              showCompletedBy={false}
             />
           </div>
         )}

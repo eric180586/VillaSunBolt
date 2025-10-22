@@ -7,6 +7,8 @@ import { Plus, CheckCircle, Clock, Users, X, RefreshCw, ArrowLeft, Edit2 } from 
 import { supabase } from '../lib/supabase';
 import { formatDateTimeForDisplay, formatDateForInput, getTodayDateString, isSameDay, combineDateAndTime } from '../lib/dateUtils';
 import { PhotoRequirementDice } from './PhotoRequirementDice';
+import { TaskCompletionModal } from './TaskCompletionModal';
+import { TaskReviewModal } from './TaskReviewModal';
 
 const CATEGORIES = [
   { id: 'daily_morning', label: 'Daily Morning', color: 'bg-orange-500' },
@@ -56,19 +58,8 @@ export function Tasks({ onNavigate, filterStatus, onBack }: TasksProps = {}) {
   const [selectedHelper, setSelectedHelper] = useState<string | null>(null);
   const [adminNotes, setAdminNotes] = useState('');
   const [adminPhoto, setAdminPhoto] = useState<File[]>([]);
-  const checklistInstances: any[] = [];
-  const [showChecklistModal, setShowChecklistModal] = useState(false);
-  const [selectedChecklist, setSelectedChecklist] = useState<any>(null);
-  const [checklistItems, setChecklistItems] = useState<any[]>([]);
-  const [checklistPhotoRequired, setChecklistPhotoRequired] = useState(false);
-  const [checklistPhoto, setChecklistPhoto] = useState<File | null>(null);
   const [showDiceModal, setShowDiceModal] = useState(false);
   const [pendingTaskCompletion, setPendingTaskCompletion] = useState<any>(null);
-  const [showChecklistReviewModal, setShowChecklistReviewModal] = useState(false);
-  const [selectedChecklistForReview, setSelectedChecklistForReview] = useState<any>(null);
-  const [checklistRejectionReason, setChecklistRejectionReason] = useState('');
-  const [checklistAdminPhoto, setChecklistAdminPhoto] = useState<File | null>(null);
-  const [showChecklistApproveModal, setShowChecklistApproveModal] = useState(false);
   const [editingTask, setEditingTask] = useState<any>(null);
 
   const isAdmin = profile?.role === 'admin';
@@ -154,10 +145,6 @@ export function Tasks({ onNavigate, filterStatus, onBack }: TasksProps = {}) {
     };
   }, [tasks]);
 
-  const loadChecklistInstances = async () => {
-    // Checklist instances are now merged into tasks table
-    // This function is no longer needed but kept for compatibility
-  };
 
   const getCategoryCounts = (categoryId: string) => {
     const today = new Date();
@@ -666,7 +653,6 @@ export function Tasks({ onNavigate, filterStatus, onBack }: TasksProps = {}) {
     });
   }
 
-  const categoryChecklistInstances: any[] = [];
 
   const selectedCategoryData = CATEGORIES.find((c) => c.id === selectedCategory);
   const displayTitle = filterStatus === 'pending_review'
@@ -1119,141 +1105,21 @@ export function Tasks({ onNavigate, filterStatus, onBack }: TasksProps = {}) {
         />
       )}
 
-      {showCompleteModal && (
-        <div
-          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50"
-          onClick={() => {
+      {showCompleteModal && selectedTask && (
+        <TaskCompletionModal
+          task={selectedTask}
+          items={selectedTask.items || []}
+          onClose={() => {
             setShowCompleteModal(false);
             setSelectedTask(null);
-            setCompletionNotes('');
-            setCompletionPhoto(null);
-            setHadHelper(false);
-            setSelectedHelper(null);
           }}
-        >
-          <div
-            className="bg-white rounded-xl p-6 w-full max-w-md"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <h3 className="text-xl font-bold text-gray-900 mb-4">Complete Task</h3>
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Notes</label>
-                <textarea
-                  value={completionNotes}
-                  onChange={(e) => setCompletionNotes(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg"
-                  rows={4}
-                  placeholder="Add any notes about the completion..."
-                />
-              </div>
-              {photoRequiredThisTime && (
-                <div className="bg-yellow-50 border-l-4 border-yellow-400 rounded-lg p-4 mb-4">
-                  <div className="flex items-start">
-                    <span className="text-2xl mr-3">📸</span>
-                    <div className="flex-1">
-                      <h4 className="font-bold text-yellow-900 mb-2">Foto erforderlich!</h4>
-                      {selectedTask?.photo_explanation_text ? (
-                        <div className="bg-white border border-yellow-200 rounded p-3 mb-3">
-                          <p className="text-xs font-semibold text-yellow-900 mb-1">📋 Foto-Anweisung:</p>
-                          <p className="text-sm text-yellow-800 whitespace-pre-wrap">
-                            {selectedTask.photo_explanation_text}
-                          </p>
-                        </div>
-                      ) : (
-                        <p className="text-sm text-yellow-800 mb-3">
-                          Bitte mache ein Foto als Beweis für die Fertigstellung.
-                        </p>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              )}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Photo Proof {photoRequiredThisTime && <span className="text-red-600 font-bold">*ERFORDERLICH*</span>}
-                </label>
-                <input
-                  type="file"
-                  accept="image/*"
-                  capture="environment"
-                  onChange={(e) => setCompletionPhoto(e.target.files?.[0] || null)}
-                  className={`w-full px-3 py-2 border rounded-lg ${
-                    photoRequiredThisTime ? 'border-yellow-400 bg-yellow-50' : 'border-gray-300'
-                  }`}
-                  required={photoRequiredThisTime}
-                />
-                {completionPhoto && (
-                  <p className="text-sm text-green-600 mt-1">✓ Foto ausgewählt: {completionPhoto.name}</p>
-                )}
-              </div>
-
-              <div className="border-t pt-4">
-                <label className="flex items-center space-x-2 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={hadHelper}
-                    onChange={(e) => {
-                      setHadHelper(e.target.checked);
-                      if (!e.target.checked) {
-                        setSelectedHelper(null);
-                      }
-                    }}
-                    className="w-5 h-5 text-blue-600 rounded"
-                  />
-                  <span className="text-sm font-medium text-gray-700">
-                    Hat ein zweiter Mitarbeiter geholfen?
-                  </span>
-                </label>
-
-                {hadHelper && (
-                  <div className="mt-3">
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Wähle den Mitarbeiter
-                    </label>
-                    <select
-                      value={selectedHelper || ''}
-                      onChange={(e) => setSelectedHelper(e.target.value || null)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg"
-                      required={hadHelper}
-                    >
-                      <option value="">Bitte wählen...</option>
-                      {profiles
-                        .filter((p) => p.role === 'staff' && p.id !== profile?.id)
-                        .map((p) => (
-                          <option key={p.id} value={p.id}>
-                            {p.full_name}
-                          </option>
-                        ))}
-                    </select>
-                  </div>
-                )}
-              </div>
-
-              <div className="flex space-x-3 pt-4">
-                <button
-                  onClick={() => {
-                    setShowCompleteModal(false);
-                    setSelectedTask(null);
-                    setCompletionNotes('');
-                    setCompletionPhoto(null);
-                    setHadHelper(false);
-                    setSelectedHelper(null);
-                  }}
-                  className="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={handleCompleteTask}
-                  className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-                >
-                  Complete
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
+          onComplete={async () => {
+            await tasks;
+            setShowCompleteModal(false);
+            setSelectedTask(null);
+          }}
+          profiles={profiles}
+        />
       )}
 
       {showReviewModal && (
