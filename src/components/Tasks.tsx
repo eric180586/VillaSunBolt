@@ -297,7 +297,7 @@ export function Tasks({ onNavigate, filterStatus, onBack }: TasksProps = {}) {
 
   // Old handleCompleteTask removed - now handled by HelperSelectionModal
 
-  const handleApproveTask = async () => {
+  const handleApproveTask = async (quality: 'very_good' | 'ready' | 'not_ready') => {
     const task = selectedTask;
     if (!task) return;
 
@@ -317,9 +317,10 @@ export function Tasks({ onNavigate, filterStatus, onBack }: TasksProps = {}) {
         admin_photos: adminPhotoUrls,
       });
 
-      const { data, error } = await supabase.rpc('approve_task_with_points', {
+      const { data, error } = await supabase.rpc('approve_task_with_quality', {
         p_task_id: task.id,
         p_admin_id: profile?.id,
+        p_review_quality: quality,
       });
 
       if (error) {
@@ -327,10 +328,21 @@ export function Tasks({ onNavigate, filterStatus, onBack }: TasksProps = {}) {
         throw error;
       }
 
+      const qualityLabels = {
+        very_good: 'Very Good (+2 bonus)',
+        ready: 'Ready',
+        not_ready: 'Not Ready (-1 penalty)',
+      };
+
+      if (data) {
+        alert(`Task approved as ${qualityLabels[quality]}!\n\nBase Points: ${data.base_points}\nQuality Bonus: ${data.quality_bonus > 0 ? '+' : ''}${data.quality_bonus}\nDeadline Bonus: +${data.deadline_bonus}\n\nTotal: ${data.total_points} points`);
+      }
+
       setShowReviewModal(false);
       setSelectedTask(null);
       setAdminNotes('');
       setAdminPhoto([]);
+      await refetch();
     } catch (error) {
       console.error('Error approving task:', error);
       alert('Error approving task');
@@ -1022,20 +1034,45 @@ export function Tasks({ onNavigate, filterStatus, onBack }: TasksProps = {}) {
                   </p>
                 )}
               </div>
-              <div className="flex flex-col space-y-2 pt-4">
+              <div className="flex flex-col space-y-3 pt-4">
+                <div className="text-sm text-gray-700 font-medium mb-1">Quality Assessment:</div>
                 <button
-                  onClick={handleApproveTask}
-                  className="w-full px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 flex items-center justify-center space-x-2"
+                  onClick={() => handleApproveTask('very_good')}
+                  className="w-full px-4 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 flex items-center justify-between group transition-all"
                 >
-                  <CheckCircle className="w-5 h-5" />
-                  <span>Very Good - Approve</span>
+                  <div className="flex items-center space-x-2">
+                    <CheckCircle className="w-5 h-5" />
+                    <span className="font-semibold">Very Good</span>
+                  </div>
+                  <span className="bg-green-700 px-3 py-1 rounded text-sm font-bold">+2 Points</span>
                 </button>
                 <button
+                  onClick={() => handleApproveTask('ready')}
+                  className="w-full px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center justify-between group transition-all"
+                >
+                  <div className="flex items-center space-x-2">
+                    <CheckCircle className="w-5 h-5" />
+                    <span className="font-semibold">Ready</span>
+                  </div>
+                  <span className="bg-blue-700 px-3 py-1 rounded text-sm font-bold">+0 Points</span>
+                </button>
+                <button
+                  onClick={() => handleApproveTask('not_ready')}
+                  className="w-full px-4 py-3 bg-orange-600 text-white rounded-lg hover:bg-orange-700 flex items-center justify-between group transition-all"
+                >
+                  <div className="flex items-center space-x-2">
+                    <X className="w-5 h-5" />
+                    <span className="font-semibold">Not Ready</span>
+                  </div>
+                  <span className="bg-orange-700 px-3 py-1 rounded text-sm font-bold">-1 Point</span>
+                </button>
+                <div className="border-t border-gray-200 my-2"></div>
+                <button
                   onClick={handleReopenTask}
-                  className="w-full px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 flex items-center justify-center space-x-2"
+                  className="w-full px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 flex items-center justify-center space-x-2"
                 >
                   <RefreshCw className="w-5 h-5" />
-                  <span>Not Perfect - Reopen</span>
+                  <span>Reopen Task (Staff must redo)</span>
                 </button>
                 <button
                   onClick={() => {
