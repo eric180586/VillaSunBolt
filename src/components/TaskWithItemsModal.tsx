@@ -40,6 +40,16 @@ export function TaskWithItemsModal({ task, onClose, onComplete, onOpenHelperPopu
         .eq('id', task.id);
 
       if (error) throw error;
+
+      // Check if all items are now completed
+      const allNowCompleted = newItems.every((item: any) => item.is_completed);
+      if (allNowCompleted) {
+        // Auto-open helper popup after a short delay
+        setTimeout(() => {
+          onClose();
+          onOpenHelperPopup();
+        }, 500);
+      }
     } catch (error) {
       console.error('Error saving item:', error);
       // Revert on error
