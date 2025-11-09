@@ -52,9 +52,11 @@ export function Tasks({ onNavigate, filterStatus, onBack }: TasksProps = {}) {
   const [showItemsModal, setShowItemsModal] = useState(false);
   const [showHelperModal, setShowHelperModal] = useState(false);
   const [showReviewModal, setShowReviewModal] = useState(false);
+  const [showReopenItemsModal, setShowReopenItemsModal] = useState(false);
   const [selectedTask, setSelectedTask] = useState<any>(null);
   const [adminNotes, setAdminNotes] = useState('');
   const [adminPhoto, setAdminPhoto] = useState<File[]>([]);
+  const [itemsToReopen, setItemsToReopen] = useState<number[]>([]);
   const [showDiceModal, setShowDiceModal] = useState(false);
   const [pendingTaskCompletion, setPendingTaskCompletion] = useState<any>(null);
   const [editingTask, setEditingTask] = useState<any>(null);
@@ -349,7 +351,20 @@ export function Tasks({ onNavigate, filterStatus, onBack }: TasksProps = {}) {
     }
   };
 
-  const handleReopenTask = async () => {
+  const handleNotReady = () => {
+    const task = selectedTask;
+    if (!task) return;
+
+    if (task.items && task.items.length > 0) {
+      setShowReviewModal(false);
+      setShowReopenItemsModal(true);
+      setItemsToReopen([]);
+    } else {
+      handleReopenEntireTask();
+    }
+  };
+
+  const handleReopenEntireTask = async () => {
     const task = selectedTask;
     if (!task) return;
 
@@ -377,12 +392,68 @@ export function Tasks({ onNavigate, filterStatus, onBack }: TasksProps = {}) {
       if (error) throw error;
 
       setShowReviewModal(false);
+      setShowReopenItemsModal(false);
       setSelectedTask(null);
       setAdminNotes('');
       setAdminPhoto([]);
+      await refetch();
     } catch (error) {
       console.error('Error reopening task:', error);
       alert('Error reopening task');
+    }
+  };
+
+  const handleReopenSelectedItems = async () => {
+    const task = selectedTask;
+    if (!task || !task.items) return;
+
+    if (itemsToReopen.length === 0) {
+      alert('Bitte wählen Sie mindestens ein Item zum Wiedereröffnen aus.');
+      return;
+    }
+
+    try {
+      const updatedItems = task.items.map((item: any, index: number) => {
+        if (itemsToReopen.includes(index)) {
+          return {
+            ...item,
+            is_completed: false,
+            completed_by: null,
+            completed_by_id: null,
+            completed_at: null,
+          };
+        }
+        return item;
+      });
+
+      let adminPhotoUrls: string[] | null = null;
+      if (adminPhoto && adminPhoto.length > 0) {
+        const uploadedUrls: string[] = [];
+        for (const file of adminPhoto) {
+          const url = await uploadPhoto(file, 'admin-reviews');
+          if (url) uploadedUrls.push(url);
+        }
+        adminPhotoUrls = uploadedUrls;
+      }
+
+      await updateTask(task.id, {
+        items: updatedItems,
+        status: 'in_progress',
+        admin_notes: adminNotes,
+        admin_photos: adminPhotoUrls,
+      });
+
+      setShowReopenItemsModal(false);
+      setShowReviewModal(false);
+      setSelectedTask(null);
+      setAdminNotes('');
+      setAdminPhoto([]);
+      setItemsToReopen([]);
+      await refetch();
+      alert('Ausgewählte Items wurden wiedereröffnet!');
+    } catch (error) {
+      console.error('Error reopening items:', error);
+      alert('Fehler beim Wiedereröffnen der Items');
     }
   };
 
@@ -1057,22 +1128,14 @@ export function Tasks({ onNavigate, filterStatus, onBack }: TasksProps = {}) {
                   <span className="bg-blue-700 px-3 py-1 rounded text-sm font-bold">+0 Points</span>
                 </button>
                 <button
-                  onClick={() => handleApproveTask('not_ready')}
+                  onClick={handleNotReady}
                   className="w-full px-4 py-3 bg-orange-600 text-white rounded-lg hover:bg-orange-700 flex items-center justify-between group transition-all"
                 >
                   <div className="flex items-center space-x-2">
-                    <X className="w-5 h-5" />
-                    <span className="font-semibold">Not Ready</span>
+                    <RefreshCw className="w-5 h-5" />
+                    <span className="font-semibold">Not Ready - Reopen</span>
                   </div>
-                  <span className="bg-orange-700 px-3 py-1 rounded text-sm font-bold">-1 Point</span>
-                </button>
-                <div className="border-t border-gray-200 my-2"></div>
-                <button
-                  onClick={handleReopenTask}
-                  className="w-full px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 flex items-center justify-center space-x-2"
-                >
-                  <RefreshCw className="w-5 h-5" />
-                  <span>Reopen Task (Staff must redo)</span>
+                  <span className="bg-orange-700 px-3 py-1 rounded text-sm">Select Items</span>
                 </button>
                 <button
                   onClick={() => {
@@ -1086,6 +1149,100 @@ export function Tasks({ onNavigate, filterStatus, onBack }: TasksProps = {}) {
                   Cancel
                 </button>
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showReopenItemsModal && selectedTask && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50"
+          onClick={() => {
+            setShowReopenItemsModal(false);
+            setShowReviewModal(true);
+            setItemsToReopen([]);
+          }}
+        >
+          <div
+            className="bg-white rounded-xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h3 className="text-xl font-bold text-gray-900 mb-4">
+              Items zum Wiedereröffnen auswählen
+            </h3>
+            <p className="text-sm text-gray-600 mb-6">
+              Wählen Sie die Items aus, die wiedereröffnet werden sollen. Der Mitarbeiter muss diese erneut bearbeiten.
+            </p>
+
+            <div className="space-y-2 mb-6">
+              {selectedTask.items?.map((item: any, index: number) => (
+                <div
+                  key={index}
+                  className={`flex items-start space-x-3 p-4 rounded-lg border-2 transition-all cursor-pointer ${
+                    itemsToReopen.includes(index)
+                      ? 'bg-orange-50 border-orange-400'
+                      : item.is_completed
+                      ? 'bg-green-50 border-green-200'
+                      : 'bg-gray-50 border-gray-200'
+                  }`}
+                  onClick={() => {
+                    if (itemsToReopen.includes(index)) {
+                      setItemsToReopen(itemsToReopen.filter(i => i !== index));
+                    } else {
+                      setItemsToReopen([...itemsToReopen, index]);
+                    }
+                  }}
+                >
+                  <input
+                    type="checkbox"
+                    checked={itemsToReopen.includes(index)}
+                    onChange={() => {}}
+                    className="mt-1 h-5 w-5 text-orange-600 rounded focus:ring-orange-500 cursor-pointer"
+                  />
+                  <div className="flex-1">
+                    <p className={`text-sm font-medium ${item.is_completed ? 'text-gray-700' : 'text-gray-500'}`}>
+                      {item.text}
+                    </p>
+                    {item.is_completed && item.completed_by && (
+                      <p className="text-xs text-green-600 mt-1">
+                        <CheckCircle className="w-3 h-3 inline mr-1" />
+                        Erledigt von: {item.completed_by}
+                      </p>
+                    )}
+                    {itemsToReopen.includes(index) && (
+                      <p className="text-xs text-orange-600 mt-1 font-medium">
+                        → Wird wiedereröffnet
+                      </p>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div className="flex space-x-3">
+              <button
+                onClick={() => {
+                  setShowReopenItemsModal(false);
+                  setShowReviewModal(true);
+                  setItemsToReopen([]);
+                }}
+                className="flex-1 px-4 py-3 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors font-medium"
+              >
+                Abbrechen
+              </button>
+              <button
+                onClick={handleReopenEntireTask}
+                className="flex-1 px-4 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium"
+              >
+                Gesamte Aufgabe wiedereröffnen
+              </button>
+              <button
+                onClick={handleReopenSelectedItems}
+                className="flex-1 px-4 py-3 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors font-medium"
+                disabled={itemsToReopen.length === 0}
+              >
+                {itemsToReopen.length} Item(s) wiedereröffnen
+              </button>
             </div>
           </div>
         </div>
