@@ -314,7 +314,7 @@ export function Tasks({ onNavigate, filterStatus, onBack }: TasksProps = {}) {
 
       await updateTask(task.id, {
         admin_notes: adminNotes,
-        admin_photo: adminPhotoUrls,
+        admin_photos: adminPhotoUrls,
       });
 
       const { data, error } = await supabase.rpc('approve_task_with_points', {
@@ -353,7 +353,7 @@ export function Tasks({ onNavigate, filterStatus, onBack }: TasksProps = {}) {
       }
 
       await updateTask(task.id, {
-        admin_photo: adminPhotoUrls,
+        admin_photos: adminPhotoUrls,
       });
 
       const { data, error } = await supabase.rpc('reopen_task_with_penalty', {

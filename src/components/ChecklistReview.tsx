@@ -14,7 +14,7 @@ interface ChecklistInstance {
   admin_reviewed: boolean;
   admin_approved: boolean | null;
   admin_rejection_reason: string | null;
-  admin_photo: string | null;
+  admin_photos: string | null;
   checklists: {
     title: string;
     category: string;

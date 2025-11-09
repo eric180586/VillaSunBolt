@@ -100,7 +100,6 @@ export interface Database {
           admin_rejection_reason: string | null
           reviewed_by: string | null
           reviewed_at: string | null
-          admin_photo: string | null
           photo_urls: Json | null
           admin_photos: Json | null
           photo_explanation_text: string | null
