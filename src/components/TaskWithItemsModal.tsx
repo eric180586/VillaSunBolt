@@ -46,7 +46,6 @@ export function TaskWithItemsModal({ task, onClose, onComplete, onOpenHelperPopu
       if (allNowCompleted) {
         // Auto-open helper popup after a short delay
         setTimeout(() => {
-          onClose();
           onOpenHelperPopup();
         }, 500);
       }
