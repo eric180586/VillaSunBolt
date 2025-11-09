@@ -8,6 +8,7 @@ import { Plus, TrendingUp, FileText, StickyNote, CheckCircle, Home, AlertCircle,
 import { isSameDay, getTodayDateString } from '../lib/dateUtils';
 import { CheckInOverview } from './CheckInOverview';
 import { checkAndRunDailyReset } from '../lib/dailyReset';
+import { TaskCreateModal } from './TaskCreateModal';
 
 interface ActionButtonProps {
   icon: React.ElementType;
@@ -79,10 +80,11 @@ interface AdminDashboardProps {
 
 export function AdminDashboard({ onNavigate, onBack }: AdminDashboardProps = {}) {
   const { profile } = useAuth();
-  const { tasks, createTask } = useTasks();
+  const { tasks, createTask, refetch } = useTasks();
   const { requests } = useDepartureRequests();
   const { profiles, addPoints } = useProfiles();
 
+  const [showCreateTaskModal, setShowCreateTaskModal] = useState(false);
 
   const staffProfiles = profiles.filter((p) => p.role !== 'admin');
 
@@ -253,7 +255,7 @@ export function AdminDashboard({ onNavigate, onBack }: AdminDashboardProps = {})
         <ActionButton
           icon={Plus}
           label="New Task"
-          onClick={() => onNavigate?.('tasks')}
+          onClick={() => setShowCreateTaskModal(true)}
           color=""
         />
         <ActionButton
@@ -500,6 +502,17 @@ export function AdminDashboard({ onNavigate, onBack }: AdminDashboardProps = {})
           </div>
         </DashboardCard>
       </div>
+
+      {showCreateTaskModal && (
+        <TaskCreateModal
+          onClose={() => setShowCreateTaskModal(false)}
+          onComplete={async () => {
+            setShowCreateTaskModal(false);
+            await refetch();
+          }}
+          profiles={staffProfiles}
+        />
+      )}
     </div>
   );
 }

@@ -7,6 +7,7 @@ import { ProgressBar } from './ProgressBar';
 import { EndOfDayRequest } from './EndOfDayRequest';
 import { NotesPopup } from './NotesPopup';
 import { AdminDashboard } from './AdminDashboard';
+import { RepairRequestModal } from './RepairRequestModal';
 import { useTranslation } from 'react-i18next';
 import { Wrench, ShoppingCart } from 'lucide-react';
 import { supabase } from '../lib/supabase';
@@ -23,9 +24,10 @@ export function Dashboard({ onNavigate, onBack }: DashboardProps = {}) {
   if (profile?.role === 'admin') {
     return <AdminDashboard onNavigate={onNavigate} onBack={onBack} />;
   }
-  const { tasks } = useTasks();
+  const { tasks, refetch } = useTasks();
   const { schedules } = useSchedules();
   const [showNotesPopup, setShowNotesPopup] = useState(false);
+  const [showRepairModal, setShowRepairModal] = useState(false);
 
   useEffect(() => {
     const checkNotesPopup = () => {
@@ -63,7 +65,7 @@ export function Dashboard({ onNavigate, onBack }: DashboardProps = {}) {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <button
-            onClick={() => onNavigate?.('tasks')}
+            onClick={() => setShowRepairModal(true)}
             className="bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-xl p-6 shadow-lg hover:shadow-xl hover:from-blue-600 hover:to-blue-700 transform hover:scale-105 transition-all duration-200 active:scale-95 flex items-center justify-center space-x-3"
           >
             <Wrench className="w-8 h-8" />
@@ -84,6 +86,16 @@ export function Dashboard({ onNavigate, onBack }: DashboardProps = {}) {
         <ProgressBar />
 
         <EndOfDayRequest />
+
+        {showRepairModal && (
+          <RepairRequestModal
+            onClose={() => setShowRepairModal(false)}
+            onComplete={async () => {
+              setShowRepairModal(false);
+              await refetch();
+            }}
+          />
+        )}
       </div>
     </>
   );
