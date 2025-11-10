@@ -55,28 +55,51 @@ export function ProgressBar() {
       today.setHours(0, 0, 0, 0);
       const todayStr = today.toISOString().split('T')[0];
 
-      const { data: checkedInUsers, error: checkInError } = await supabase
-        .from('check_ins')
-        .select('user_id')
-        .gte('check_in_time', today.toISOString())
-        .eq('status', 'approved');
+      // Get scheduled staff from weekly_schedules
+      const { data: weeklySchedules, error: scheduleError } = await supabase
+        .from('weekly_schedules')
+        .select('staff_id, shifts');
 
-      if (checkInError) {
-        console.error('Error fetching check-ins:', checkInError);
+      if (scheduleError) {
+        console.error('Error fetching schedules:', scheduleError);
         setDisplayTime('--:--');
         setTotalMinutes(0);
         setHomeTime('');
         return;
       }
 
-      const checkedInCount = checkedInUsers?.length || 0;
+      // Count scheduled staff for today and determine user's shift
+      let scheduledCountEarly = 0;
+      let scheduledCountLate = 0;
+      let userIsScheduled = false;
+      let userShiftType: 'early' | 'late' | null = null;
 
-      if (checkedInCount === 0) {
+      weeklySchedules?.forEach((schedule) => {
+        const shiftsArray = schedule.shifts as Array<{ date: string; shift: string }>;
+        const todayShift = shiftsArray.find((s) => s.date === todayStr);
+
+        if (todayShift && (todayShift.shift === 'early' || todayShift.shift === 'late')) {
+          if (todayShift.shift === 'early') {
+            scheduledCountEarly++;
+          } else {
+            scheduledCountLate++;
+          }
+
+          if (schedule.staff_id === profile.id) {
+            userIsScheduled = true;
+            userShiftType = todayShift.shift as 'early' | 'late';
+          }
+        }
+      });
+
+      if (!userIsScheduled) {
         setDisplayTime('--:--');
         setTotalMinutes(0);
         setHomeTime('');
         return;
       }
+
+      const scheduledCount = userShiftType === 'early' ? scheduledCountEarly : scheduledCountLate;
 
       const todayTasks = tasks.filter((t) => {
         if (!t.due_date) return false;
@@ -86,20 +109,34 @@ export function ProgressBar() {
         return taskDate.getTime() === today.getTime();
       });
 
-      // Checklists are now integrated into Tasks
-      const taskMinutes = todayTasks.reduce((sum, t) => {
-        const duration = t.duration_minutes || 30;
-        return sum + duration;
-      }, 0);
+      // Calculate minutes for current user based on their shift
+      let minutesForCurrentUser = 0;
 
-      const checklistMinutes = 0; // Checklists merged into tasks
-      const legacyChecklistVariable = ([] || []).reduce((sum, c: any) => {
-        return sum + (c.checklists?.duration_minutes || 0);
-      }, 0);
+      todayTasks.forEach((task) => {
+        const duration = task.duration_minutes || 30;
 
-      const total = taskMinutes + checklistMinutes;
-      const minutesPerPerson = total / checkedInCount;
-      const totalWithBuffer = minutesPerPerson + 120;
+        // Skip tasks that are for the opposite shift
+        const taskTitle = (task.title || '').toLowerCase();
+        const isLateShiftTask = taskTitle.includes('late') || taskTitle.includes('spät');
+        const isEarlyShiftTask = taskTitle.includes('early') || taskTitle.includes('früh');
+
+        if (userShiftType === 'early' && isLateShiftTask && !task.assigned_to && !task.helper_id) {
+          return; // Skip late shift tasks for early shift staff
+        }
+        if (userShiftType === 'late' && isEarlyShiftTask && !task.assigned_to && !task.helper_id) {
+          return; // Skip early shift tasks for late shift staff
+        }
+
+        if (task.assigned_to === profile.id) {
+          minutesForCurrentUser += duration;
+        } else if (task.helper_id === profile.id) {
+          minutesForCurrentUser += duration / 2;
+        } else if (!task.assigned_to && !task.helper_id) {
+          minutesForCurrentUser += scheduledCount > 0 ? duration / scheduledCount : duration;
+        }
+      });
+
+      const totalWithBuffer = minutesForCurrentUser + 120;
 
       setTotalMinutes(totalWithBuffer);
       const timeStr = formatMinutesToTime(totalWithBuffer);
@@ -113,11 +150,6 @@ export function ProgressBar() {
 
       const weekStartStr = weekStart.toISOString().split('T')[0];
       const todayDayName = today.toLocaleDateString('en-US', { weekday: 'long' }).toLowerCase();
-
-      const { data: weeklySchedules } = await supabase
-        .from('weekly_schedules')
-        .select('*')
-        .eq('week_start_date', weekStartStr);
 
       const currentUserSchedule = weeklySchedules?.find((s) => s.staff_id === profile.id);
       if (!currentUserSchedule) {
