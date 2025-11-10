@@ -74,6 +74,20 @@ export function ShiftProjection() {
       todayTasks.forEach((task) => {
         const duration = task.duration_minutes || 0;
 
+        // Skip tasks that are for the opposite shift
+        const taskTitle = (task.title || '').toLowerCase();
+        const isLateShiftTask = taskTitle.includes('late') || taskTitle.includes('spät');
+        const isEarlyShiftTask = taskTitle.includes('early') || taskTitle.includes('früh');
+
+        if (userShiftType === 'early' && isLateShiftTask && !task.assigned_to && !task.helper_id) {
+          // Skip late shift tasks for early shift staff (unless assigned)
+          return;
+        }
+        if (userShiftType === 'late' && isEarlyShiftTask && !task.assigned_to && !task.helper_id) {
+          // Skip early shift tasks for late shift staff (unless assigned)
+          return;
+        }
+
         if (task.assigned_to === profile?.id) {
           // Task ist mir zugewiesen
           minutesForCurrentUser += duration;

@@ -247,6 +247,29 @@ export function PerformanceMetrics({ onNavigate }: PerformanceMetricsProps = {})
       try {
         const today = getTodayDateString();
 
+        // Get scheduled staff for today from weekly_schedules
+        const { data: weeklySchedules, error: scheduleError } = await supabase
+          .from('weekly_schedules')
+          .select('staff_id, shifts');
+
+        if (scheduleError) throw scheduleError;
+
+        // Count scheduled staff for today
+        let scheduledCount = 0;
+        weeklySchedules?.forEach((schedule) => {
+          const shiftsArray = schedule.shifts as Array<{ date: string; shift: string }>;
+          const todayShift = shiftsArray.find((s) => s.date === today);
+
+          if (todayShift && (todayShift.shift === 'early' || todayShift.shift === 'late')) {
+            scheduledCount++;
+          }
+        });
+
+        if (scheduledCount === 0) {
+          setTeamEstimatedTime(120);
+          return;
+        }
+
         const { data: tasksData, error: tasksError } = await supabase
           .from('tasks')
           .select('duration_minutes, status')
@@ -262,22 +285,8 @@ export function PerformanceMetrics({ onNavigate }: PerformanceMetricsProps = {})
         // Checklists are now integrated into Tasks
         const totalChecklistMinutes = 0;
 
-        const { data: checkInsData } = await supabase
-          .from('check_ins')
-          .select('user_id')
-          .eq('check_in_date', today);
-
-        const uniqueUserIds = [...new Set((checkInsData || []).map(ci => ci.user_id))];
-
-        const { data: profilesData } = await supabase
-          .from('profiles')
-          .select('id, role')
-          .in('id', uniqueUserIds);
-
-        const staffCount = (profilesData || []).filter(p => p.role === 'staff').length || 1;
-
         const totalMinutes = totalTaskMinutes + totalChecklistMinutes;
-        const estimatedMinutes = staffCount > 0 ? Math.ceil(totalMinutes / staffCount) + 120 : totalMinutes + 120;
+        const estimatedMinutes = Math.ceil(totalMinutes / scheduledCount) + 120;
 
         setTeamEstimatedTime(estimatedMinutes);
 
