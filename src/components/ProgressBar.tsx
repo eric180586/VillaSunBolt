@@ -152,10 +152,9 @@ export function ProgressBar() {
         (shift) => shift.date === todayStr
       );
 
-      if (todayShift && (todayShift.shift === 'early' || todayShift.shift === 'late')) {
-        const shiftStartTime = todayShift.shift === 'early'
-          ? { hours: 9, minutes: 0 }
-          : { hours: 15, minutes: 0 };
+      // Only show "go home at" for early shift
+      if (todayShift && todayShift.shift === 'early') {
+        const shiftStartTime = { hours: 10, minutes: 0 };
 
         const baseTime = new Date();
         baseTime.setHours(shiftStartTime.hours, shiftStartTime.minutes, 0, 0);
