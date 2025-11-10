@@ -60,7 +60,8 @@ export function EndOfDayRequest() {
     }
 
     const today = new Date();
-    const shiftType = currentShift === 'early_shift' ? 'früh' : 'spät';
+    // Map database shift_type (morning/late) to German (früh/spät)
+    const shiftType = currentShift === 'morning' ? 'früh' : 'spät';
     console.log('[EndOfDayRequest] Creating request for shift type:', shiftType);
 
     const hasPendingRequest = requests.some(
