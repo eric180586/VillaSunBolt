@@ -84,21 +84,18 @@ export function Chat({ onBack }: { onBack?: () => void } = {}) {
         },
         async (payload) => {
           if (payload.eventType === 'INSERT') {
-            const { data: newMessage } = await supabase
-              .from('chat_messages')
-              .select(`
-                *,
-                profiles:user_id (
-                  full_name,
-                  avatar_url
-                )
-              `)
-              .eq('id', payload.new.id)
+            const { data: profileData } = await supabase
+              .from('profiles')
+              .select('full_name, avatar_url')
+              .eq('id', payload.new.user_id)
               .maybeSingle();
 
-            if (newMessage.data) {
-              setMessages((prev) => [...prev, newMessage.data]);
-            }
+            const newMessage = {
+              ...payload.new,
+              profiles: profileData
+            };
+
+            setMessages((prev) => [...prev, newMessage as ChatMessage]);
           } else if (payload.eventType === 'DELETE') {
             setMessages((prev) => prev.filter((msg) => msg.id !== payload.old.id));
           }
