@@ -27,17 +27,25 @@ export function ShiftProjection() {
       }
 
       // Zähle Mitarbeiter die heute eingeplant sind (early oder late)
-      let scheduledCount = 0;
+      let scheduledCountEarly = 0;
+      let scheduledCountLate = 0;
       let userIsScheduled = false;
+      let userShiftType: 'early' | 'late' | null = null;
 
       weeklySchedules?.forEach((schedule) => {
         const shiftsArray = schedule.shifts as Array<{ date: string; shift: string }>;
         const todayShift = shiftsArray.find((s) => s.date === todayDateString);
 
         if (todayShift && (todayShift.shift === 'early' || todayShift.shift === 'late')) {
-          scheduledCount++;
+          if (todayShift.shift === 'early') {
+            scheduledCountEarly++;
+          } else {
+            scheduledCountLate++;
+          }
+
           if (schedule.staff_id === profile?.id) {
             userIsScheduled = true;
+            userShiftType = todayShift.shift as 'early' | 'late';
           }
         }
       });
@@ -46,6 +54,9 @@ export function ShiftProjection() {
         setMessage('You are not scheduled today');
         return;
       }
+
+      // Use the count for the user's shift type
+      const scheduledCount = userShiftType === 'early' ? scheduledCountEarly : scheduledCountLate;
 
       // Hole alle offenen Tasks von heute (inkl. templates die heute relevant sind)
       const todayTasks = tasks.filter((t) => {
@@ -76,7 +87,9 @@ export function ShiftProjection() {
         // Else: Task ist jemand anderem zugewiesen, zählt nicht für mich
       });
 
-      const minutesPerPerson = minutesForCurrentUser;
+      // Add 2 hours base time for regular work
+      const BASE_WORK_MINUTES = 120;
+      const minutesPerPerson = minutesForCurrentUser + BASE_WORK_MINUTES;
 
       // Formatiere die Zeit
       const totalHours = Math.floor(minutesPerPerson / 60);
@@ -84,7 +97,7 @@ export function ShiftProjection() {
       const taskCount = todayTasks.length;
 
       if (taskCount === 0) {
-        setMessage('All tasks done! Time to chill!');
+        setMessage(`Estimated time for the daily ToDos: 2h (base work time)`);
         setProjectedEndTime('');
       } else {
         // Zeige die geschätzte Zeit pro Person
@@ -95,7 +108,7 @@ export function ShiftProjection() {
         } else if (totalHours > 0 && remainingMinutes > 0) {
           setMessage(`Estimated time for the daily ToDos: ${totalHours}h ${remainingMinutes}m`);
         } else {
-          setMessage('All tasks done! Time to chill!');
+          setMessage('Estimated time for the daily ToDos: 2h (base work time)');
         }
         setProjectedEndTime('');
       }

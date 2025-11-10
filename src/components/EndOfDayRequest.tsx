@@ -24,11 +24,10 @@ export function EndOfDayRequest() {
 
       const { data: checkIn, error } = await supabase
         .from('check_ins')
-        .select('shift_type')
+        .select('shift_type, check_in_date')
         .eq('user_id', profile.id)
+        .eq('check_in_date', today)
         .in('status', ['approved', 'pending'])
-        .gte('check_in_time', `${today}T00:00:00`)
-        .lte('check_in_time', `${today}T23:59:59`)
         .order('check_in_time', { ascending: false })
         .limit(1)
         .maybeSingle();
