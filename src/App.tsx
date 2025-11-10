@@ -24,6 +24,7 @@ import { PatrolSchedules } from './components/PatrolSchedules';
 import { PatrolQRCodes } from './components/PatrolQRCodes';
 import { CheckInPopup } from './components/CheckInPopup';
 import { DailyPointsOverview } from './components/DailyPointsOverview';
+import { MonthlyPointsOverview } from './components/MonthlyPointsOverview';
 import { DepartureRequestAdmin } from './components/DepartureRequestAdmin';
 import { HowTo } from './components/HowTo';
 import { Chat } from './components/Chat';
@@ -163,6 +164,8 @@ function AppContent() {
         return <ChecklistReview onBack={handleBack} />;
       case 'daily-points':
         return <DailyPointsOverview onBack={handleBack} />;
+      case 'monthly-points':
+        return <MonthlyPointsOverview />;
       case 'departure-requests':
         return <DepartureRequestAdmin onBack={handleBack} />;
       case 'today-tasks-overview':

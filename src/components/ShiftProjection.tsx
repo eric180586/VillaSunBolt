@@ -37,20 +37,36 @@ export function ShiftProjection() {
         return;
       }
 
-      // Hole alle offenen Tasks von heute
+      // Hole alle offenen Tasks von heute (inkl. templates die heute relevant sind)
       const todayTasks = tasks.filter((t) => {
-        if (!t.due_date) return false;
-        if (t.status === 'completed' || t.status === 'cancelled') return false;
-        const taskDate = new Date(t.due_date);
-        taskDate.setHours(0, 0, 0, 0);
-        return taskDate.getTime() === today.getTime();
+        if (t.status === 'completed' || t.status === 'cancelled' || t.status === 'archived') return false;
+
+        // Tasks created today
+        const createdDate = new Date(t.created_at);
+        createdDate.setHours(0, 0, 0, 0);
+        return createdDate.getTime() === today.getTime();
       });
 
-      // Summe ALLER Task-Dauern (nicht pro Person)
-      const totalMinutes = todayTasks.reduce((sum, t) => sum + t.duration_minutes, 0);
+      // Berechne estimated time für aktuellen User
+      let minutesForCurrentUser = 0;
 
-      // Geschätzte Zeit pro Person = Summe aller Tasks / Anzahl eingestempelter Mitarbeiter
-      const minutesPerPerson = checkedInCount > 0 ? totalMinutes / checkedInCount : totalMinutes;
+      todayTasks.forEach((task) => {
+        const duration = task.duration_minutes || 0;
+
+        if (task.assigned_to === profile?.id) {
+          // Task ist mir zugewiesen
+          minutesForCurrentUser += duration;
+        } else if (task.helper_id === profile?.id) {
+          // Ich bin Helper (geteilte Arbeit)
+          minutesForCurrentUser += duration / 2;
+        } else if (!task.assigned_to && !task.helper_id) {
+          // Unassigned task - wird durch alle anwesenden Mitarbeiter geteilt
+          minutesForCurrentUser += checkedInCount > 0 ? duration / checkedInCount : duration;
+        }
+        // Else: Task ist jemand anderem zugewiesen, zählt nicht für mich
+      });
+
+      const minutesPerPerson = minutesForCurrentUser;
 
       // Formatiere die Zeit
       const totalHours = Math.floor(minutesPerPerson / 60);

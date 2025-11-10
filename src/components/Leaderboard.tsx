@@ -351,6 +351,79 @@ export function Leaderboard({ onBack }: { onBack?: () => void } = {}) {
         </div>
       )}
 
+      {/* Team Monthly Performance - 90% Goal */}
+      {Object.keys(monthlyStats).length > 0 && (
+        <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl p-6 shadow-lg border-2 border-blue-200">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center space-x-3">
+              <Users className="w-8 h-8 text-blue-600" />
+              <div>
+                <p className="font-bold text-xl text-gray-900">Team-Event Ziel: 90% für diesen Monat</p>
+                <p className="text-sm text-gray-600">
+                  Gemeinsam schaffen wir das!
+                </p>
+              </div>
+            </div>
+            <div className="text-right">
+              <p className={`text-4xl font-bold ${
+                Object.values(monthlyStats).reduce((sum, s) => sum + s.totalAchieved, 0) /
+                Object.values(monthlyStats).reduce((sum, s) => sum + s.totalAchievable, 0) * 100 >= 90
+                  ? 'text-green-600'
+                  : 'text-gray-900'
+              }`}>
+                {(
+                  (Object.values(monthlyStats).reduce((sum, s) => sum + s.totalAchieved, 0) /
+                  Object.values(monthlyStats).reduce((sum, s) => sum + s.totalAchievable, 0)) * 100
+                ).toFixed(1)}%
+              </p>
+            </div>
+          </div>
+          <div className="w-full bg-white bg-opacity-60 rounded-full h-6 mb-3">
+            <div
+              className={`h-6 rounded-full transition-all duration-500 flex items-center justify-center ${
+                Object.values(monthlyStats).reduce((sum, s) => sum + s.totalAchieved, 0) /
+                Object.values(monthlyStats).reduce((sum, s) => sum + s.totalAchievable, 0) * 100 >= 90
+                  ? 'bg-green-500'
+                  : 'bg-blue-500'
+              }`}
+              style={{
+                width: `${Math.min(
+                  (Object.values(monthlyStats).reduce((sum, s) => sum + s.totalAchieved, 0) /
+                  Object.values(monthlyStats).reduce((sum, s) => sum + s.totalAchievable, 0)) * 100,
+                  100
+                )}%`
+              }}
+            >
+              <span className="text-xs font-bold text-white drop-shadow">
+                {(
+                  (Object.values(monthlyStats).reduce((sum, s) => sum + s.totalAchieved, 0) /
+                  Object.values(monthlyStats).reduce((sum, s) => sum + s.totalAchievable, 0)) * 100
+                ).toFixed(1)}%
+              </span>
+            </div>
+          </div>
+          <div className="flex items-center justify-between text-sm">
+            <span className="font-semibold text-gray-700">
+              {Object.values(monthlyStats).reduce((sum, s) => sum + s.totalAchieved, 0)} /{' '}
+              {Object.values(monthlyStats).reduce((sum, s) => sum + s.totalAchievable, 0)} Punkte
+            </span>
+            {Object.values(monthlyStats).reduce((sum, s) => sum + s.totalAchieved, 0) /
+            Object.values(monthlyStats).reduce((sum, s) => sum + s.totalAchievable, 0) * 100 >= 90 ? (
+              <span className="font-bold text-green-600">Team-Event erreicht!</span>
+            ) : (
+              <span className="text-gray-600">
+                Noch{' '}
+                {(
+                  Object.values(monthlyStats).reduce((sum, s) => sum + s.totalAchievable, 0) * 0.9 -
+                  Object.values(monthlyStats).reduce((sum, s) => sum + s.totalAchieved, 0)
+                ).toFixed(0)}{' '}
+                Punkte bis zum Ziel
+              </span>
+            )}
+          </div>
+        </div>
+      )}
+
       {/* Team Performance Today */}
       {teamDailyGoal && (
         <div className="bg-white rounded-xl p-5 shadow-md border-2 border-gray-200">
@@ -358,7 +431,7 @@ export function Leaderboard({ onBack }: { onBack?: () => void } = {}) {
             <div className="flex items-center space-x-3">
               <Users className="w-6 h-6 text-blue-600" />
               <div>
-                <p className="font-bold text-lg text-gray-900">👥 TEAM PERFORMANCE HEUTE</p>
+                <p className="font-bold text-lg text-gray-900">Team Performance Heute</p>
                 <p className="text-sm text-gray-600">
                   {teamDailyGoal.team_points_earned} / {teamDailyGoal.team_achievable_points} Punkte
                 </p>
