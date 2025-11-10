@@ -3,6 +3,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { useTasks } from '../hooks/useTasks';
 import { useHumorModules } from '../hooks/useHumorModules';
 import { supabase } from '../lib/supabase';
+import { getTodayDateString } from '../lib/dateUtils';
 import { Clock, MessageCircle, Sparkles, Smartphone, Home } from 'lucide-react';
 
 const iconMap = {
@@ -51,9 +52,7 @@ export function ProgressBar() {
     const calculateTime = async () => {
       if (!profile?.id) return;
 
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-      const todayStr = today.toISOString().split('T')[0];
+      const todayStr = getTodayDateString();
 
       // Get scheduled staff from weekly_schedules
       const { data: weeklySchedules, error: scheduleError } = await supabase
@@ -142,15 +141,7 @@ export function ProgressBar() {
       const timeStr = formatMinutesToTime(totalWithBuffer);
       setDisplayTime(timeStr);
 
-      const dayOfWeek = today.getDay();
-      const weekStart = new Date(today);
-      const daysFromMonday = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
-      weekStart.setDate(today.getDate() - daysFromMonday);
-      weekStart.setHours(0, 0, 0, 0);
-
-      const weekStartStr = weekStart.toISOString().split('T')[0];
-      const todayDayName = today.toLocaleDateString('en-US', { weekday: 'long' }).toLowerCase();
-
+      // Find user's shift for today directly from the schedule data we already have
       const currentUserSchedule = weeklySchedules?.find((s) => s.staff_id === profile.id);
       if (!currentUserSchedule) {
         setHomeTime('');
@@ -158,7 +149,7 @@ export function ProgressBar() {
       }
 
       const todayShift = (currentUserSchedule as WeeklySchedule).shifts.find(
-        (shift) => shift.day === todayDayName
+        (shift) => shift.date === todayStr
       );
 
       if (todayShift && (todayShift.shift === 'early' || todayShift.shift === 'late')) {

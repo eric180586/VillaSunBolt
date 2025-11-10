@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useTasks } from '../hooks/useTasks';
 import { supabase } from '../lib/supabase';
+import { getTodayDateString } from '../lib/dateUtils';
 import { Clock } from 'lucide-react';
 
 export function ShiftProjection() {
@@ -12,9 +13,7 @@ export function ShiftProjection() {
 
   useEffect(() => {
     const calculateProjection = async () => {
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-      const todayDateString = today.toISOString().split('T')[0];
+      const todayDateString = getTodayDateString();
 
       // Hole alle GEPLANTEN Mitarbeiter aus weekly_schedules für heute
       const { data: weeklySchedules, error: scheduleError } = await supabase
