@@ -104,9 +104,9 @@ export function ProgressBar() {
       const todayTasks = tasks.filter((t) => {
         if (!t.due_date) return false;
         if (t.status === 'completed' || t.status === 'archived') return false;
-        const taskDate = new Date(t.due_date);
-        taskDate.setHours(0, 0, 0, 0);
-        return taskDate.getTime() === today.getTime();
+        // Compare just the date part (YYYY-MM-DD)
+        const taskDueDate = new Date(t.due_date).toISOString().split('T')[0];
+        return taskDueDate === todayStr;
       });
 
       // Calculate minutes for current user based on their shift

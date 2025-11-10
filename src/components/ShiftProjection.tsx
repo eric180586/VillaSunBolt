@@ -58,14 +58,14 @@ export function ShiftProjection() {
       // Use the count for the user's shift type
       const scheduledCount = userShiftType === 'early' ? scheduledCountEarly : scheduledCountLate;
 
-      // Hole alle offenen Tasks von heute (inkl. templates die heute relevant sind)
+      // Hole alle offenen Tasks von heute (due today, not just created today)
       const todayTasks = tasks.filter((t) => {
         if (t.status === 'completed' || t.status === 'cancelled' || t.status === 'archived') return false;
+        if (!t.due_date) return false;
 
-        // Tasks created today
-        const createdDate = new Date(t.created_at);
-        createdDate.setHours(0, 0, 0, 0);
-        return createdDate.getTime() === today.getTime();
+        // Compare due_date (YYYY-MM-DD)
+        const taskDueDate = new Date(t.due_date).toISOString().split('T')[0];
+        return taskDueDate === todayDateString;
       });
 
       // Berechne estimated time für aktuellen User
