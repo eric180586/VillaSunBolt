@@ -35,6 +35,26 @@ export function PointsManager({ onBack }: { onBack?: () => void } = {}) {
 
   useEffect(() => {
     fetchTemplates();
+
+    // Realtime subscription for templates
+    const templatesChannel = supabase
+      .channel(`point_templates_${Date.now()}`)
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'point_templates',
+        },
+        () => {
+          fetchTemplates();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(templatesChannel);
+    };
   }, []);
 
   const fetchTemplates = async () => {

@@ -106,6 +106,8 @@ export function EndOfDayRequest() {
     );
   }
 
+  const canRequestDeparture = currentShift !== null;
+
   return (
     <div className="bg-gradient-to-r from-orange-500 to-amber-500 rounded-xl p-6 text-center shadow-xl animate-pulse-slow border-2 border-orange-300">
       <Home className="w-12 h-12 text-white mx-auto mb-3 animate-bounce" />
@@ -114,14 +116,21 @@ export function EndOfDayRequest() {
       </h3>
       <button
         onClick={handleRequest}
-        disabled={isSubmitting}
+        disabled={isSubmitting || !canRequestDeparture}
         className="bg-white text-orange-600 px-8 py-3 rounded-xl text-lg font-bold hover:bg-orange-50 hover:scale-110 transform transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed shadow-2xl hover:shadow-orange-300/50 active:scale-95 animate-pulse"
       >
         {isSubmitting ? 'Sending...' : 'Ok?'}
       </button>
-      <p className="text-orange-50 text-sm mt-3 font-medium">
-        Request will be sent to admin for approval
-      </p>
+      {!canRequestDeparture && (
+        <p className="text-red-200 text-sm mt-3 font-bold bg-red-600/30 rounded-lg py-2 px-4">
+          ⚠️ You must check in first before requesting departure!
+        </p>
+      )}
+      {canRequestDeparture && (
+        <p className="text-orange-50 text-sm mt-3 font-medium">
+          Request will be sent to admin for approval
+        </p>
+      )}
     </div>
   );
 }

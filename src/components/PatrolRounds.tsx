@@ -384,13 +384,23 @@ export function PatrolRounds({ onBack }: { onBack?: () => void } = {}) {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-3xl font-bold text-gray-900">Patrol Rounds</h2>
-          <p className="text-gray-600 mt-1">
-            {profile?.role === 'admin'
-              ? 'Übersicht aller Patrouillengänge'
-              : 'Scanne QR Codes an den Kontrollpunkten'}
-          </p>
+        <div className="flex items-center space-x-4">
+          {onBack && (
+            <button
+              onClick={onBack}
+              className="p-2 hover:bg-beige-100 rounded-lg transition-colors"
+            >
+              <ArrowLeft className="w-6 h-6 text-gray-700" />
+            </button>
+          )}
+          <div>
+            <h2 className="text-3xl font-bold text-gray-900">Patrol Rounds</h2>
+            <p className="text-gray-600 mt-1">
+              {profile?.role === 'admin'
+                ? 'Übersicht aller Patrouillengänge'
+                : 'Scanne QR Codes an den Kontrollpunkten'}
+            </p>
+          </div>
         </div>
         <Shield className="w-8 h-8 text-orange-600" />
       </div>

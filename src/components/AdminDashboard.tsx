@@ -183,8 +183,6 @@ export function AdminDashboard({ onNavigate, onBack }: AdminDashboardProps = {})
         }
 
         // Checklists are now integrated into Tasks
-        setTotalChecklistsToday(0);
-        setCompletedChecklistsToday(0);
       } catch (error) {
         console.error('Error fetching team points:', error);
       }
