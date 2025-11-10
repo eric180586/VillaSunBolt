@@ -25,6 +25,7 @@ export function Chat({ onBack }: { onBack?: () => void } = {}) {
   const [selectedPhoto, setSelectedPhoto] = useState<File | null>(null);
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
   const [sending, setSending] = useState(false);
+  const [showLanguage, setShowLanguage] = useState<'original' | 'de' | 'km'>('original');
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
