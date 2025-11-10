@@ -14,26 +14,36 @@ export function ShiftProjection() {
     const calculateProjection = async () => {
       const today = new Date();
       today.setHours(0, 0, 0, 0);
+      const todayDateString = today.toISOString().split('T')[0];
 
-      // Hole alle eingestempelten Mitarbeiter (approved check-ins) von heute
-      const { data: checkedInUsers, error } = await supabase
-        .from('check_ins')
-        .select('user_id')
-        .gte('check_in_time', today.toISOString())
-        .eq('status', 'approved');
+      // Hole alle GEPLANTEN Mitarbeiter aus weekly_schedules für heute
+      const { data: weeklySchedules, error: scheduleError } = await supabase
+        .from('weekly_schedules')
+        .select('staff_id, shifts');
 
-      if (error) {
-        console.error('Error fetching check-ins:', error);
+      if (scheduleError) {
+        console.error('Error fetching schedules:', scheduleError);
         return;
       }
 
-      const checkedInCount = checkedInUsers?.length || 0;
+      // Zähle Mitarbeiter die heute eingeplant sind (early oder late)
+      let scheduledCount = 0;
+      let userIsScheduled = false;
 
-      // Prüfe ob aktueller User eingecheckt ist
-      const isCheckedIn = checkedInUsers?.some(ci => ci.user_id === profile?.id);
+      weeklySchedules?.forEach((schedule) => {
+        const shiftsArray = schedule.shifts as Array<{ date: string; shift: string }>;
+        const todayShift = shiftsArray.find((s) => s.date === todayDateString);
 
-      if (!isCheckedIn) {
-        setMessage('Please check in first');
+        if (todayShift && (todayShift.shift === 'early' || todayShift.shift === 'late')) {
+          scheduledCount++;
+          if (schedule.staff_id === profile?.id) {
+            userIsScheduled = true;
+          }
+        }
+      });
+
+      if (!userIsScheduled) {
+        setMessage('You are not scheduled today');
         return;
       }
 
@@ -60,8 +70,8 @@ export function ShiftProjection() {
           // Ich bin Helper (geteilte Arbeit)
           minutesForCurrentUser += duration / 2;
         } else if (!task.assigned_to && !task.helper_id) {
-          // Unassigned task - wird durch alle anwesenden Mitarbeiter geteilt
-          minutesForCurrentUser += checkedInCount > 0 ? duration / checkedInCount : duration;
+          // Unassigned task - wird durch alle GEPLANTEN Mitarbeiter geteilt
+          minutesForCurrentUser += scheduledCount > 0 ? duration / scheduledCount : duration;
         }
         // Else: Task ist jemand anderem zugewiesen, zählt nicht für mich
       });
@@ -106,7 +116,7 @@ export function ShiftProjection() {
           <h3 className="text-xl font-bold mb-2">{message}</h3>
           {projectedEndTime && (
             <p className="text-blue-100 text-sm">
-              Based on remaining tasks and checked-in staff
+              Based on remaining tasks and scheduled staff
             </p>
           )}
         </div>
