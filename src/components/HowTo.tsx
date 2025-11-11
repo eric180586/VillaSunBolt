@@ -6,7 +6,6 @@ import TutorialViewer from './TutorialViewer';
 import QuizGame from './QuizGame';
 import TutorialSlideManager from './TutorialSlideManager';
 import { FortuneWheel } from './FortuneWheel';
-import { isAdmin as checkIsAdmin } from '../lib/roleUtils';
 
 interface HowToDocument {
   id: string;

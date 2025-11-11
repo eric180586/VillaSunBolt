@@ -1,9 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../lib/supabase';
-import { CheckCircle, XCircle, Clock, User, AlertCircle, ArrowLeft, Home, UserPlus, LogOut } from 'lucide-react';
+import { CheckCircle, XCircle, Clock, User, AlertCircle, ArrowLeft, Home, UserPlus } from 'lucide-react';
 import { toLocaleTimeStringCambodia, toLocaleStringCambodia, combineDateAndTime, getTodayDateString } from '../lib/dateUtils';
-import { isAdmin as checkIsAdmin } from '../lib/roleUtils';
 
 interface CheckInWithProfile {
   id: string;
@@ -41,7 +40,7 @@ export function CheckInApproval({ onNavigate }: CheckInApprovalProps = {}) {
   const [loading, setLoading] = useState(false);
   const [rejectReason, setRejectReason] = useState<{ [key: string]: string }>({});
   const [showRejectModal, setShowRejectModal] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<'checkin' | 'departure' | 'manual' | 'checkout'>('checkin');
+  const [activeTab, setActiveTab] = useState<'checkin' | 'departure' | 'manual'>('checkin');
   const [showApproveModal, setShowApproveModal] = useState<string | null>(null);
   const [customPoints, setCustomPoints] = useState<{ [key: string]: number }>({});
   const [showManualCheckIn, setShowManualCheckIn] = useState(false);
@@ -53,19 +52,12 @@ export function CheckInApproval({ onNavigate }: CheckInApprovalProps = {}) {
     shiftType: 'morning' as 'morning' | 'evening',
     lateReason: '',
   });
-  const [manualCheckOutForm, setManualCheckOutForm] = useState({
-    userId: '',
-    time: new Date().toTimeString().slice(0, 5),
-    reason: '',
-  });
-  const [activeStaff, setActiveStaff] = useState<any[]>([]);
 
   useEffect(() => {
-    if (checkIsAdmin(profile)) {
+    if (profile?.role === 'admin') {
       fetchPendingCheckIns();
       fetchPendingDepartures();
       fetchAllStaff();
-      fetchActiveStaff();
 
       const checkInChannel = supabase
         .channel(`check_ins_admin_${Date.now()}`)
@@ -155,28 +147,6 @@ export function CheckInApproval({ onNavigate }: CheckInApprovalProps = {}) {
     setAllStaff(data || []);
   };
 
-  const fetchActiveStaff = async () => {
-    const { data, error } = await supabase
-      .from('check_ins')
-      .select(`
-        id,
-        user_id,
-        check_in_time,
-        check_out_time,
-        profiles:user_id (id, full_name)
-      `)
-      .eq('status', 'approved')
-      .is('check_out_time', null)
-      .order('check_in_time', { ascending: false });
-
-    if (error) {
-      console.error('Error fetching active staff:', error);
-      return;
-    }
-
-    setActiveStaff(data || []);
-  };
-
   const handleManualCheckIn = async () => {
     if (!profile?.id || !manualCheckInForm.userId) {
       alert('Bitte wähle einen Mitarbeiter aus');
@@ -210,45 +180,6 @@ export function CheckInApproval({ onNavigate }: CheckInApprovalProps = {}) {
     } catch (error: any) {
       console.error('Error creating manual check-in:', error);
       alert('Fehler: ' + (error.message || 'Unbekannter Fehler'));
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleManualCheckOut = async () => {
-    if (!profile?.id || !manualCheckOutForm.userId) {
-      alert('Bitte wähle einen Mitarbeiter aus');
-      return;
-    }
-
-    setLoading(true);
-
-    try {
-      const checkoutTimestamp = combineDateAndTime(getTodayDateString(), manualCheckOutForm.time);
-
-      const { data, error } = await supabase.rpc('admin_checkout_user', {
-        p_admin_id: profile.id,
-        p_user_id: manualCheckOutForm.userId,
-        p_checkout_time: checkoutTimestamp,
-        p_reason: manualCheckOutForm.reason || null,
-      });
-
-      if (error) throw error;
-
-      alert(`Mitarbeiter erfolgreich ausgecheckt!`);
-      setManualCheckOutForm({
-        userId: '',
-        time: new Date().toTimeString().slice(0, 5),
-        reason: '',
-      });
-      fetchActiveStaff();
-    } catch (error: any) {
-      console.error('Error creating manual checkout:', error);
-      if (error.message.includes('Kein aktives Check-in')) {
-        alert('Fehler: Dieser Mitarbeiter ist nicht eingecheckt!');
-      } else {
-        alert('Fehler: ' + (error.message || 'Unbekannter Fehler'));
-      }
     } finally {
       setLoading(false);
     }
@@ -438,20 +369,7 @@ export function CheckInApproval({ onNavigate }: CheckInApprovalProps = {}) {
         >
           <div className="flex items-center space-x-2">
             <UserPlus className="w-5 h-5" />
-            <span>Einchecken</span>
-          </div>
-        </button>
-        <button
-          onClick={() => setActiveTab('checkout')}
-          className={`px-6 py-3 font-medium transition-colors ${
-            activeTab === 'checkout'
-              ? 'border-b-2 border-orange-500 text-orange-600'
-              : 'text-gray-600 hover:text-gray-900'
-          }`}
-        >
-          <div className="flex items-center space-x-2">
-            <LogOut className="w-5 h-5" />
-            <span>Auschecken ({activeStaff.length})</span>
+            <span>Manuell Einchecken</span>
           </div>
         </button>
       </div>
@@ -877,107 +795,6 @@ export function CheckInApproval({ onNavigate }: CheckInApprovalProps = {}) {
               <div className="text-sm text-blue-800">
                 <p className="font-semibold mb-1">Hinweis:</p>
                 <p>Das manuelle Check-In wird automatisch als "pending" erstellt und muss anschließend noch genehmigt werden.</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {activeTab === 'checkout' && (
-        <div className="bg-white rounded-xl p-8 shadow-lg border border-gray-200">
-          <div className="flex items-center space-x-3 mb-6">
-            <LogOut className="w-8 h-8 text-orange-600" />
-            <h3 className="text-2xl font-bold text-gray-900">Manuelles Check-Out</h3>
-          </div>
-
-          {activeStaff.length === 0 ? (
-            <div className="text-center py-8">
-              <Clock className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-              <p className="text-gray-600">Keine Mitarbeiter aktuell eingecheckt</p>
-            </div>
-          ) : (
-            <>
-              <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                <h4 className="font-semibold text-blue-900 mb-2">Aktuell eingecheckte Mitarbeiter:</h4>
-                <div className="space-y-2">
-                  {activeStaff.map((staff: any) => (
-                    <div key={staff.id} className="flex items-center justify-between bg-white p-3 rounded-lg">
-                      <div className="flex items-center space-x-3">
-                        <User className="w-5 h-5 text-gray-600" />
-                        <span className="font-medium text-gray-900">{staff.profiles.full_name}</span>
-                      </div>
-                      <div className="text-sm text-gray-600">
-                        Eingecheckt: {toLocaleTimeStringCambodia(staff.check_in_time, 'de-DE')}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Mitarbeiter
-                  </label>
-                  <select
-                    value={manualCheckOutForm.userId}
-                    onChange={(e) => setManualCheckOutForm({ ...manualCheckOutForm, userId: e.target.value })}
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                  >
-                    <option value="">Mitarbeiter auswählen...</option>
-                    {activeStaff.map((staff: any) => (
-                      <option key={staff.user_id} value={staff.user_id}>
-                        {staff.profiles.full_name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Check-Out Uhrzeit
-                  </label>
-                  <input
-                    type="time"
-                    value={manualCheckOutForm.time}
-                    onChange={(e) => setManualCheckOutForm({ ...manualCheckOutForm, time: e.target.value })}
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Grund (optional)
-                  </label>
-                  <textarea
-                    value={manualCheckOutForm.reason}
-                    onChange={(e) => setManualCheckOutForm({ ...manualCheckOutForm, reason: e.target.value })}
-                    placeholder="z.B. Früherer Feierabend genehmigt..."
-                    rows={3}
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                  />
-                </div>
-
-                <div className="flex space-x-3 pt-4">
-                  <button
-                    onClick={handleManualCheckOut}
-                    disabled={loading || !manualCheckOutForm.userId}
-                    className="flex-1 px-6 py-3 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-semibold flex items-center justify-center space-x-2"
-                  >
-                    <LogOut className="w-5 h-5" />
-                    <span>Mitarbeiter Auschecken</span>
-                  </button>
-                </div>
-              </div>
-            </>
-          )}
-
-          <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-            <div className="flex items-start space-x-2">
-              <AlertCircle className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
-              <div className="text-sm text-blue-800">
-                <p className="font-semibold mb-1">Hinweis:</p>
-                <p>Der Mitarbeiter erhält eine Benachrichtigung, dass er ausgecheckt wurde.</p>
               </div>
             </div>
           </div>

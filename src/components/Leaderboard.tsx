@@ -4,7 +4,6 @@ import { useProfiles } from '../hooks/useProfiles';
 import { supabase } from '../lib/supabase';
 import { Award, TrendingUp, Trophy, Medal, Plus, Minus, ArrowLeft, Users, ArrowUp, ArrowDown, Minus as MinusIcon } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { isAdmin as checkIsAdmin } from '../lib/roleUtils';
 
 interface DailyGoal {
   user_id: string;
@@ -42,7 +41,7 @@ export function Leaderboard({ onBack }: { onBack?: () => void } = {}) {
   const [monthlyStats, setMonthlyStats] = useState<Record<string, MonthlyStats>>({});
   const [loading, setLoading] = useState(true);
 
-  const isManager = (checkIsAdmin(profile) || profile?.role === 'manager');
+  const isManager = profile?.role === 'admin' || profile?.role === 'manager';
 
   useEffect(() => {
     fetchGoalsData();

@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useNotes } from '../hooks/useNotes';
 import { Plus, AlertCircle, X, Edit, ArrowLeft, StickyNote } from 'lucide-react';
-import { isAdmin as checkIsAdmin } from '../lib/roleUtils';
 
 export function Notes({ onBack }: { onBack?: () => void } = {}) {
   const { profile } = useAuth();
@@ -129,7 +128,7 @@ export function Notes({ onBack }: { onBack?: () => void } = {}) {
                 <h3 className="text-lg font-semibold text-gray-900">{note.title}</h3>
               </div>
               <div className="flex items-center space-x-1">
-                {(note.created_by === profile?.id || checkIsAdmin(profile)) && (
+                {(note.created_by === profile?.id || profile?.role === 'admin') && (
                   <>
                     <button
                       onClick={() => handleEdit(note.id)}

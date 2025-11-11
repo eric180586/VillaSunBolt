@@ -3,7 +3,6 @@ import { useAuth } from '../contexts/AuthContext';
 import { useProfiles } from '../hooks/useProfiles';
 import { Calendar, ChevronLeft, ChevronRight, Clock, X, Check, ArrowLeft } from 'lucide-react';
 import { supabase } from '../lib/supabase';
-import { isAdmin as checkIsAdmin } from '../lib/roleUtils';
 
 type ShiftType = 'early' | 'late' | 'off';
 

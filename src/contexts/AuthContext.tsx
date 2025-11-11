@@ -16,7 +16,6 @@ interface AuthContextType {
   signUp: (email: string, password: string, fullName: string) => Promise<void>;
   signOut: () => Promise<void>;
   updateLanguage: (language: 'de' | 'en' | 'km') => Promise<void>;
-  refreshProfile: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -29,7 +28,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     let mounted = true;
-    let profileChannel: any = null;
 
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (!mounted) return;
@@ -37,32 +35,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setUser(session?.user ?? null);
       if (session?.user) {
         loadProfile(session.user.id);
-
-        // Subscribe to profile changes for realtime role updates
-        profileChannel = supabase
-          .channel(`profile_${session.user.id}`)
-          .on(
-            'postgres_changes',
-            {
-              event: 'UPDATE',
-              schema: 'public',
-              table: 'profiles',
-              filter: `id=eq.${session.user.id}`,
-            },
-            (payload) => {
-              if (payload.new) {
-                console.log('Profile updated, reloading...', payload.new);
-                setProfile(payload.new as Profile);
-
-                // Update language if changed
-                const newProfile = payload.new as Profile;
-                if (newProfile.preferred_language) {
-                  i18n.changeLanguage(newProfile.preferred_language);
-                }
-              }
-            }
-          )
-          .subscribe();
       } else {
         setLoading(false);
       }
@@ -76,45 +48,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         if (session?.user) {
           setLoading(true);
           await loadProfile(session.user.id);
-
-          // Clean up old subscription
-          if (profileChannel) {
-            supabase.removeChannel(profileChannel);
-          }
-
-          // Create new subscription
-          profileChannel = supabase
-            .channel(`profile_${session.user.id}`)
-            .on(
-              'postgres_changes',
-              {
-                event: 'UPDATE',
-                schema: 'public',
-                table: 'profiles',
-                filter: `id=eq.${session.user.id}`,
-              },
-              (payload) => {
-                if (payload.new) {
-                  console.log('Profile updated, reloading...', payload.new);
-                  setProfile(payload.new as Profile);
-
-                  const newProfile = payload.new as Profile;
-                  if (newProfile.preferred_language) {
-                    i18n.changeLanguage(newProfile.preferred_language);
-                  }
-                }
-              }
-            )
-            .subscribe();
         } else {
           setProfile(null);
           setLoading(false);
-
-          // Clean up subscription
-          if (profileChannel) {
-            supabase.removeChannel(profileChannel);
-            profileChannel = null;
-          }
         }
       })();
     });
@@ -122,9 +58,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => {
       mounted = false;
       subscription.unsubscribe();
-      if (profileChannel) {
-        supabase.removeChannel(profileChannel);
-      }
     };
   }, []);
 
@@ -253,15 +186,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const refreshProfile = async () => {
-    if (!user) return;
-
-    console.log('Manually refreshing profile...');
-    await loadProfile(user.id);
-  };
-
   return (
-    <AuthContext.Provider value={{ user, profile, session, loading, signIn, signUp, signOut, updateLanguage, refreshProfile }}>
+    <AuthContext.Provider value={{ user, profile, session, loading, signIn, signUp, signOut, updateLanguage }}>
       {children}
     </AuthContext.Provider>
   );

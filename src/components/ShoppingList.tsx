@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { Plus, Check, X, Camera, ShoppingCart, ArrowLeft } from 'lucide-react';
 import { supabase } from '../lib/supabase';
-import { isAdmin as checkIsAdmin } from '../lib/roleUtils';
 
 interface ShoppingItem {
   id: string;

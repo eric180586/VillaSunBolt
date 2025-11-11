@@ -28,7 +28,6 @@ import { MonthlyPointsOverview } from './components/MonthlyPointsOverview';
 import { DepartureRequestAdmin } from './components/DepartureRequestAdmin';
 import { HowTo } from './components/HowTo';
 import { Chat } from './components/Chat';
-import { AdminLogs } from './components/AdminLogs';
 import { supabase } from './lib/supabase';
 
 function AppContent() {
@@ -171,8 +170,6 @@ function AppContent() {
         return <DepartureRequestAdmin onBack={handleBack} />;
       case 'today-tasks-overview':
         return <Tasks onNavigate={handleNavigate} filterStatus="today" onBack={handleBack} />;
-      case 'admin-logs':
-        return <AdminLogs onNavigate={handleNavigate} />;
       default:
         return <Dashboard onNavigate={handleNavigate} />;
     }

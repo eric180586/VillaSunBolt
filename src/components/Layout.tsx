@@ -2,7 +2,6 @@ import { ReactNode, useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useNotifications } from '../hooks/useNotifications';
 import { useTranslation } from 'react-i18next';
-import { isAdmin as checkIsAdmin } from '../lib/roleUtils';
 import {
   Home,
   CheckSquare,
@@ -35,7 +34,7 @@ export function Layout({ children, currentView, onViewChange }: LayoutProps) {
   const { t } = useTranslation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  const isAdmin = checkIsAdmin(profile);
+  const isAdmin = profile?.role === 'admin';
 
   const menuItems = [
     { id: 'dashboard', label: t('nav.dashboard'), icon: Home },

@@ -10,7 +10,6 @@ import { PhotoRequirementDice } from './PhotoRequirementDice';
 import { TaskWithItemsModal } from './TaskWithItemsModal';
 import { HelperSelectionModal } from './HelperSelectionModal';
 import { TaskCreateModal } from './TaskCreateModal';
-import { isAdmin as checkIsAdmin } from '../lib/roleUtils';
 
 const CATEGORIES = [
   { id: 'daily_morning', label: 'Daily Morning', color: 'bg-orange-500' },
