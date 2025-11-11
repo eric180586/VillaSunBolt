@@ -244,24 +244,33 @@ export function PatrolRounds({ onBack }: { onBack?: () => void } = {}) {
     photoRequested: boolean
   ) => {
     try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        alert('Not authenticated');
+        return;
+      }
+
       const { error: scanError } = await supabase.from('patrol_scans').insert({
         patrol_round_id: roundId,
         location_id: locationId,
-        user_id: profile?.id,
+        user_id: user.id,
         photo_url: photoUrl,
         photo_requested: photoRequested,
       });
 
-      if (scanError) throw scanError;
+      if (scanError) {
+        console.error('Scan insert error:', scanError);
+        throw scanError;
+      }
 
       // Award +1 point immediately for this scan
       const locationName = locations.find(l => l.id === locationId)?.name || 'Unknown';
       await supabase.from('points_history').insert({
-        user_id: profile?.id,
+        user_id: user.id,
         points_change: 1,
         reason: `Patrol scan completed: ${locationName}`,
         category: 'patrol',
-        created_by: profile?.id,
+        created_by: user.id,
       });
 
       // Update daily_point_goals
@@ -269,7 +278,7 @@ export function PatrolRounds({ onBack }: { onBack?: () => void } = {}) {
       const { data: existing } = await supabase
         .from('daily_point_goals')
         .select('*')
-        .eq('user_id', profile?.id)
+        .eq('user_id', user.id)
         .eq('date', today)
         .maybeSingle();
 
@@ -280,13 +289,13 @@ export function PatrolRounds({ onBack }: { onBack?: () => void } = {}) {
             points_earned: existing.points_earned + 1,
             updated_at: new Date().toISOString()
           })
-          .eq('user_id', profile?.id)
+          .eq('user_id', user.id)
           .eq('date', today);
       } else {
         await supabase
           .from('daily_point_goals')
           .insert({
-            user_id: profile?.id,
+            user_id: user.id,
             date: today,
             points_earned: 1
           });
