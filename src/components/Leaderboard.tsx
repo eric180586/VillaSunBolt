@@ -657,9 +657,19 @@ export function Leaderboard({ onBack }: { onBack?: () => void } = {}) {
                 >
                   <div className="flex-1">
                     <p className="font-medium text-gray-900">{entry.reason}</p>
-                    <p className="text-sm text-gray-600">
-                      {new Date(entry.created_at).toLocaleString()}
-                    </p>
+                    <div className="flex items-center space-x-2 mt-1">
+                      <p className="text-sm text-gray-600">
+                        {new Date(entry.created_at).toLocaleString()}
+                      </p>
+                      {entry.daily_achievable > 0 && (
+                        <>
+                          <span className="text-sm text-gray-400">•</span>
+                          <span className="text-sm text-blue-600 font-medium">
+                            Tag: {entry.daily_achieved}/{entry.daily_achievable}
+                          </span>
+                        </>
+                      )}
+                    </div>
                   </div>
                   <span
                     className={`text-xl font-bold ${

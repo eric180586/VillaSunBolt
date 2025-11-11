@@ -62,7 +62,7 @@ export function useProfiles() {
     if (error) throw error;
   };
 
-  const getPointsHistory = async (userId: string): Promise<PointsHistory[]> => {
+  const getPointsHistory = async (userId: string): Promise<any[]> => {
     const { data, error } = await supabase
       .from('points_history')
       .select('*')
@@ -70,7 +70,25 @@ export function useProfiles() {
       .order('created_at', { ascending: false });
 
     if (error) throw error;
-    return data || [];
+
+    const historyWithContext = await Promise.all((data || []).map(async (entry) => {
+      const entryDate = new Date(entry.created_at).toISOString().split('T')[0];
+
+      const { data: dailyGoal } = await supabase
+        .from('daily_point_goals')
+        .select('achieved_points, theoretically_achievable_points')
+        .eq('user_id', userId)
+        .eq('goal_date', entryDate)
+        .maybeSingle();
+
+      return {
+        ...entry,
+        daily_achieved: dailyGoal?.achieved_points || 0,
+        daily_achievable: dailyGoal?.theoretically_achievable_points || 0
+      };
+    }));
+
+    return historyWithContext;
   };
 
   return {

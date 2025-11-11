@@ -157,6 +157,14 @@ export function Profile({ onBack }: { onBack?: () => void } = {}) {
                         <span className="text-sm text-gray-600">
                           {new Date(entry.created_at).toLocaleDateString()}
                         </span>
+                        {entry.daily_achievable > 0 && (
+                          <>
+                            <span className="text-sm text-gray-400">•</span>
+                            <span className="text-sm text-blue-600 font-medium">
+                              Tag: {entry.daily_achieved}/{entry.daily_achievable}
+                            </span>
+                          </>
+                        )}
                       </div>
                     </div>
                     <span

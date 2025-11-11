@@ -88,16 +88,6 @@ export function useTasks() {
       status: 'completed',
       completed_at: new Date().toISOString(),
     });
-
-    if (task.points_value > 0 && task.assigned_to) {
-      await supabase.from('points_history').insert({
-        user_id: task.assigned_to,
-        points_change: task.points_value,
-        reason: `Task completed: ${task.title}`,
-        category: 'task_completed',
-        created_by: userId,
-      });
-    }
   };
 
   return {
