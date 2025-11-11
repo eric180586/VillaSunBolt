@@ -25,7 +25,7 @@ export function PatrolSchedules({ onNavigate, onBack }: PatrolSchedulesProps = {
   const [schedules, setSchedules] = useState<PatrolSchedule[]>([]);
   const [loading, setLoading] = useState(false);
 
-  const isAdmin = profile?.role === 'admin';
+  const isAdmin = profile?.role === 'admin' || profile?.role === 'super_admin';
   const staffMembers = profiles.filter((p) => p.role === 'staff');
 
   useEffect(() => {

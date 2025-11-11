@@ -21,7 +21,7 @@ export function Dashboard({ onNavigate, onBack }: DashboardProps = {}) {
   const { profile } = useAuth();
   const { t } = useTranslation();
 
-  if (profile?.role === 'admin') {
+  if (profile?.role === 'admin' || profile?.role === 'super_admin' || profile?.role === 'super_admin') {
     return <AdminDashboard onNavigate={onNavigate} onBack={onBack} />;
   }
   const { tasks, refetch } = useTasks();

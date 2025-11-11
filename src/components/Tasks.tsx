@@ -61,7 +61,7 @@ export function Tasks({ onNavigate, filterStatus, onBack }: TasksProps = {}) {
   const [pendingTaskCompletion, setPendingTaskCompletion] = useState<any>(null);
   const [editingTask, setEditingTask] = useState<any>(null);
 
-  const isAdmin = profile?.role === 'admin';
+  const isAdmin = profile?.role === 'admin' || profile?.role === 'super_admin';
   const isRepairCategory = selectedCategory === 'repair';
 
   const [formData, setFormData] = useState({

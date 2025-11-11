@@ -51,7 +51,7 @@ export function Checklists({ onBack }: { onBack?: () => void } = {}) {
   const [showModal, setShowModal] = useState(false);
   const [editingChecklist, setEditingChecklist] = useState<any>(null);
 
-  const isAdmin = profile?.role === 'admin';
+  const isAdmin = profile?.role === 'admin' || profile?.role === 'super_admin';
 
   if (!isAdmin) {
     return (

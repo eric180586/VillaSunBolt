@@ -35,7 +35,7 @@ export function CheckInOverview({ onBack, onNavigate }: CheckInOverviewProps = {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (profile?.role === 'admin' && profiles.length > 0) {
+    if ((profile?.role === 'admin' || profile?.role === 'super_admin') && profiles.length > 0) {
       fetchCheckInStatuses();
 
       const checkInsChannel = supabase

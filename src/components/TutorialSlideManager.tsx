@@ -25,7 +25,7 @@ export default function TutorialSlideManager({ onClose }: { onClose: () => void 
     image: null as File | null,
   });
 
-  const isAdmin = profile?.role === 'admin';
+  const isAdmin = profile?.role === 'admin' || profile?.role === 'super_admin';
 
   useEffect(() => {
     if (isAdmin) {

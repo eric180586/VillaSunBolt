@@ -32,7 +32,7 @@ export function ShoppingList({ onBack }: { onBack?: () => void } = {}) {
   const [photo, setPhoto] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
 
-  const isAdmin = profile?.role === 'admin';
+  const isAdmin = profile?.role === 'admin' || profile?.role === 'super_admin';
 
   useEffect(() => {
     loadItems();

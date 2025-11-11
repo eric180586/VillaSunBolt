@@ -128,7 +128,7 @@ export function Notes({ onBack }: { onBack?: () => void } = {}) {
                 <h3 className="text-lg font-semibold text-gray-900">{note.title}</h3>
               </div>
               <div className="flex items-center space-x-1">
-                {(note.created_by === profile?.id || profile?.role === 'admin') && (
+                {(note.created_by === profile?.id || profile?.role === 'admin' || profile?.role === 'super_admin') && (
                   <>
                     <button
                       onClick={() => handleEdit(note.id)}

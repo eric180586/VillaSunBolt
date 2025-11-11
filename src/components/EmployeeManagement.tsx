@@ -24,7 +24,7 @@ export function EmployeeManagement({ onBack }: { onBack?: () => void } = {}) {
     role: 'staff' as 'admin' | 'staff',
   });
 
-  const isAdmin = profile?.role === 'admin';
+  const isAdmin = profile?.role === 'admin' || profile?.role === 'super_admin';
 
   useEffect(() => {
     if (isAdmin) {
