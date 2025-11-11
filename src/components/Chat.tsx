@@ -75,7 +75,7 @@ export function Chat({ onBack }: { onBack?: () => void } = {}) {
 
   const subscribeToMessages = () => {
     const channel = supabase
-      .channel('chat_messages_changes')
+      .channel(`chat_messages_changes_${Date.now()}`)
       .on(
         'postgres_changes',
         {

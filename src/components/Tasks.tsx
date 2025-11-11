@@ -753,6 +753,40 @@ export function Tasks({ onNavigate, filterStatus, onBack }: TasksProps = {}) {
                     </div>
                   )}
 
+                  {/* Display task items (sub-tasks) if present */}
+                  {task.items && Array.isArray(task.items) && task.items.length > 0 && (
+                    <div className="bg-gray-50 border-2 border-gray-300 rounded-lg p-4 mb-3">
+                      <p className="text-sm font-bold text-gray-900 mb-3 flex items-center">
+                        <CheckCircle className="w-5 h-5 mr-2 text-blue-600" />
+                        Sub-Tasks: {task.items.filter((item: any) => item.is_completed || item.completed).length}/{task.items.length} erledigt
+                      </p>
+                      <ul className="space-y-2">
+                        {task.items.map((item: any, index: number) => {
+                          const isCompleted = item.is_completed || item.completed;
+                          return (
+                            <li key={index} className="flex items-start space-x-3">
+                              <div className={`w-6 h-6 rounded-md flex items-center justify-center flex-shrink-0 mt-0.5 ${
+                                isCompleted ? 'bg-green-500' : 'bg-gray-300'
+                              }`}>
+                                {isCompleted && <CheckCircle className="w-4 h-4 text-white" />}
+                              </div>
+                              <div className="flex-1">
+                                <span className={`text-sm font-medium ${isCompleted ? 'text-gray-500 line-through' : 'text-gray-900'}`}>
+                                  {item.text}
+                                </span>
+                                {isCompleted && item.completed_by && (
+                                  <p className="text-xs text-green-600 mt-1">
+                                    ✓ {item.completed_by}
+                                  </p>
+                                )}
+                              </div>
+                            </li>
+                          );
+                        })}
+                      </ul>
+                    </div>
+                  )}
+
                   {task.admin_notes && (
                     <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 mb-3">
                       <p className="text-sm font-medium text-yellow-900 mb-1">Admin Notes:</p>

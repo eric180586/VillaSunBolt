@@ -14,6 +14,43 @@ export function DepartureRequestAdmin({ onBack }: { onBack?: () => void } = {}) 
 
   const handleApprove = async (requestId: string, userId: string) => {
     try {
+      // First verify user has checked in today
+      const request = requests.find(r => r.id === requestId);
+      if (!request) {
+        alert('Request not found');
+        return;
+      }
+
+      const { data: checkIn, error: checkInError } = await supabase
+        .from('check_ins')
+        .select('id, check_out_time')
+        .eq('user_id', userId)
+        .eq('check_in_date', request.shift_date)
+        .in('status', ['approved', 'pending'])
+        .maybeSingle();
+
+      if (checkInError) throw checkInError;
+
+      if (!checkIn) {
+        alert('FEHLER: Mitarbeiter hat heute nicht eingecheckt! Feierabend kann nicht genehmigt werden.');
+        return;
+      }
+
+      if (checkIn.check_out_time) {
+        alert('FEHLER: Mitarbeiter ist bereits ausgecheckt!');
+        return;
+      }
+
+      // Now update check-out time
+      const { error: checkOutError } = await supabase
+        .from('check_ins')
+        .update({
+          check_out_time: new Date().toISOString(),
+        })
+        .eq('id', checkIn.id);
+
+      if (checkOutError) throw checkOutError;
+
       const { error: updateError } = await supabase
         .from('departure_requests')
         .update({
