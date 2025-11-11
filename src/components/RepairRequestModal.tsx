@@ -71,6 +71,7 @@ export function RepairRequestModal({ onClose, onComplete }: RepairRequestModalPr
         due_date: new Date(getTodayDateString() + 'T23:59:00').toISOString(),
         duration_minutes: 30,
         points_value: 10,
+        created_by: profile?.id,  // Required for RLS policy
         assigned_to: profile?.id,
         status: 'pending',
         description_photo: photoUrls,

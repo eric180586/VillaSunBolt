@@ -16,6 +16,12 @@ export function TodayTasksOverview({ onBack }: TodayTasksOverviewProps) {
   today.setHours(0, 0, 0, 0);
 
   const todayTasks = tasks.filter((task) => {
+    // Include daily recurring tasks (they don't have due_date)
+    if (task.recurrence === 'daily') {
+      return true;
+    }
+
+    // Include tasks with today's due_date
     if (!task.due_date) return false;
     const taskDate = new Date(task.due_date);
     taskDate.setHours(0, 0, 0, 0);

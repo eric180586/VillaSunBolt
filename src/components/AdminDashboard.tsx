@@ -91,6 +91,9 @@ export function AdminDashboard({ onNavigate, onBack }: AdminDashboardProps = {})
   const today = new Date();
 
   const todayTasks = tasks.filter((t) => {
+    // Include daily recurring tasks
+    if (t.recurrence === 'daily') return true;
+
     if (!t.due_date) return false;
     return isSameDay(t.due_date, today);
   });
