@@ -379,10 +379,6 @@ export function Tasks({ onNavigate, filterStatus, onBack }: TasksProps = {}) {
         adminPhotoUrls = uploadedUrls;
       }
 
-      await updateTask(task.id, {
-        admin_photos: adminPhotoUrls,
-      });
-
       const { data, error } = await supabase.rpc('reopen_task_with_penalty', {
         p_task_id: task.id,
         p_admin_id: profile?.id,
@@ -390,6 +386,12 @@ export function Tasks({ onNavigate, filterStatus, onBack }: TasksProps = {}) {
       });
 
       if (error) throw error;
+
+      if (adminPhotoUrls && adminPhotoUrls.length > 0) {
+        await updateTask(task.id, {
+          admin_photos: adminPhotoUrls,
+        });
+      }
 
       setShowReviewModal(false);
       setShowReopenItemsModal(false);
