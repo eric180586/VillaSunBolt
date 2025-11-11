@@ -65,7 +65,7 @@ export function Schedules({ onNavigate, onBack }: SchedulesProps = {}) {
   const [rejectionReason, setRejectionReason] = useState('');
   const [activeTab, setActiveTab] = useState<'shifts' | 'patrol'>('shifts');
 
-  const isAdmin = profile?.role === 'admin' || profile?.role === 'super_admin';
+  const isAdmin = profile?.role === 'admin';
   const staffMembers = profiles.filter((p) => p.role === 'staff');
 
   useEffect(() => {

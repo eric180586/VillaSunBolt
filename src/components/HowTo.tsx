@@ -43,7 +43,7 @@ export function HowTo({ onBack }: { onBack?: () => void } = {}) {
   const [showSlideManager, setShowSlideManager] = useState(false);
   const [showFortuneWheel, setShowFortuneWheel] = useState(false);
 
-  const isAdmin = profile?.role === 'admin' || profile?.role === 'super_admin';
+  const isAdmin = profile?.role === 'admin';
 
   const [formData, setFormData] = useState({
     title: '',

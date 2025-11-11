@@ -34,7 +34,7 @@ export function Layout({ children, currentView, onViewChange }: LayoutProps) {
   const { t } = useTranslation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  const isAdmin = profile?.role === 'admin' || profile?.role === 'super_admin' || profile?.role === 'super_admin';
+  const isAdmin = profile?.role === 'admin';
 
   const menuItems = [
     { id: 'dashboard', label: t('nav.dashboard'), icon: Home },

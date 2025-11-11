@@ -41,7 +41,7 @@ export function Leaderboard({ onBack }: { onBack?: () => void } = {}) {
   const [monthlyStats, setMonthlyStats] = useState<Record<string, MonthlyStats>>({});
   const [loading, setLoading] = useState(true);
 
-  const isManager = profile?.role === 'admin' || profile?.role === 'super_admin' || profile?.role === 'manager';
+  const isManager = profile?.role === 'admin' || profile?.role === 'manager';
 
   useEffect(() => {
     fetchGoalsData();

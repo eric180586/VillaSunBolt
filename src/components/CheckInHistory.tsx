@@ -42,7 +42,7 @@ export function CheckInHistory({ onBack }: { onBack?: () => void } = {}) {
   }, []);
 
   useEffect(() => {
-    if (startDate && endDate && (profile?.role === 'admin' || profile?.role === 'super_admin')) {
+    if (startDate && endDate && (profile?.role === 'admin')) {
       fetchCheckIns();
     }
   }, [startDate, endDate, statusFilter, currentPage, profile]);

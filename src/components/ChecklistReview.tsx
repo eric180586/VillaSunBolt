@@ -53,7 +53,7 @@ export function ChecklistReview({ onBack }: { onBack?: () => void } = {}) {
   // ALL CODE BELOW IS DISABLED - DO NOT EXECUTE
   /*
   useEffect(() => {
-    if (profile?.role === 'admin' || profile?.role === 'super_admin') {
+    if (profile?.role === 'admin') {
       fetchPendingChecklists();
 
       const channel = supabase

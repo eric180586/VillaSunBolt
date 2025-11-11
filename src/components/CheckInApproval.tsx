@@ -45,7 +45,7 @@ export function CheckInApproval({ onNavigate }: CheckInApprovalProps = {}) {
   const [customPoints, setCustomPoints] = useState<{ [key: string]: number }>({});
 
   useEffect(() => {
-    if (profile?.role === 'admin' || profile?.role === 'super_admin') {
+    if (profile?.role === 'admin') {
       fetchPendingCheckIns();
       fetchPendingDepartures();
 
