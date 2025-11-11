@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../lib/supabase';
-import { CheckCircle, XCircle, Clock, User, AlertCircle, ArrowLeft, Home, UserPlus } from 'lucide-react';
-import { toLocaleTimeStringCambodia, toLocaleStringCambodia, combineDateAndTime, getTodayDateString } from '../lib/dateUtils';
+import { CheckCircle, XCircle, Clock, User, AlertCircle, ArrowLeft, Home } from 'lucide-react';
+import { toLocaleTimeStringCambodia, toLocaleStringCambodia } from '../lib/dateUtils';
 
 interface CheckInWithProfile {
   id: string;
@@ -40,24 +40,14 @@ export function CheckInApproval({ onNavigate }: CheckInApprovalProps = {}) {
   const [loading, setLoading] = useState(false);
   const [rejectReason, setRejectReason] = useState<{ [key: string]: string }>({});
   const [showRejectModal, setShowRejectModal] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<'checkin' | 'departure' | 'manual'>('checkin');
+  const [activeTab, setActiveTab] = useState<'checkin' | 'departure'>('checkin');
   const [showApproveModal, setShowApproveModal] = useState<string | null>(null);
   const [customPoints, setCustomPoints] = useState<{ [key: string]: number }>({});
-  const [showManualCheckIn, setShowManualCheckIn] = useState(false);
-  const [allStaff, setAllStaff] = useState<any[]>([]);
-  const [manualCheckInForm, setManualCheckInForm] = useState({
-    userId: '',
-    date: getTodayDateString(),
-    time: '09:00',
-    shiftType: 'morning' as 'morning' | 'evening',
-    lateReason: '',
-  });
 
   useEffect(() => {
     if (profile?.role === 'admin') {
       fetchPendingCheckIns();
       fetchPendingDepartures();
-      fetchAllStaff();
 
       const checkInChannel = supabase
         .channel(`check_ins_admin_${Date.now()}`)
@@ -130,59 +120,6 @@ export function CheckInApproval({ onNavigate }: CheckInApprovalProps = {}) {
     }
 
     setPendingDepartures(data || []);
-  };
-
-  const fetchAllStaff = async () => {
-    const { data, error } = await supabase
-      .from('profiles')
-      .select('id, full_name, role')
-      .eq('role', 'staff')
-      .order('full_name');
-
-    if (error) {
-      console.error('Error fetching staff:', error);
-      return;
-    }
-
-    setAllStaff(data || []);
-  };
-
-  const handleManualCheckIn = async () => {
-    if (!profile?.id || !manualCheckInForm.userId) {
-      alert('Bitte wähle einen Mitarbeiter aus');
-      return;
-    }
-
-    setLoading(true);
-
-    try {
-      const checkInTimestamp = combineDateAndTime(manualCheckInForm.date, manualCheckInForm.time);
-
-      const { error } = await supabase.rpc('process_check_in', {
-        p_user_id: manualCheckInForm.userId,
-        p_check_in_time: checkInTimestamp,
-        p_shift_type: manualCheckInForm.shiftType,
-        p_late_reason: manualCheckInForm.lateReason || null,
-      });
-
-      if (error) throw error;
-
-      alert('Check-In erfolgreich erstellt!');
-      setShowManualCheckIn(false);
-      setManualCheckInForm({
-        userId: '',
-        date: getTodayDateString(),
-        time: '09:00',
-        shiftType: 'morning',
-        lateReason: '',
-      });
-      fetchPendingCheckIns();
-    } catch (error: any) {
-      console.error('Error creating manual check-in:', error);
-      alert('Fehler: ' + (error.message || 'Unbekannter Fehler'));
-    } finally {
-      setLoading(false);
-    }
   };
 
   const handleApproveDeparture = async (requestId: string) => {
@@ -358,19 +295,6 @@ export function CheckInApproval({ onNavigate }: CheckInApprovalProps = {}) {
           }`}
         >
           Feierabend ({pendingDepartures.length})
-        </button>
-        <button
-          onClick={() => setActiveTab('manual')}
-          className={`px-6 py-3 font-medium transition-colors ${
-            activeTab === 'manual'
-              ? 'border-b-2 border-orange-500 text-orange-600'
-              : 'text-gray-600 hover:text-gray-900'
-          }`}
-        >
-          <div className="flex items-center space-x-2">
-            <UserPlus className="w-5 h-5" />
-            <span>Manuell Einchecken</span>
-          </div>
         </button>
       </div>
 
@@ -697,109 +621,6 @@ export function CheckInApproval({ onNavigate }: CheckInApprovalProps = {}) {
           ))}
         </div>
       ))}
-
-      {activeTab === 'manual' && (
-        <div className="bg-white rounded-xl p-8 shadow-lg border border-gray-200">
-          <div className="flex items-center space-x-3 mb-6">
-            <UserPlus className="w-8 h-8 text-orange-600" />
-            <h3 className="text-2xl font-bold text-gray-900">Manuelles Check-In</h3>
-          </div>
-
-          <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Mitarbeiter
-              </label>
-              <select
-                value={manualCheckInForm.userId}
-                onChange={(e) => setManualCheckInForm({ ...manualCheckInForm, userId: e.target.value })}
-                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-              >
-                <option value="">Mitarbeiter auswählen...</option>
-                {allStaff.map((staff) => (
-                  <option key={staff.id} value={staff.id}>
-                    {staff.full_name}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Datum
-                </label>
-                <input
-                  type="date"
-                  value={manualCheckInForm.date}
-                  onChange={(e) => setManualCheckInForm({ ...manualCheckInForm, date: e.target.value })}
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Uhrzeit
-                </label>
-                <input
-                  type="time"
-                  value={manualCheckInForm.time}
-                  onChange={(e) => setManualCheckInForm({ ...manualCheckInForm, time: e.target.value })}
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                />
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Schicht
-              </label>
-              <select
-                value={manualCheckInForm.shiftType}
-                onChange={(e) => setManualCheckInForm({ ...manualCheckInForm, shiftType: e.target.value as 'morning' | 'evening' })}
-                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-              >
-                <option value="morning">Morningschicht</option>
-                <option value="evening">Eveningschicht</option>
-              </select>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Grund für Verspätung (optional)
-              </label>
-              <textarea
-                value={manualCheckInForm.lateReason}
-                onChange={(e) => setManualCheckInForm({ ...manualCheckInForm, lateReason: e.target.value })}
-                placeholder="Falls zu spät, hier Grund angeben..."
-                rows={3}
-                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-              />
-            </div>
-
-            <div className="flex space-x-3 pt-4">
-              <button
-                onClick={handleManualCheckIn}
-                disabled={loading || !manualCheckInForm.userId}
-                className="flex-1 px-6 py-3 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-semibold flex items-center justify-center space-x-2"
-              >
-                <CheckCircle className="w-5 h-5" />
-                <span>Check-In Erstellen</span>
-              </button>
-            </div>
-          </div>
-
-          <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-            <div className="flex items-start space-x-2">
-              <AlertCircle className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
-              <div className="text-sm text-blue-800">
-                <p className="font-semibold mb-1">Hinweis:</p>
-                <p>Das manuelle Check-In wird automatisch als "pending" erstellt und muss anschließend noch genehmigt werden.</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
