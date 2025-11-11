@@ -1,0 +1,153 @@
+/*
+  # Fix approve_check_in function to actually award points
+
+  1. Problem
+    - Current approve_check_in() only updates status
+    - NO points are added to points_history
+    - NO points calculation happens
+    - total_points stays at 0
+
+  2. Solution
+    - Rewrite approve_check_in() with full logic
+    - Calculate points based on late time
+    - Insert into points_history
+    - Update daily_point_goals
+    - Send notifications
+
+  3. Logic
+    - On-time (before deadline): +5 points
+    - Late: -1 point per 5 minutes late
+    - Admin can override with custom points
+*/
+
+CREATE OR REPLACE FUNCTION public.approve_check_in(
+  p_check_in_id uuid,
+  p_admin_id uuid,
+  p_custom_points integer DEFAULT NULL
+)
+RETURNS jsonb
+LANGUAGE plpgsql
+SECURITY DEFINER
+AS $$
+DECLARE
+  v_check_in record;
+  v_deadline_time time;
+  v_actual_time time;
+  v_minutes_late integer := 0;
+  v_points_awarded integer := 0;
+  v_points_penalty integer := 0;
+  v_reason text;
+  v_check_in_date date;
+BEGIN
+  -- Get check-in data
+  SELECT * INTO v_check_in
+  FROM check_ins
+  WHERE id = p_check_in_id;
+
+  IF v_check_in IS NULL THEN
+    RETURN jsonb_build_object('success', false, 'message', 'Check-in not found');
+  END IF;
+
+  -- Get the date
+  v_check_in_date := v_check_in.check_in_date;
+  IF v_check_in_date IS NULL THEN
+    v_check_in_date := DATE(v_check_in.check_in_time AT TIME ZONE 'Asia/Phnom_Penh');
+  END IF;
+
+  -- Determine deadline based on shift type
+  IF v_check_in.shift_type = 'morning' THEN
+    v_deadline_time := '09:00:59'::time;
+  ELSIF v_check_in.shift_type = 'late' THEN
+    v_deadline_time := '15:00:59'::time;
+  ELSE
+    v_deadline_time := '09:00:59'::time;  -- default to morning
+  END IF;
+
+  -- Get actual check-in time
+  v_actual_time := (v_check_in.check_in_time AT TIME ZONE 'Asia/Phnom_Penh')::time;
+
+  -- Use custom points if provided by admin
+  IF p_custom_points IS NOT NULL THEN
+    v_points_awarded := p_custom_points;
+    v_reason := 'Check-in approved with custom points: ' || p_custom_points || ' points';
+  ELSE
+    -- Calculate if late and by how many minutes
+    IF v_actual_time > v_deadline_time THEN
+      -- Calculate minutes late
+      v_minutes_late := EXTRACT(EPOCH FROM (v_actual_time - v_deadline_time)) / 60;
+      
+      -- Calculate penalty: -1 per full 5 minutes
+      v_points_penalty := -(v_minutes_late / 5)::integer;
+      v_points_awarded := v_points_penalty;
+      v_reason := 'Late check-in (' || v_minutes_late || ' min late): ' || v_points_penalty || ' points';
+    ELSE
+      -- On time: +5 points
+      v_points_awarded := 5;
+      v_reason := 'Punctual check-in: +5 points';
+    END IF;
+  END IF;
+
+  -- Update check-in record
+  UPDATE check_ins
+  SET 
+    status = 'approved',
+    approved_by = p_admin_id,
+    approved_at = now(),
+    points_awarded = v_points_awarded,
+    minutes_late = v_minutes_late,
+    is_late = (v_minutes_late > 0)
+  WHERE id = p_check_in_id;
+
+  -- Award/deduct points
+  INSERT INTO points_history (
+    user_id,
+    points_change,
+    reason,
+    category,
+    created_by
+  ) VALUES (
+    v_check_in.user_id,
+    v_points_awarded,
+    v_reason,
+    'check_in',
+    p_admin_id
+  );
+
+  -- Update daily point goals
+  PERFORM update_daily_point_goals_for_user(v_check_in.user_id, v_check_in_date);
+
+  -- Send notification
+  IF v_minutes_late > 0 AND p_custom_points IS NULL THEN
+    INSERT INTO notifications (
+      user_id,
+      type,
+      message,
+      priority
+    ) VALUES (
+      v_check_in.user_id,
+      'checkin_approved',
+      'Check-in approved. You were ' || v_minutes_late || ' minutes late. Penalty: ' || v_points_penalty || ' points.',
+      'medium'
+    );
+  ELSE
+    INSERT INTO notifications (
+      user_id,
+      type,
+      message,
+      priority
+    ) VALUES (
+      v_check_in.user_id,
+      'checkin_approved',
+      'Check-in approved! ' || v_points_awarded || ' points awarded.',
+      'low'
+    );
+  END IF;
+
+  RETURN jsonb_build_object(
+    'success', true,
+    'message', 'Check-in approved successfully',
+    'points_awarded', v_points_awarded,
+    'minutes_late', v_minutes_late
+  );
+END;
+$$;
