@@ -15,7 +15,11 @@ export function Profile({ onBack }: { onBack?: () => void } = {}) {
     if (!profile) return;
     try {
       const data = await getPointsHistory(profile.id);
-      setHistory(data);
+      // Sort by date to group entries per day
+      const sorted = data.sort((a, b) =>
+        new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+      );
+      setHistory(sorted);
       setShowHistory(true);
     } catch (error) {
       console.error('Error loading history:', error);
@@ -141,42 +145,67 @@ export function Profile({ onBack }: { onBack?: () => void } = {}) {
             {history.length === 0 ? (
               <p className="text-center text-gray-600 py-8">{t('profile.noHistory')}</p>
             ) : (
-              <div className="space-y-3">
-                {history.map((entry) => (
-                  <div
-                    key={entry.id}
-                    className="flex items-center justify-between p-4 bg-gray-50 rounded-lg"
-                  >
-                    <div className="flex-1">
-                      <p className="font-medium text-gray-900">{entry.reason}</p>
-                      <div className="flex items-center space-x-2 mt-1">
-                        <span className="text-sm text-gray-600 capitalize">
-                          {entry.category.replace('_', ' ')}
-                        </span>
-                        <span className="text-sm text-gray-400">•</span>
-                        <span className="text-sm text-gray-600">
-                          {new Date(entry.created_at).toLocaleDateString()}
-                        </span>
-                        {entry.daily_achievable > 0 && (
-                          <>
-                            <span className="text-sm text-gray-400">•</span>
-                            <span className="text-sm text-blue-600 font-medium">
-                              Tag: {entry.daily_achieved}/{entry.daily_achievable}
+              <div className="space-y-4">
+                {/* Group by date */}
+                {Object.entries(
+                  history.reduce((acc, entry) => {
+                    const dateKey = new Date(entry.created_at).toLocaleDateString();
+                    if (!acc[dateKey]) acc[dateKey] = [];
+                    acc[dateKey].push(entry);
+                    return acc;
+                  }, {} as Record<string, typeof history>)
+                ).map(([date, entries]) => {
+                  const dayTotal = entries.reduce((sum, e) => sum + e.points_change, 0);
+                  const dayAchievable = entries[0]?.daily_achievable || 0;
+                  const dayAchieved = entries[0]?.daily_achieved || 0;
+
+                  return (
+                    <div key={date} className="border-2 border-gray-200 rounded-lg overflow-hidden">
+                      {/* Day Header */}
+                      <div className="bg-gradient-to-r from-blue-50 to-purple-50 p-3 border-b-2 border-gray-200">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <p className="font-bold text-gray-900">{date}</p>
+                            {dayAchievable > 0 && (
+                              <p className="text-sm text-gray-600">
+                                Daily: {dayAchieved}/{dayAchievable} pts ({((dayAchieved/dayAchievable)*100).toFixed(0)}%)
+                              </p>
+                            )}
+                          </div>
+                          <span className={`text-lg font-bold ${
+                            dayTotal > 0 ? 'text-green-600' : dayTotal < 0 ? 'text-red-600' : 'text-gray-600'
+                          }`}>
+                            {dayTotal > 0 ? '+' : ''}{dayTotal}
+                          </span>
+                        </div>
+                      </div>
+                      {/* Day Entries */}
+                      <div className="divide-y divide-gray-200">
+                        {entries.map((entry) => (
+                          <div
+                            key={entry.id}
+                            className="flex items-center justify-between p-3 bg-white hover:bg-gray-50"
+                          >
+                            <div className="flex-1">
+                              <p className="font-medium text-gray-900 text-sm">{entry.reason}</p>
+                              <span className="text-xs text-gray-500 capitalize">
+                                {entry.category.replace('_', ' ')}
+                              </span>
+                            </div>
+                            <span
+                              className={`text-lg font-bold ml-3 ${
+                                entry.points_change > 0 ? 'text-green-600' : 'text-red-600'
+                              }`}
+                            >
+                              {entry.points_change > 0 ? '+' : ''}
+                              {entry.points_change}
                             </span>
-                          </>
-                        )}
+                          </div>
+                        ))}
                       </div>
                     </div>
-                    <span
-                      className={`text-2xl font-bold ${
-                        entry.points_change > 0 ? 'text-green-600' : 'text-red-600'
-                      }`}
-                    >
-                      {entry.points_change > 0 ? '+' : ''}
-                      {entry.points_change}
-                    </span>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             )}
           </div>

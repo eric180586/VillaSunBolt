@@ -20,8 +20,8 @@ export function PointsManager({ onBack }: { onBack?: () => void } = {}) {
   const [selectedTemplateId, setSelectedTemplateId] = useState('');
   const [customPoints, setCustomPoints] = useState(0);
   const [customReason, setCustomReason] = useState('');
-  const [photoFile, setPhotoFile] = useState<File | null>(null);
-  const [photoPreview, setPhotoPreview] = useState<string | null>(null);
+  const [photoFiles, setPhotoFiles] = useState<File[]>([]);
+  const [photoPreviews, setPhotoPreviews] = useState<string[]>([]);
   const [uploading, setUploading] = useState(false);
   const [showNewTemplate, setShowNewTemplate] = useState(false);
   const [newTemplate, setNewTemplate] = useState({
@@ -89,38 +89,47 @@ export function PointsManager({ onBack }: { onBack?: () => void } = {}) {
   };
 
   const handlePhotoSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setPhotoFile(file);
+    const files = Array.from(e.target.files || []);
+    if (files.length === 0) return;
+
+    setPhotoFiles((prev) => [...prev, ...files]);
+
+    files.forEach((file) => {
       const reader = new FileReader();
       reader.onloadend = () => {
-        setPhotoPreview(reader.result as string);
+        setPhotoPreviews((prev) => [...prev, reader.result as string]);
       };
       reader.readAsDataURL(file);
-    }
+    });
   };
 
-  const uploadPhoto = async (): Promise<string | null> => {
-    if (!photoFile) return null;
+  const uploadPhotos = async (): Promise<string[]> => {
+    if (photoFiles.length === 0) return [];
 
-    const fileExt = photoFile.name.split('.').pop();
-    const fileName = `${Math.random()}.${fileExt}`;
-    const filePath = `point-photos/${fileName}`;
+    const uploadedUrls: string[] = [];
 
-    const { error: uploadError } = await supabase.storage
-      .from('point-evidence')
-      .upload(filePath, photoFile);
+    for (const file of photoFiles) {
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${Math.random()}.${fileExt}`;
+      const filePath = `point-photos/${fileName}`;
 
-    if (uploadError) {
-      console.error('Error uploading photo:', uploadError);
-      return null;
+      const { error: uploadError } = await supabase.storage
+        .from('point-evidence')
+        .upload(filePath, file);
+
+      if (uploadError) {
+        console.error('Error uploading photo:', uploadError);
+        continue;
+      }
+
+      const { data } = supabase.storage
+        .from('point-evidence')
+        .getPublicUrl(filePath);
+
+      uploadedUrls.push(data.publicUrl);
     }
 
-    const { data } = supabase.storage
-      .from('point-evidence')
-      .getPublicUrl(filePath);
-
-    return data.publicUrl;
+    return uploadedUrls;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -134,21 +143,19 @@ export function PointsManager({ onBack }: { onBack?: () => void } = {}) {
     setUploading(true);
 
     try {
-      let photoUrl: string | null = null;
-      if (photoFile) {
-        photoUrl = await uploadPhoto();
-      }
+      const photoUrls = await uploadPhotos();
+      const photoUrlString = photoUrls.length > 0 ? photoUrls[0] : null;
 
       for (const staffId of selectedStaffIds) {
-        await addPoints(staffId, customPoints, customReason, profile?.id || '', photoUrl);
+        await addPoints(staffId, customPoints, customReason, profile?.id || '', photoUrlString);
       }
 
       setSelectedStaffIds([]);
       setSelectedTemplateId('');
       setCustomPoints(0);
       setCustomReason('');
-      setPhotoFile(null);
-      setPhotoPreview(null);
+      setPhotoFiles([]);
+      setPhotoPreviews([]);
       alert('Points awarded successfully!');
     } catch (error) {
       console.error('Error awarding points:', error);
@@ -342,34 +349,39 @@ export function PointsManager({ onBack }: { onBack?: () => void } = {}) {
           <label className="block text-sm font-medium text-gray-700 mb-2">
             Photo Evidence (Optional)
           </label>
-          <div className="flex items-center space-x-4">
-            <label className="flex items-center space-x-2 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 cursor-pointer">
+          <div className="space-y-3">
+            <label className="flex items-center space-x-2 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 cursor-pointer w-fit">
               <Upload className="w-5 h-5" />
-              <span>Upload Photo</span>
+              <span>Upload Photos (Multiple)</span>
               <input
                 type="file"
                 accept="image/*"
+                multiple
                 onChange={handlePhotoSelect}
                 className="hidden"
               />
             </label>
-            {photoPreview && (
-              <div className="relative">
-                <img
-                  src={photoPreview}
-                  alt="Preview"
-                  className="w-20 h-20 object-cover rounded-lg"
-                />
-                <button
-                  type="button"
-                  onClick={() => {
-                    setPhotoFile(null);
-                    setPhotoPreview(null);
-                  }}
-                  className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
-                >
-                  <X className="w-4 h-4" />
-                </button>
+            {photoPreviews.length > 0 && (
+              <div className="flex flex-wrap gap-3">
+                {photoPreviews.map((preview, index) => (
+                  <div key={index} className="relative">
+                    <img
+                      src={preview}
+                      alt={`Preview ${index + 1}`}
+                      className="w-20 h-20 object-cover rounded-lg"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setPhotoFiles((prev) => prev.filter((_, i) => i !== index));
+                        setPhotoPreviews((prev) => prev.filter((_, i) => i !== index));
+                      }}
+                      className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+                ))}
               </div>
             )}
           </div>
