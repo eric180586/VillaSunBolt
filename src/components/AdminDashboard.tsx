@@ -4,7 +4,7 @@ import { useTasks } from '../hooks/useTasks';
 import { useDepartureRequests } from '../hooks/useDepartureRequests';
 import { useProfiles } from '../hooks/useProfiles';
 import { supabase } from '../lib/supabase';
-import { Plus, TrendingUp, FileText, StickyNote, CheckCircle, Home, AlertCircle, QrCode, Users, UserCheck, ClipboardCheck, Shield, ArrowLeft, History } from 'lucide-react';
+import { Plus, TrendingUp, FileText, StickyNote, CheckCircle, Home, AlertCircle, QrCode, Users, UserCheck, ClipboardCheck, Shield, ArrowLeft, History, ScrollText } from 'lucide-react';
 import { isSameDay, getTodayDateString } from '../lib/dateUtils';
 import { CheckInOverview } from './CheckInOverview';
 import { checkAndRunDailyReset } from '../lib/dailyReset';
@@ -297,6 +297,12 @@ export function AdminDashboard({ onNavigate, onBack }: AdminDashboardProps = {})
               }
             }
           }}
+          color=""
+        />
+        <ActionButton
+          icon={ScrollText}
+          label="Admin Logs"
+          onClick={() => onNavigate?.('admin-logs')}
           color=""
         />
       </div>
