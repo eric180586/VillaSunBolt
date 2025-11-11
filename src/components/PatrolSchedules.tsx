@@ -3,6 +3,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { useProfiles } from '../hooks/useProfiles';
 import { Shield, ChevronLeft, ChevronRight, ArrowLeft } from 'lucide-react';
 import { supabase } from '../lib/supabase';
+import { isAdmin as checkIsAdmin } from '../lib/roleUtils';
 
 const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 

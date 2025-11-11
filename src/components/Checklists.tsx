@@ -4,6 +4,7 @@ import { useChecklists } from '../hooks/useChecklists';
 import { Plus, X, Edit2, Trash2, ClipboardList, ArrowLeft } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { combineDateAndTime, formatDateForInputFromUTC, formatTimeForInputFromUTC } from '../lib/dateUtils';
+import { isAdmin as checkIsAdmin } from '../lib/roleUtils';
 
 const CATEGORIES = [
   { id: 'daily_morning', label: 'Daily Morning', color: 'bg-orange-500' },

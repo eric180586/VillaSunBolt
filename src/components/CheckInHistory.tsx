@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../lib/supabase';
 import { ArrowLeft, Calendar, Download, Filter } from 'lucide-react';
+import { isAdmin as checkIsAdmin } from '../lib/roleUtils';
 
 interface CheckInRecord {
   id: string;
@@ -42,7 +43,7 @@ export function CheckInHistory({ onBack }: { onBack?: () => void } = {}) {
   }, []);
 
   useEffect(() => {
-    if (startDate && endDate && profile?.role === 'admin') {
+    if (startDate && endDate && checkIsAdmin(profile)) {
       fetchCheckIns();
     }
   }, [startDate, endDate, statusFilter, currentPage, profile]);

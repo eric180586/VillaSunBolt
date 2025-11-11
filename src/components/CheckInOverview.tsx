@@ -4,6 +4,7 @@ import { useProfiles } from '../hooks/useProfiles';
 import { supabase } from '../lib/supabase';
 import { getTodayDateString } from '../lib/dateUtils';
 import { CheckCircle, XCircle, Clock, AlertCircle, Users, ArrowLeft, LogOut, History, Check, X as XIcon } from 'lucide-react';
+import { isAdmin as checkIsAdmin } from '../lib/roleUtils';
 
 interface CheckInStatus {
   user_id: string;
@@ -35,7 +36,7 @@ export function CheckInOverview({ onBack, onNavigate }: CheckInOverviewProps = {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (profile?.role === 'admin' && profiles.length > 0) {
+    if (checkIsAdmin(profile) && profiles.length > 0) {
       fetchCheckInStatuses();
 
       const checkInsChannel = supabase

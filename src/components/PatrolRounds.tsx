@@ -4,6 +4,7 @@ import { Shield, Camera, CheckCircle, AlertCircle, Clock, QrCode, ArrowLeft } fr
 import { supabase } from '../lib/supabase';
 import { getTodayDateString } from '../lib/dateUtils';
 import { QRScanner } from './QRScanner';
+import { isAdmin as checkIsAdmin } from '../lib/roleUtils';
 
 interface PatrolLocation {
   id: string;
@@ -100,7 +101,7 @@ export function PatrolRounds({ onBack }: { onBack?: () => void } = {}) {
 
   const loadTodayData = async () => {
     const today = getTodayDateString();
-    const isAdmin = profile?.role === 'admin';
+    const isAdmin = checkIsAdmin(profile);
 
     let query = supabase
       .from('patrol_rounds')
@@ -396,7 +397,7 @@ export function PatrolRounds({ onBack }: { onBack?: () => void } = {}) {
           <div>
             <h2 className="text-3xl font-bold text-gray-900">Patrol Rounds</h2>
             <p className="text-gray-600 mt-1">
-              {profile?.role === 'admin'
+              {checkIsAdmin(profile)
                 ? 'Übersicht aller Patrouillengänge'
                 : 'Scanne QR Codes an den Kontrollpunkten'}
             </p>
@@ -477,7 +478,7 @@ export function PatrolRounds({ onBack }: { onBack?: () => void } = {}) {
                     <Clock className="w-5 h-5 text-gray-600" />
                     <div>
                       <div className="font-semibold text-gray-900">{round.time_slot}</div>
-                      {profile?.role === 'admin' && round.profiles && (
+                      {checkIsAdmin(profile) && round.profiles && (
                         <div className="text-xs text-gray-500">{round.profiles.full_name}</div>
                       )}
                       <div className="text-sm text-gray-600 capitalize">{status}</div>
@@ -493,7 +494,7 @@ export function PatrolRounds({ onBack }: { onBack?: () => void } = {}) {
           })}
           {todayRounds.length === 0 && (
             <div className="text-center py-12 text-gray-500">
-              {profile?.role === 'admin'
+              {checkIsAdmin(profile)
                 ? 'Heute keine Patrouillengänge geplant'
                 : 'Keine Patrouillengänge für heute zugewiesen'}
             </div>

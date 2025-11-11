@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../lib/supabase';
 import { CheckCircle, XCircle, Clock, Image as ImageIcon, AlertCircle, ArrowLeft } from 'lucide-react';
+import { isAdmin as checkIsAdmin } from '../lib/roleUtils';
 
 interface ChecklistInstance {
   id: string;
@@ -53,7 +54,7 @@ export function ChecklistReview({ onBack }: { onBack?: () => void } = {}) {
   // ALL CODE BELOW IS DISABLED - DO NOT EXECUTE
   /*
   useEffect(() => {
-    if (profile?.role === 'admin') {
+    if (checkIsAdmin(profile)) {
       fetchPendingChecklists();
 
       const channel = supabase

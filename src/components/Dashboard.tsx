@@ -11,6 +11,7 @@ import { RepairRequestModal } from './RepairRequestModal';
 import { useTranslation } from 'react-i18next';
 import { Wrench, ShoppingCart } from 'lucide-react';
 import { supabase } from '../lib/supabase';
+import { isAdmin } from '../lib/roleUtils';
 
 interface DashboardProps {
   onNavigate?: (view: string, filter?: 'pending_review' | 'today' | null) => void;
@@ -21,7 +22,7 @@ export function Dashboard({ onNavigate, onBack }: DashboardProps = {}) {
   const { profile } = useAuth();
   const { t } = useTranslation();
 
-  if (profile?.role === 'admin') {
+  if (isAdmin(profile)) {
     return <AdminDashboard onNavigate={onNavigate} onBack={onBack} />;
   }
   const { tasks, refetch } = useTasks();

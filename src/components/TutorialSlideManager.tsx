@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import { Plus, X, ChevronUp, ChevronDown, Trash2, Upload, Image as ImageIcon } from 'lucide-react';
+import { isAdmin as checkIsAdmin } from '../lib/roleUtils';
 
 interface TutorialSlide {
   id: string;

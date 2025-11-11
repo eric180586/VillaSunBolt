@@ -3,6 +3,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../lib/supabase';
 import { CheckCircle, XCircle, Clock, User, AlertCircle, ArrowLeft, Home, UserPlus, LogOut } from 'lucide-react';
 import { toLocaleTimeStringCambodia, toLocaleStringCambodia, combineDateAndTime, getTodayDateString } from '../lib/dateUtils';
+import { isAdmin as checkIsAdmin } from '../lib/roleUtils';
 
 interface CheckInWithProfile {
   id: string;
@@ -60,7 +61,7 @@ export function CheckInApproval({ onNavigate }: CheckInApprovalProps = {}) {
   const [activeStaff, setActiveStaff] = useState<any[]>([]);
 
   useEffect(() => {
-    if (profile?.role === 'admin') {
+    if (checkIsAdmin(profile)) {
       fetchPendingCheckIns();
       fetchPendingDepartures();
       fetchAllStaff();
