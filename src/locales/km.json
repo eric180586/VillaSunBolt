@@ -30,7 +30,33 @@
   },
   "dashboard": {
     "welcomeBack": "សូមស្វាគមន៍ត្រឡប់មកវិញ, {{name}}!",
-    "whatsHappening": "នេះគឺជាអ្វីដែលកំពុងកើតឡើងថ្ងៃនេះ"
+    "whatsHappening": "នេះគឺជាអ្វីដែលកំពុងកើតឡើងថ្ងៃនេះ",
+    "adminDashboard": "Admin Dashboard",
+    "newTask": "New Task",
+    "managePoints": "Manage Points",
+    "newNote": "New Note",
+    "checkInHistory": "Check-In History",
+    "dailyReset": "Daily Reset",
+    "dailyResetConfirm": "ប្រតិបត្តិការកំណត់ឡើងវិញប្រចាំថ្ងៃដោយដៃ? នេះបង្កើតបញ្ជីពិនិត្យថ្មីនិងធ្វើបច្ចុប្បន្នភាពគោលដៅប្រចាំថ្ងៃ។",
+    "dailyResetSuccess": "កំណត់ឡើងវិញប្រចាំថ្ងៃបានដំណើរការដោយជោគជ័យ!",
+    "dailyResetError": "កំណត់ឡើងវិញប្រចាំថ្ងៃបរាជ័យ:",
+    "todaysTasks": "Today's Tasks",
+    "completed": "បានបញ្ចប់",
+    "noTasksToday": "គ្មានកិច្ចការថ្ងៃនេះ",
+    "reviewTasks": "Review Tasks",
+    "taskToReview": "កិច្ចការត្រូវពិនិត្យ",
+    "tasksToReview": "កិច្ចការត្រូវពិនិត្យ",
+    "allReviewed": "បានពិនិត្យទាំងអស់",
+    "checkInDeparture": "Check-In / Status / Departure",
+    "checkIn": "Check-In",
+    "departure": "Departure",
+    "teamPointsToday": "Team Points Today",
+    "tasksOverall": "Tasks Overall",
+    "tasks": "Tasks",
+    "checklists": "Checklists",
+    "noChecklists": "គ្មានបញ្ជីពិនិត្យ",
+    "patrolRounds": "Patrol Rounds",
+    "viewAll": "មើលទាំងអស់"
   },
   "checkin": {
     "title": "ចុះឈ្មោះចូល",
@@ -403,5 +429,10 @@
     "goalPoints": "ពិន្ទុគល្បំណង",
     "currentPoints": "ពិន្ទុបច្ចុប្បន្ន",
     "achievablePoints": "ពិន្ទុអាចស្រេចបាន"
+  },
+  "admin": {
+    "allDone": "បានបញ្ចប់ទាំងអស់!",
+    "noPendingItems": "គ្មានធាតុកំពុងរង់ចាំ",
+    "approveReject": "អនុម័តឬបដិសេធ {{type}}"
   }
 }

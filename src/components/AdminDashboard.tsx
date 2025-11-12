@@ -9,6 +9,7 @@ import { isSameDay, getTodayDateString } from '../lib/dateUtils';
 import { CheckInOverview } from './CheckInOverview';
 import { checkAndRunDailyReset } from '../lib/dailyReset';
 import { TaskCreateModal } from './TaskCreateModal';
+import { useTranslation } from 'react-i18next';
 
 interface ActionButtonProps {
   icon: React.ElementType;
@@ -79,6 +80,7 @@ interface AdminDashboardProps {
 }
 
 export function AdminDashboard({ onNavigate, onBack }: AdminDashboardProps = {}) {
+  const { t } = useTranslation();
   const { profile } = useAuth();
   const { tasks, createTask, refetch } = useTasks();
   const { requests } = useDepartureRequests();
@@ -235,7 +237,7 @@ export function AdminDashboard({ onNavigate, onBack }: AdminDashboardProps = {})
             <h2 className="text-3xl font-bold text-gray-900">
               Admin Dashboard
             </h2>
-            <p className="text-gray-600 mt-1">Welcome back, {profile?.full_name}</p>
+            <p className="text-gray-600 mt-1">{t('dashboard.welcomeBack', { name: profile?.full_name })}</p>
           </div>
         </div>
       </div>
@@ -274,15 +276,15 @@ export function AdminDashboard({ onNavigate, onBack }: AdminDashboardProps = {})
           icon={AlertCircle}
           label="Daily Reset"
           onClick={async () => {
-            if (confirm('Daily Reset manuell ausführen? Dies generiert neue Checklisten und aktualisiert die Tagesziele.')) {
+            if (confirm(t('dashboard.dailyResetConfirm'))) {
               try {
                 localStorage.removeItem('last_daily_reset');
                 await checkAndRunDailyReset();
-                alert('Daily Reset erfolgreich ausgeführt!');
+                alert(t('dashboard.dailyResetSuccess'));
                 window.location.reload();
               } catch (error) {
                 const errorMessage = error instanceof Error ? error.message : 'Unbekannter Fehler';
-                alert('Daily Reset fehlgeschlagen: ' + errorMessage);
+                alert(t('dashboard.dailyResetError') + ' ' + errorMessage);
               }
             }
           }}
@@ -298,11 +300,11 @@ export function AdminDashboard({ onNavigate, onBack }: AdminDashboardProps = {})
         >
           <div className="space-y-2">
             {todayTasks.length === 0 ? (
-              <p className="text-center text-gray-500 py-4">Keine Tasks heute</p>
+              <p className="text-center text-gray-500 py-4">{t('dashboard.noTasksToday')}</p>
             ) : (
               <>
                 <div className="text-sm text-gray-600 mb-3 text-center">
-                  {completedTasks.length}/{todayTasks.length} erledigt
+                  {completedTasks.length}/{todayTasks.length} {t('dashboard.completed')}
                 </div>
                 <div className="space-y-2 max-h-48 overflow-y-auto">
                   {todayTasks.slice(0, 5).map((task) => (
@@ -335,7 +337,7 @@ export function AdminDashboard({ onNavigate, onBack }: AdminDashboardProps = {})
                     onClick={() => onNavigate?.('tasks', 'today')}
                     className="w-full text-center text-sm text-blue-600 hover:text-blue-700 hover:underline mt-2"
                   >
-                    View all {todayTasks.length} tasks
+                    {t('dashboard.viewAll')} {todayTasks.length} {t('dashboard.tasks')}
                   </button>
                 )}
               </>
@@ -361,8 +363,8 @@ export function AdminDashboard({ onNavigate, onBack }: AdminDashboardProps = {})
             </div>
             <p className="text-sm text-gray-600 mt-3">
               {pendingReview.length > 0
-                ? `${pendingReview.length} Aufgabe${pendingReview.length > 1 ? 'n' : ''} zu prüfen`
-                : 'Alles geprüft'}
+                ? `${pendingReview.length} ${pendingReview.length > 1 ? t('dashboard.tasksToReview') : t('dashboard.taskToReview')}`
+                : t('dashboard.allReviewed')}
             </p>
           </div>
         </DashboardCard>
@@ -438,8 +440,8 @@ export function AdminDashboard({ onNavigate, onBack }: AdminDashboardProps = {})
             </div>
             <p className="text-xs text-gray-600 mt-2">
               {teamAchievable > 0
-                ? `${((teamAchieved / teamAchievable) * 100).toFixed(0)}% erreicht`
-                : 'Kein Zeitplan'}
+                ? `${((teamAchieved / teamAchievable) * 100).toFixed(0)}% ${t('goals.achieved')}`
+                : t('dashboard.noTasksToday')}
             </p>
           </div>
         </DashboardCard>
@@ -461,8 +463,8 @@ export function AdminDashboard({ onNavigate, onBack }: AdminDashboardProps = {})
               </div>
               <p className="text-xs text-gray-600 mt-1">
                 {totalTasksToday > 0
-                  ? `${((completedTasksToday / totalTasksToday) * 100).toFixed(0)}% erledigt`
-                  : 'Keine Tasks'}
+                  ? `${((completedTasksToday / totalTasksToday) * 100).toFixed(0)}% ${t('dashboard.completed')}`
+                  : t('dashboard.noTasksToday')}
               </p>
             </div>
             <div className="border-t border-gray-200 pt-2">
@@ -474,8 +476,8 @@ export function AdminDashboard({ onNavigate, onBack }: AdminDashboardProps = {})
               </div>
               <p className="text-xs text-gray-600 mt-1">
                 {totalChecklistsToday > 0
-                  ? `${((completedChecklistsToday / totalChecklistsToday) * 100).toFixed(0)}% erledigt`
-                  : 'Keine Checklists'}
+                  ? `${((completedChecklistsToday / totalChecklistsToday) * 100).toFixed(0)}% ${t('dashboard.completed')}`
+                  : t('dashboard.noChecklists')}
               </p>
             </div>
           </div>
@@ -491,7 +493,7 @@ export function AdminDashboard({ onNavigate, onBack }: AdminDashboardProps = {})
               <Shield className="w-16 h-16 text-orange-600" />
             </div>
             <p className="text-sm text-gray-600 mt-3">
-              Patrouillengänge verwalten
+              {t('patrol.title')}
             </p>
           </div>
         </DashboardCard>

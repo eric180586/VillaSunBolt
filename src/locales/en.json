@@ -30,7 +30,33 @@
   },
   "dashboard": {
     "welcomeBack": "Welcome back, {{name}}!",
-    "whatsHappening": "Here's what's happening today"
+    "whatsHappening": "Here's what's happening today",
+    "adminDashboard": "Admin Dashboard",
+    "newTask": "New Task",
+    "managePoints": "Manage Points",
+    "newNote": "New Note",
+    "checkInHistory": "Check-In History",
+    "dailyReset": "Daily Reset",
+    "dailyResetConfirm": "Execute daily reset manually? This generates new checklists and updates daily goals.",
+    "dailyResetSuccess": "Daily reset executed successfully!",
+    "dailyResetError": "Daily reset failed:",
+    "todaysTasks": "Today's Tasks",
+    "completed": "completed",
+    "noTasksToday": "No tasks today",
+    "reviewTasks": "Review Tasks",
+    "taskToReview": "task to review",
+    "tasksToReview": "tasks to review",
+    "allReviewed": "All reviewed",
+    "checkInDeparture": "Check-In / Status / Departure",
+    "checkIn": "Check-In",
+    "departure": "Departure",
+    "teamPointsToday": "Team Points Today",
+    "tasksOverall": "Tasks Overall",
+    "tasks": "Tasks",
+    "checklists": "Checklists",
+    "noChecklists": "No checklists",
+    "patrolRounds": "Patrol Rounds",
+    "viewAll": "View all"
   },
   "checkin": {
     "title": "Check-In",
@@ -403,5 +429,10 @@
     "goalPoints": "Goal Points",
     "currentPoints": "Current Points",
     "achievablePoints": "Achievable Points"
+  },
+  "admin": {
+    "allDone": "All done!",
+    "noPendingItems": "No pending items",
+    "approveReject": "Approve or reject {{type}}"
   }
 }
