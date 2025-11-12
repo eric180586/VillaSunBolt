@@ -297,6 +297,20 @@ export function Tasks({ onNavigate, filterStatus, onBack }: TasksProps = {}) {
     }
   };
 
+  const handleAddHelper = async (taskId: string) => {
+    if (!profile?.id) return;
+    try {
+      await updateTask(taskId, {
+        secondary_assigned_to: profile.id,
+        status: 'in_progress',
+      });
+      await refetch();
+    } catch (error) {
+      console.error('Error adding helper:', error);
+      alert('Error adding helper');
+    }
+  };
+
   // Old handleCompleteTask removed - now handled by HelperSelectionModal
 
   const handleApproveTask = async (quality: 'very_good' | 'ready' | 'not_ready') => {
@@ -650,6 +664,7 @@ export function Tasks({ onNavigate, filterStatus, onBack }: TasksProps = {}) {
           const taskIsRepair = task.category === 'repair';
           const canAccept = !task.assigned_to && task.status === 'pending' && !taskIsRepair;
           const isMyTask = task.assigned_to === profile?.id || task.secondary_assigned_to === profile?.id;
+          const canHelp = task.assigned_to && task.assigned_to !== profile?.id && !task.secondary_assigned_to && (task.status === 'in_progress' || task.status === 'pending');
 
           const getStatusBorderColor = (status: string) => {
             switch (status) {
@@ -821,6 +836,14 @@ export function Tasks({ onNavigate, filterStatus, onBack }: TasksProps = {}) {
                       className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 whitespace-nowrap"
                     >
                       Me Do
+                    </button>
+                  )}
+                  {canHelp && (
+                    <button
+                      onClick={() => handleAddHelper(task.id)}
+                      className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 whitespace-nowrap"
+                    >
+                      Me Help
                     </button>
                   )}
                   {isMyTask && (task.status === 'in_progress' || task.status === 'pending') && (
