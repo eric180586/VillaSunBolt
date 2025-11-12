@@ -195,14 +195,25 @@ export function PatrolRounds({ onBack }: { onBack?: () => void } = {}) {
 
       const [hours, minutes] = round.time_slot.split(':').map(Number);
       const slotTime = hours * 60 + minutes;
-      const diff = Math.abs(currentTime - slotTime);
 
-      if (diff <= 15) {
+      // Allow scanning anytime after the scheduled time (no time limit)
+      if (currentTime >= slotTime) {
         return round;
       }
     }
 
     return null;
+  };
+
+  const isWithinPointsWindow = (round: PatrolRound): boolean => {
+    const now = new Date();
+    const currentTime = now.getHours() * 60 + now.getMinutes();
+    const [hours, minutes] = round.time_slot.split(':').map(Number);
+    const slotTime = hours * 60 + minutes;
+    const diff = currentTime - slotTime;
+
+    // Points are awarded only if scanned within 15 minutes of scheduled time
+    return diff >= 0 && diff <= 15;
   };
 
   const handleQRScan = async (qrCode: string) => {
@@ -319,16 +330,28 @@ export function PatrolRounds({ onBack }: { onBack?: () => void } = {}) {
 
       if (uniqueLocations.size === locations.length) {
         // Mark round as complete
+        const pointsForRound = withinWindow ? locations.length : 0;
         await supabase
           .from('patrol_rounds')
           .update({
             completed_at: new Date().toISOString(),
             points_calculated: true,
-            points_awarded: locations.length
+            points_awarded: pointsForRound
           })
           .eq('id', roundId);
 
-        alert(`Rundgang abgeschlossen! +${locations.length} Punkte`);
+        if (withinWindow) {
+          alert(`Patrol round completed! +${locations.length} points awarded`);
+        } else {
+          alert('Patrol round completed (time expired, no points awarded)');
+        }
+      } else {
+        // Individual scan feedback
+        if (withinWindow) {
+          alert('Scan completed successfully! +1 point awarded.');
+        } else {
+          alert('Scan completed, but time window expired (no points awarded).');
+        }
       }
 
       loadTodayData();
