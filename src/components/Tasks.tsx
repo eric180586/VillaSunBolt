@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useTasks } from '../hooks/useTasks';
 import { useProfiles } from '../hooks/useProfiles';
-import { useChecklists } from '../hooks/useChecklists';
 import { Plus, CheckCircle, Clock, Users, X, RefreshCw, ArrowLeft, Edit2 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { formatDateTimeForDisplay, formatDateForInput, getTodayDateString, isSameDay, combineDateAndTime } from '../lib/dateUtils';
@@ -46,7 +45,6 @@ export function Tasks({ onNavigate, filterStatus, onBack }: TasksProps = {}) {
   const { profile } = useAuth();
   const { tasks, createTask, updateTask, deleteTask, refetch } = useTasks();
   const { profiles } = useProfiles();
-  const { checklists } = useChecklists();
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [showModal, setShowModal] = useState(false);
   const [showItemsModal, setShowItemsModal] = useState(false);
@@ -127,18 +125,16 @@ export function Tasks({ onNavigate, filterStatus, onBack }: TasksProps = {}) {
   const getCategoryCounts = (categoryId: string) => {
     const today = new Date();
     const categoryTasks = tasks.filter(
-      (t) => t.category === categoryId && t.is_template !== true
+      (t) => t.category === categoryId && t.is_template !== true && t.status !== 'archived'
     );
     const todayTasks = categoryTasks.filter(
       (t) => t.due_date && isSameDay(t.due_date, today)
     );
-    const openTasks = todayTasks.filter((t) => t.status !== 'completed' && t.status !== 'archived');
+    const openTasks = todayTasks.filter((t) => t.status !== 'completed');
 
     return {
       totalTasks: todayTasks.length,
       openTasks: openTasks.length,
-      totalChecklists: 0,
-      openChecklists: 0,
     };
   };
 
@@ -527,15 +523,9 @@ export function Tasks({ onNavigate, filterStatus, onBack }: TasksProps = {}) {
                 </div>
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
-                    <span className="text-sm text-gray-600">Tasks Today</span>
+                    <span className="text-sm text-gray-600">Open / Total</span>
                     <span className="text-lg font-bold text-gray-900">
                       {counts.openTasks}/{counts.totalTasks}
-                    </span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-gray-600">Checklists</span>
-                    <span className="text-lg font-bold text-gray-900">
-                      {counts.openChecklists}/{counts.totalChecklists}
                     </span>
                   </div>
                 </div>
@@ -575,6 +565,7 @@ export function Tasks({ onNavigate, filterStatus, onBack }: TasksProps = {}) {
     : selectedCategory
     ? tasks.filter((t) => {
         if (t.status === 'archived') return false;
+        if (t.is_template) return false;
         if (t.status === 'completed') {
           const today = getTodayDateString();
           const taskDate = t.due_date ? new Date(t.due_date).toISOString().split('T')[0] : '';
@@ -584,6 +575,7 @@ export function Tasks({ onNavigate, filterStatus, onBack }: TasksProps = {}) {
       })
     : tasks.filter((t) => {
         if (t.status === 'archived') return false;
+        if (t.is_template) return false;
         if (t.status === 'completed') {
           const today = getTodayDateString();
           const taskDate = t.due_date ? new Date(t.due_date).toISOString().split('T')[0] : '';

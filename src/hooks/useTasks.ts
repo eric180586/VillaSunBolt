@@ -13,10 +13,15 @@ export function useTasks() {
 
   const fetchTasks = useCallback(async () => {
     try {
+      const sevenDaysAgo = new Date();
+      sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+
       const { data, error } = await supabase
         .from('tasks')
         .select('*')
-        .order('created_at', { ascending: false });
+        .or(`due_date.gte.${sevenDaysAgo.toISOString()},is_template.eq.true`)
+        .neq('status', 'archived')
+        .order('due_date', { ascending: true });
 
       if (error) throw error;
       setTasks(data || []);
