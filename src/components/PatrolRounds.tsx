@@ -260,6 +260,14 @@ export function PatrolRounds({ onBack }: { onBack?: () => void } = {}) {
 
       if (scanError) {
         console.error('Scan insert error:', scanError);
+        // Check if it's a duplicate scan error
+        if (scanError.code === '23505') {
+          alert('This location has already been scanned for this patrol round.');
+          setShowScanner(false);
+          setShowPhotoRequest(false);
+          loadTodayData();
+          return;
+        }
         throw scanError;
       }
 
