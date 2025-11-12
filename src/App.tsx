@@ -5,7 +5,6 @@ import { Layout } from './components/Layout';
 import { Dashboard } from './components/Dashboard';
 import { Tasks } from './components/Tasks';
 import { Schedules } from './components/Schedules';
-import { Checklists } from './components/Checklists';
 import { Notes } from './components/Notes';
 import { Leaderboard } from './components/Leaderboard';
 import { Notifications } from './components/Notifications';
@@ -17,7 +16,6 @@ import { CheckIn } from './components/CheckIn';
 import { CheckInApproval } from './components/CheckInApproval';
 import { CheckInOverview } from './components/CheckInOverview';
 import { CheckInHistory } from './components/CheckInHistory';
-import { ChecklistReview } from './components/ChecklistReview';
 import { ShoppingList } from './components/ShoppingList';
 import { PatrolRounds } from './components/PatrolRounds';
 import { PatrolSchedules } from './components/PatrolSchedules';
@@ -135,7 +133,7 @@ function AppContent() {
       case 'patrol-qrcodes':
         return <PatrolQRCodes onBack={handleBack} />;
       case 'checklists':
-        return <Checklists onBack={handleBack} />;
+        return <Tasks onBack={handleBack} />;
       case 'notes':
         return <Notes onBack={handleBack} />;
       case 'chat':
@@ -161,7 +159,7 @@ function AppContent() {
       case 'checkin-history':
         return <CheckInHistory onBack={handleBack} />;
       case 'checklist-review':
-        return <ChecklistReview onBack={handleBack} />;
+        return <Tasks onBack={handleBack} filterStatus="pending_review" />;
       case 'daily-points':
         return <DailyPointsOverview onBack={handleBack} />;
       case 'monthly-points':

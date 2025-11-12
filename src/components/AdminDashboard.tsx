@@ -4,7 +4,7 @@ import { useTasks } from '../hooks/useTasks';
 import { useDepartureRequests } from '../hooks/useDepartureRequests';
 import { useProfiles } from '../hooks/useProfiles';
 import { supabase } from '../lib/supabase';
-import { Plus, TrendingUp, FileText, StickyNote, CheckCircle, Home, AlertCircle, QrCode, Users, UserCheck, ClipboardCheck, Shield, ArrowLeft, History } from 'lucide-react';
+import { Plus, TrendingUp, FileText, StickyNote, CheckCircle, Home, AlertCircle, QrCode, Users, UserCheck, Shield, ArrowLeft, History, Edit2 } from 'lucide-react';
 import { isSameDay, getTodayDateString } from '../lib/dateUtils';
 import { CheckInOverview } from './CheckInOverview';
 import { checkAndRunDailyReset } from '../lib/dailyReset';
@@ -85,6 +85,7 @@ export function AdminDashboard({ onNavigate, onBack }: AdminDashboardProps = {})
   const { profiles, addPoints } = useProfiles();
 
   const [showCreateTaskModal, setShowCreateTaskModal] = useState(false);
+  const [editingTask, setEditingTask] = useState<any>(null);
 
   const staffProfiles = profiles.filter((p) => p.role !== 'admin');
 
@@ -103,13 +104,10 @@ export function AdminDashboard({ onNavigate, onBack }: AdminDashboardProps = {})
   const pendingDepartures = requests.filter((r) => r.status === 'pending');
 
   const [pendingCheckIns, setPendingCheckIns] = useState(0);
-  const [pendingChecklists, setPendingChecklists] = useState(0);
   const [teamAchievable, setTeamAchievable] = useState(0);
   const [teamAchieved, setTeamAchieved] = useState(0);
   const [totalTasksToday, setTotalTasksToday] = useState(0);
   const [completedTasksToday, setCompletedTasksToday] = useState(0);
-  const [totalChecklistsToday, setTotalChecklistsToday] = useState(0);
-  const [completedChecklistsToday, setCompletedChecklistsToday] = useState(0);
 
   // Daily reset is now only triggered manually by admin or via scheduled cron job
   // Removed automatic call on mount to prevent errors on every page load
@@ -126,13 +124,7 @@ export function AdminDashboard({ onNavigate, onBack }: AdminDashboardProps = {})
       }
     };
 
-    const fetchPendingChecklists = async () => {
-      // Checklists are now integrated into Tasks
-      setPendingChecklists(0);
-    };
-
     fetchPendingCheckIns();
-    fetchPendingChecklists();
 
     const checkInsChannel = supabase
       .channel(`check_ins_count_${Date.now()}`)
@@ -148,8 +140,6 @@ export function AdminDashboard({ onNavigate, onBack }: AdminDashboardProps = {})
         }
       )
       .subscribe();
-
-    // Checklists subscription removed - feature integrated into Tasks
 
     return () => {
       supabase.removeChannel(checkInsChannel);
@@ -185,7 +175,6 @@ export function AdminDashboard({ onNavigate, onBack }: AdminDashboardProps = {})
           setCompletedTasksToday(0);
         }
 
-        // Checklists are now integrated into Tasks
       } catch (error) {
         console.error('Error fetching team points:', error);
       }
@@ -301,29 +290,56 @@ export function AdminDashboard({ onNavigate, onBack }: AdminDashboardProps = {})
         />
       </div>
 
-      {/* Dritte Reihe: Today's Tasks, Aufgaben prüfen, Checklist prüfen */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      {/* Dritte Reihe: Today's Tasks with List, Aufgaben prüfen */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <DashboardCard
           title="Today's Tasks"
           icon={CheckCircle}
-          onClick={() => onNavigate?.('tasks', 'today')}
         >
-          <div className="text-center py-4">
-            <div className="relative inline-block mb-3">
-              <CheckCircle className={`w-16 h-16 ${
-                totalTasksToday > 0 ? 'text-blue-500' : 'text-gray-400'
-              }`} />
-              {totalTasksToday - completedTasksToday > 0 && (
-                <span className="absolute -top-2 -right-2 w-8 h-8 bg-blue-500 text-white rounded-full flex items-center justify-center text-sm font-bold">
-                  {totalTasksToday - completedTasksToday}
-                </span>
-              )}
-            </div>
-            <p className="text-sm text-gray-600 mt-3">
-              {totalTasksToday > 0
-                ? `${completedTasksToday}/${totalTasksToday} erledigt`
-                : 'Keine Tasks heute'}
-            </p>
+          <div className="space-y-2">
+            {todayTasks.length === 0 ? (
+              <p className="text-center text-gray-500 py-4">Keine Tasks heute</p>
+            ) : (
+              <>
+                <div className="text-sm text-gray-600 mb-3 text-center">
+                  {completedTasks.length}/{todayTasks.length} erledigt
+                </div>
+                <div className="space-y-2 max-h-48 overflow-y-auto">
+                  {todayTasks.slice(0, 5).map((task) => (
+                    <div
+                      key={task.id}
+                      className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+                    >
+                      <div className="flex items-center space-x-3 flex-1 min-w-0">
+                        <CheckCircle
+                          className={`w-5 h-5 flex-shrink-0 ${
+                            task.status === 'completed' ? 'text-green-500' : 'text-gray-400'
+                          }`}
+                        />
+                        <span className="text-sm font-medium text-gray-900 truncate">
+                          {task.title}
+                        </span>
+                      </div>
+                      <button
+                        onClick={() => setEditingTask(task)}
+                        className="ml-2 p-2 hover:bg-gray-200 rounded-lg transition-colors flex-shrink-0"
+                        title="Edit Task"
+                      >
+                        <Edit2 className="w-4 h-4 text-gray-600" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+                {todayTasks.length > 5 && (
+                  <button
+                    onClick={() => onNavigate?.('tasks', 'today')}
+                    className="w-full text-center text-sm text-blue-600 hover:text-blue-700 hover:underline mt-2"
+                  >
+                    View all {todayTasks.length} tasks
+                  </button>
+                )}
+              </>
+            )}
           </div>
         </DashboardCard>
 
@@ -351,29 +367,6 @@ export function AdminDashboard({ onNavigate, onBack }: AdminDashboardProps = {})
           </div>
         </DashboardCard>
 
-        <DashboardCard
-          title="Checklist Review"
-          icon={ClipboardCheck}
-          onClick={() => onNavigate?.('checklist-review')}
-        >
-          <div className="flex flex-col items-center justify-center text-center py-6">
-            <div className="relative inline-block mb-4">
-              <ClipboardCheck className={`w-16 h-16 ${
-                pendingChecklists > 0 ? 'text-green-500' : 'text-gray-400'
-              }`} />
-              {pendingChecklists > 0 && (
-                <span className="absolute -top-2 -right-2 w-7 h-7 bg-red-500 text-white rounded-full flex items-center justify-center text-sm font-bold shadow-lg">
-                  {pendingChecklists}
-                </span>
-              )}
-            </div>
-            <p className="text-sm font-semibold text-gray-700">
-              {pendingChecklists > 0
-                ? `${pendingChecklists} warten`
-                : 'Alle reviewt'}
-            </p>
-          </div>
-        </DashboardCard>
       </div>
 
       {/* Vierte Reihe: Check-In/Status/Feierabend, Team Points, Aufgaben Gesamt, Patrol Rounds */}
@@ -509,6 +502,18 @@ export function AdminDashboard({ onNavigate, onBack }: AdminDashboardProps = {})
           onClose={() => setShowCreateTaskModal(false)}
           onComplete={async () => {
             setShowCreateTaskModal(false);
+            await refetch();
+          }}
+          profiles={staffProfiles}
+        />
+      )}
+
+      {editingTask && (
+        <TaskCreateModal
+          task={editingTask}
+          onClose={() => setEditingTask(null)}
+          onComplete={async () => {
+            setEditingTask(null);
             await refetch();
           }}
           profiles={staffProfiles}
