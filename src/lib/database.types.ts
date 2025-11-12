@@ -50,10 +50,11 @@ export interface Database {
           photo_explanation_text: string | null
           photo_urls: Json | null
           admin_photos: Json | null
+          photo_required: boolean | null
+          photo_required_sometimes: boolean | null
           category: string | null
           description_photo: Json | null
           photo_proof_required: boolean | null
-          photo_required_sometimes: boolean | null
           photo_optional: boolean | null
           items: Json | null
           recurrence: string | null
@@ -92,6 +93,8 @@ export interface Database {
           photo_explanation_text?: string | null
           photo_urls?: Json | null
           admin_photos?: Json | null
+          photo_required?: boolean | null
+          photo_required_sometimes?: boolean | null
           category?: string | null
           description_photo?: Json | null
           photo_proof_required?: boolean | null
@@ -134,6 +137,8 @@ export interface Database {
           photo_explanation_text?: string | null
           photo_urls?: Json | null
           admin_photos?: Json | null
+          photo_required?: boolean | null
+          photo_required_sometimes?: boolean | null
           category?: string | null
           description_photo?: Json | null
           photo_proof_required?: boolean | null
