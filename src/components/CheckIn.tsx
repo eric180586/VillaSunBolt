@@ -42,27 +42,7 @@ export function CheckIn({ onBack }: { onBack?: () => void } = {}) {
           async (payload) => {
             console.log('Realtime: Check-in changed!', payload);
             fetchTodayCheckIns();
-
-            if (payload.new.status === 'approved' && payload.new.id && !isCheckingWheel) {
-              console.log('Realtime: Check-in approved! ID:', payload.new.id);
-              setIsCheckingWheel(true);
-              try {
-                const hasSpun = await checkIfAlreadySpunToday();
-                console.log('Realtime: Already spun?', hasSpun);
-
-                if (!hasSpun && !showFortuneWheel) {
-                  console.log('Realtime: Opening Fortune Wheel NOW!');
-                  setCurrentCheckInId(payload.new.id);
-                  setShowFortuneWheel(true);
-                } else {
-                  console.log('Realtime: Already spun today or wheel already showing, skipping Fortune Wheel');
-                }
-              } finally {
-                setIsCheckingWheel(false);
-              }
-            } else {
-              console.log('Realtime: Check-in not approved yet, no ID, or already checking');
-            }
+            // Fortune wheel appears immediately after check-in, not after approval
           }
         )
         .subscribe();
@@ -109,23 +89,23 @@ export function CheckIn({ onBack }: { onBack?: () => void } = {}) {
         return;
       }
 
+      // Check for check-in today (any status, not just approved)
       const { data: checkInData, error: checkInError } = await supabase
         .from('check_ins')
         .select('id, status, check_in_date')
         .eq('user_id', profile.id)
         .eq('check_in_date', today)
-        .eq('status', 'approved')
         .maybeSingle();
 
       console.log('checkForMissedFortuneWheel: Check-in data:', checkInData, 'Error:', checkInError);
 
       if (checkInData && !showFortuneWheel) {
-        console.log('Found approved check-in without fortune wheel spin!', checkInData.id);
+        console.log('Found check-in without fortune wheel spin!', checkInData.id);
         console.log('Opening Fortune Wheel NOW!');
         setCurrentCheckInId(checkInData.id);
         setShowFortuneWheel(true);
       } else {
-        console.log('checkForMissedFortuneWheel: No approved check-in found for today or wheel already showing');
+        console.log('checkForMissedFortuneWheel: No check-in found for today or wheel already showing');
       }
     } finally {
       setIsCheckingWheel(false);
