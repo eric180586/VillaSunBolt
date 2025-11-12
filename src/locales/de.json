@@ -30,7 +30,33 @@
   },
   "dashboard": {
     "welcomeBack": "Willkommen zurück, {{name}}!",
-    "whatsHappening": "Das passiert heute"
+    "whatsHappening": "Das passiert heute",
+    "adminDashboard": "Admin Dashboard",
+    "newTask": "Neue Aufgabe",
+    "managePoints": "Punkte verwalten",
+    "newNote": "Neue Notiz",
+    "checkInHistory": "Check-In Historie",
+    "dailyReset": "Daily Reset",
+    "dailyResetConfirm": "Daily Reset manuell ausführen? Dies generiert neue Checklisten und aktualisiert die Tagesziele.",
+    "dailyResetSuccess": "Daily Reset erfolgreich ausgeführt!",
+    "dailyResetError": "Daily Reset fehlgeschlagen:",
+    "todaysTasks": "Heutige Aufgaben",
+    "completed": "erledigt",
+    "noTasksToday": "Keine Aufgaben heute",
+    "reviewTasks": "Aufgaben prüfen",
+    "taskToReview": "Aufgabe zu prüfen",
+    "tasksToReview": "Aufgaben zu prüfen",
+    "allReviewed": "Alles geprüft",
+    "checkInDeparture": "Check-In / Status / Feierabend",
+    "checkIn": "Check-In",
+    "departure": "Feierabend",
+    "teamPointsToday": "Team Punkte Heute",
+    "tasksOverall": "Aufgaben Gesamt",
+    "tasks": "Aufgaben",
+    "checklists": "Checklisten",
+    "noChecklists": "Keine Checklisten",
+    "patrolRounds": "Patrol Rounds",
+    "viewAll": "Alle anzeigen"
   },
   "checkin": {
     "title": "Check-In",
@@ -403,5 +429,10 @@
     "goalPoints": "Zielpunkte",
     "currentPoints": "Aktuelle Punkte",
     "achievablePoints": "Erreichbare Punkte"
+  },
+  "admin": {
+    "allDone": "Alles erledigt!",
+    "noPendingItems": "Keine ausstehenden Elemente",
+    "approveReject": "{{type}} genehmigen oder ablehnen"
   }
 }
