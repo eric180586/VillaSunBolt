@@ -9,6 +9,7 @@ import { PhotoRequirementDice } from './PhotoRequirementDice';
 import { TaskWithItemsModal } from './TaskWithItemsModal';
 import { HelperSelectionModal } from './HelperSelectionModal';
 import { TaskCreateModal } from './TaskCreateModal';
+import { useTranslation } from 'react-i18next';
 
 const CATEGORIES = [
   { id: 'daily_morning', label: 'Daily Morning', color: 'bg-orange-500' },
@@ -42,6 +43,7 @@ interface TasksProps {
 }
 
 export function Tasks({ onNavigate, filterStatus, onBack }: TasksProps = {}) {
+  const { t } = useTranslation();
   const { profile } = useAuth();
   const { tasks, createTask, updateTask, deleteTask, refetch } = useTasks();
   const { profiles } = useProfiles();
@@ -303,7 +305,7 @@ export function Tasks({ onNavigate, filterStatus, onBack }: TasksProps = {}) {
       await refetch();
     } catch (error) {
       console.error('Error adding helper:', error);
-      alert('Error adding helper');
+      alert(t('tasks.errorAddHelper'));
     }
   };
 
@@ -357,7 +359,7 @@ export function Tasks({ onNavigate, filterStatus, onBack }: TasksProps = {}) {
       await refetch();
     } catch (error) {
       console.error('Error approving task:', error);
-      alert('Error approving task');
+      alert(t('tasks.errorApproveTask'));
     }
   };
 
@@ -411,7 +413,7 @@ export function Tasks({ onNavigate, filterStatus, onBack }: TasksProps = {}) {
       await refetch();
     } catch (error) {
       console.error('Error reopening task:', error);
-      alert('Error reopening task');
+      alert(t('tasks.errorReopenTask'));
     }
   };
 
@@ -420,7 +422,7 @@ export function Tasks({ onNavigate, filterStatus, onBack }: TasksProps = {}) {
     if (!task || !task.items) return;
 
     if (itemsToReopen.length === 0) {
-      alert('Bitte wählen Sie mindestens ein Item zum Wiedereröffnen aus.');
+      alert(t('tasks.selectItemsToReopen'));
       return;
     }
 
@@ -462,10 +464,10 @@ export function Tasks({ onNavigate, filterStatus, onBack }: TasksProps = {}) {
       setAdminPhoto([]);
       setItemsToReopen([]);
       await refetch();
-      alert('Ausgewählte Items wurden wiedereröffnet!');
+      alert(t('tasks.itemsReopenedSuccess'));
     } catch (error) {
       console.error('Error reopening items:', error);
-      alert('Fehler beim Wiedereröffnen der Items');
+      alert(t('tasks.errorReopeningItems'));
     }
   };
 
@@ -645,7 +647,7 @@ export function Tasks({ onNavigate, filterStatus, onBack }: TasksProps = {}) {
         {categoryTasks.length === 0 && (
           <div className="text-center py-16 bg-white rounded-xl border border-beige-200">
             <CheckCircle className="w-16 h-16 text-beige-300 mx-auto mb-4" />
-            <h3 className="text-lg font-semibold text-gray-700 mb-2">Keine aktuellen ToDos</h3>
+            <h3 className="text-lg font-semibold text-gray-700 mb-2">{t('tasks.noCurrentTodos')}</h3>
             <p className="text-gray-500 text-sm">Alle Aufgaben sind erledigt oder es wurden noch keine erstellt.</p>
           </div>
         )}

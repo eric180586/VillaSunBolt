@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { X, Upload, CheckCircle, XCircle } from 'lucide-react';
 import { TaskItemsList } from './TaskItemsList';
 import { supabase } from '../lib/supabase';
+import { useTranslation } from 'react-i18next';
 
 interface TaskReviewModalProps {
   task: any;
@@ -67,7 +68,7 @@ export function TaskReviewModal({ task, onClose, onComplete }: TaskReviewModalPr
       onComplete();
     } catch (error) {
       console.error('Error approving task:', error);
-      alert('Fehler beim Genehmigen');
+      alert(t('tasks.errorApprovingTask'));
     } finally {
       setLoading(false);
     }
@@ -75,7 +76,7 @@ export function TaskReviewModal({ task, onClose, onComplete }: TaskReviewModalPr
 
   const handleReject = async () => {
     if (rejectedItems.length === 0 && !adminNotes) {
-      alert('Bitte gib einen Grund an oder wähle abgelehnte Items aus!');
+      alert(t('tasks.provideReasonOrSelect'));
       return;
     }
 
@@ -87,7 +88,7 @@ export function TaskReviewModal({ task, onClose, onComplete }: TaskReviewModalPr
         p_task_id: task.id,
         p_admin_id: (await supabase.auth.getUser()).data.user?.id,
         p_approved: false,
-        p_rejection_reason: adminNotes || 'Bitte erneut erledigen',
+        p_rejection_reason: adminNotes || t('tasks.pleaseRedoTask'),
         p_rejected_items: rejectedItems,
         p_admin_photos: photoUrls,
         p_admin_notes: adminNotes,
@@ -98,7 +99,7 @@ export function TaskReviewModal({ task, onClose, onComplete }: TaskReviewModalPr
       onComplete();
     } catch (error) {
       console.error('Error rejecting task:', error);
-      alert('Fehler beim Ablehnen');
+      alert(t('tasks.errorRejectingTask'));
     } finally {
       setLoading(false);
     }

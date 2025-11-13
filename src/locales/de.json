@@ -184,7 +184,32 @@
     "beforeDeadline": "Vor Frist",
     "deadlineBonus": "Frist-Bonus",
     "lateSubmission": "Verspätete Abgabe",
-    "onTimeBonus": "Pünktlichkeits-Bonus"
+    "onTimeBonus": "Pünktlichkeits-Bonus",
+    "errorAcceptTask": "Fehler beim Annehmen der Aufgabe",
+    "errorAddHelper": "Fehler beim Hinzufügen des Helfers",
+    "errorApproveTask": "Fehler beim Bestätigen der Aufgabe",
+    "errorReopenTask": "Fehler beim Wiederöffnen der Aufgabe",
+    "selectItemsToReopen": "Bitte wählen Sie mindestens ein Item zum Wiederöffnen aus.",
+    "itemsReopenedSuccess": "Ausgewählte Items wurden wiederöffnet!",
+    "errorReopeningItems": "Fehler beim Wiederöffnen der Items",
+    "noCurrentTodos": "Keine aktuellen ToDos",
+    "taskApprovedMessage": "Aufgabe als {{quality}} bestätigt!\n\nBasis-Punkte: {{base}}\nQualitäts-Bonus: {{quality_bonus}}\nFrist-Bonus: +{{deadline_bonus}}\n\nGesamt: {{total}} Punkte",
+    "enterTitle": "Bitte Titel eingeben!",
+    "addAtLeastOneTask": "Bitte mindestens eine Aufgabe hinzufügen!",
+    "errorSaving": "Fehler beim Speichern",
+    "photoExamplePlaceholder": "Z.B. Bitte Foto von sauberem Bett machen",
+    "checkAllTasks": "Bitte alle Aufgaben abhaken bevor du abschließt!",
+    "selectHelper": "Bitte Helfer auswählen!",
+    "errorCompleting": "Fehler beim Abschließen",
+    "warningCheckAll": "⚠️ Bitte alle Aufgaben abhaken bevor du abschließt",
+    "errorApprovingTask": "Fehler beim Genehmigen",
+    "provideReasonOrSelect": "Bitte gib einen Grund an oder wähle abgelehnte Items aus!",
+    "errorRejectingTask": "Fehler beim Ablehnen",
+    "pleaseRedoTask": "Bitte erneut erledigen",
+    "selectHelperFirst": "Bitte wähle einen Helfer aus",
+    "checkAllItems": "Bitte alle Items abhaken!",
+    "enterTitlePlease": "Bitte geben Sie einen Titel ein",
+    "errorCreatingRequest": "Fehler beim Erstellen der Anfrage"
   },
   "checklists": {
     "title": "Checklisten",
@@ -305,7 +330,10 @@
     "employeeUpdated": "Mitarbeiter aktualisiert",
     "employeeDeleted": "Mitarbeiter gelöscht",
     "resetPassword": "Passwort zurücksetzen",
-    "passwordReset": "Passwort wurde zurückgesetzt"
+    "passwordReset": "Passwort wurde zurückgesetzt",
+    "employeeCreatedEmailConfirm": "WICHTIG: Mitarbeiter erstellt, aber Email-Bestätigung ist erforderlich!\n\nDer Mitarbeiter muss die Email-Bestätigung in seinem Posteingang anklicken, bevor er sich anmelden kann.\n\nAlternativ: Bitte deaktivieren Sie die Email-Bestätigung in den Supabase Einstellungen (Authentication > Providers > Email > Confirm email = OFF)",
+    "tooManyRequests": "Zu viele Anfragen. Bitte warten Sie einen Moment und versuchen Sie es erneut.",
+    "errorCreatingEmployee": "Fehler beim Erstellen des Mitarbeiters"
   },
   "departure": {
     "title": "Feierabendanfrage",
@@ -406,7 +434,9 @@
     "editMessage": "Nachricht bearbeiten",
     "deleteMessage": "Nachricht löschen",
     "messageContent": "Nachrichteninhalt",
-    "sortOrder": "Sortierreihenfolge"
+    "sortOrder": "Sortierreihenfolge",
+    "errorSendingMessage": "Fehler beim Senden der Nachricht",
+    "errorDeleting": "Fehler beim Löschen"
   },
   "auth": {
     "login": "Anmelden",

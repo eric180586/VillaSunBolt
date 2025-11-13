@@ -4,6 +4,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { TaskItemsList } from './TaskItemsList';
 import { PhotoRequirementDice } from './PhotoRequirementDice';
 import { supabase } from '../lib/supabase';
+import { useTranslation } from 'react-i18next';
 
 interface TaskCompletionModalProps {
   task: any;
@@ -59,7 +60,7 @@ export function TaskCompletionModal({ task, items, onClose, onComplete, profiles
 
   const handleSubmit = async () => {
     if (!allItemsCompleted) {
-      alert('Bitte alle Aufgaben abhaken bevor du abschließt!');
+      alert(t('tasks.checkAllTasks'));
       return;
     }
 
@@ -69,7 +70,7 @@ export function TaskCompletionModal({ task, items, onClose, onComplete, profiles
     }
 
     if (hasHelper && !selectedHelper) {
-      alert('Bitte Helfer auswählen!');
+      alert(t('tasks.selectHelper'));
       return;
     }
 
@@ -121,7 +122,7 @@ export function TaskCompletionModal({ task, items, onClose, onComplete, profiles
       onClose();
     } catch (error) {
       console.error('Error completing task:', error);
-      alert('Fehler beim Abschließen: ' + (error as any).message);
+      alert(t('tasks.errorCompleting') + ': ' + (error as any).message);
     } finally {
       setLoading(false);
     }
@@ -278,7 +279,7 @@ export function TaskCompletionModal({ task, items, onClose, onComplete, profiles
 
         {!allItemsCompleted && (
           <p className="text-sm text-red-600 mt-3 text-center">
-            ⚠️ Bitte alle Aufgaben abhaken bevor du abschließt
+            {t('tasks.warningCheckAll')}
           </p>
         )}
       </div>

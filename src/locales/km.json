@@ -184,7 +184,32 @@
     "beforeDeadline": "មុនពេលកំណត់",
     "deadlineBonus": "បូណុសពេលកំណត់",
     "lateSubmission": "ដាក់ស្នើរយឺតពេល",
-    "onTimeBonus": "បូណុសទាន់ពេល"
+    "onTimeBonus": "បូណុសទាន់ពេល",
+    "errorAcceptTask": "កំហុសក្នុងការទទួលយកកិច្ចការ",
+    "errorAddHelper": "កំហុសក្នុងការបន្ថែមជំនួយការ",
+    "errorApproveTask": "កំហុសក្នុងការអនុម័តកិច្ចការ",
+    "errorReopenTask": "កំហុសក្នុងការបើកឡើងវិញ",
+    "selectItemsToReopen": "សូមជ្រើសរើសយ៉ាងហោចណាស់មួយធាតុដើម្បីបើកឡើងវិញ។",
+    "itemsReopenedSuccess": "ធាតុដែលបានជ្រើសរើសត្រូវបានបើកឡើងវិញ!",
+    "errorReopeningItems": "កំហុសក្នុងការបើកធាតុឡើងវិញ",
+    "noCurrentTodos": "មិនមាន ToDos បច្ចុប្បន្ន",
+    "taskApprovedMessage": "កិច្ចការបានអនុម័តជា {{quality}}!\n\nពិន្ទុមូលដ្ឋាន: {{base}}\nប្រាក់រង្វាន់គុណភាព: {{quality_bonus}}\nប្រាក់រង្វាន់ពេលវេលា: +{{deadline_bonus}}\n\nសរុប: {{total}} ពិន្ទុ",
+    "enterTitle": "សូមបញ្ចូលចំណងជើង!",
+    "addAtLeastOneTask": "សូមបន្ថែមយ៉ាងហោចណាស់មួយកិច្ចការ!",
+    "errorSaving": "កំហុសក្នុងការរក្សាទុក",
+    "photoExamplePlaceholder": "ឧ. សូមថតរូបពីគ្រែស្អាត",
+    "checkAllTasks": "សូមធីកកិច្ចការទាំងអស់មុនពេលបញ្ចប់!",
+    "selectHelper": "សូមជ្រើសរើសជំនួយការ!",
+    "errorCompleting": "កំហុសក្នុងការបញ្ចប់",
+    "warningCheckAll": "⚠️ សូមធីកកិច្ចការទាំងអស់មុនពេលបញ្ចប់",
+    "errorApprovingTask": "កំហុសក្នុងការអនុម័ត",
+    "provideReasonOrSelect": "សូមផ្តល់មូលហេតុឬជ្រើសរើសធាតុដែលបានបដិសេធ!",
+    "errorRejectingTask": "កំហុសក្នុងការបដិសេធ",
+    "pleaseRedoTask": "សូមធ្វើម្តងទៀត",
+    "selectHelperFirst": "សូមជ្រើសរើសជំនួយការ",
+    "checkAllItems": "សូមធីកធាតុទាំងអស់!",
+    "enterTitlePlease": "សូមបញ្ចូលចំណងជើង",
+    "errorCreatingRequest": "កំហុសក្នុងការបង្កើតសំណើ"
   },
   "checklists": {
     "title": "បញ្ជីពិនិត្យ",
@@ -285,7 +310,9 @@
     "deleteItem": "លុបធាតុ",
     "itemAdded": "បានបន្ថែមធាតុ",
     "itemUpdated": "បានធ្វើបច្ចុប្បន្នភាពធាតុ",
-    "itemDeleted": "បានលុបធាតុ"
+    "employeeCreatedEmailConfirm": "សំខាន់: បានបង្កើតនិយោជិត ប៉ុន្តែត្រូវការបញ្ជាក់អ៊ីមែល!\n\nនិយោជិតត្រូវតែចុចលើការបញ្ជាក់អ៊ីមែលមុនពេលពួកគេអាចចូល។",
+    "tooManyRequests": "សំណើច្រើនពេក។ សូមរងចាំមួយសន្ទុះហើយព្យាយាមម្តងទៀត។",
+    "errorCreatingEmployee": "កំហុសក្នុងការបង្កើតនិយោជិត"
   },
   "employees": {
     "title": "និយោជិត",
@@ -376,11 +403,8 @@
     "question": "សូរប្រស្ន៍",
     "answer": "ចម្លើយ",
     "submit": "ដាក់ស្នើរ",
-    "correct": "ត្រឹមត្រូវ!",
-    "incorrect": "មិនត្រឹមត្រូវ!",
-    "score": "ពិន្ទុ",
-    "highscores": "ពិន្ទុខ្ពស់",
-    "noHighscores": "មិនទាន់មានពិន្ទុទេ"
+    "errorSendingMessage": "កំហុសក្នុងការផ្ញើសារ",
+    "errorDeleting": "កំហុសក្នុងការលុប"
   },
   "performance": {
     "title": "រូបមែត្រសម្រេចកិច្ចការ",

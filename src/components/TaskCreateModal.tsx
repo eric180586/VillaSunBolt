@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { X, Plus, Trash2, Upload } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { combineDateAndTime, getTodayDateString } from '../lib/dateUtils';
+import { useTranslation } from 'react-i18next';
 
 const CATEGORIES = [
   { id: 'daily_morning', label: 'Daily Morning', color: 'bg-orange-500' },
@@ -118,14 +119,14 @@ export function TaskCreateModal({ onClose, onComplete, profiles, editingTask }: 
 
   const handleSubmit = async () => {
     if (!formData.title) {
-      alert('Bitte Titel eingeben!');
+      alert(t('tasks.enterTitle'));
       return;
     }
 
     // Staff assignment is now optional
 
     if (formData.has_items && items.filter(i => i.trim()).length === 0) {
-      alert('Bitte mindestens eine Aufgabe hinzufügen!');
+      alert(t('tasks.addAtLeastOneTask'));
       return;
     }
 
@@ -250,7 +251,7 @@ export function TaskCreateModal({ onClose, onComplete, profiles, editingTask }: 
     } catch (error: any) {
       console.error('Error saving task:', error);
       console.error('Error details:', error.message, error.details, error.hint);
-      alert('Fehler beim Speichern: ' + (error.message || 'Unbekannter Fehler'));
+      alert(t('tasks.errorSaving') + ': ' + (error.message || t('common.error')));
     } finally {
       setLoading(false);
     }
@@ -526,7 +527,7 @@ export function TaskCreateModal({ onClose, onComplete, profiles, editingTask }: 
                 onChange={(e) => setPhotoSettings({ ...photoSettings, photo_explanation_text: e.target.value })}
                 rows={2}
                 className="w-full p-2 border border-gray-300 rounded-lg text-sm"
-                placeholder="Z.B. Bitte Foto von sauberem Bett machen"
+                placeholder={t('tasks.photoExamplePlaceholder')}
               />
             </div>
           )}

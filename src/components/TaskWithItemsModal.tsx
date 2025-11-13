@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { X, CheckCircle } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
+import { useTranslation } from 'react-i18next';
 
 interface TaskWithItemsModalProps {
   task: any;
@@ -53,7 +54,7 @@ export function TaskWithItemsModal({ task, onClose, onComplete, onOpenHelperPopu
       console.error('Error saving item:', error);
       // Revert on error
       setItems(items);
-      alert('Fehler beim Speichern');
+      alert(t('tasks.errorSaving'));
     } finally {
       setSaving(false);
     }
@@ -61,7 +62,7 @@ export function TaskWithItemsModal({ task, onClose, onComplete, onOpenHelperPopu
 
   const handleCompleteTask = () => {
     if (!allCompleted) {
-      alert('Bitte alle Items abhaken!');
+      alert(t('tasks.checkAllItems'));
       return;
     }
 

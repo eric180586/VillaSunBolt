@@ -184,7 +184,32 @@
     "beforeDeadline": "Before deadline",
     "deadlineBonus": "Deadline bonus",
     "lateSubmission": "Late submission",
-    "onTimeBonus": "On-time bonus"
+    "onTimeBonus": "On-time bonus",
+    "errorAcceptTask": "Error accepting task",
+    "errorAddHelper": "Error adding helper",
+    "errorApproveTask": "Error approving task",
+    "errorReopenTask": "Error reopening task",
+    "selectItemsToReopen": "Please select at least one item to reopen.",
+    "itemsReopenedSuccess": "Selected items have been reopened!",
+    "errorReopeningItems": "Error reopening items",
+    "noCurrentTodos": "No current ToDos",
+    "taskApprovedMessage": "Task approved as {{quality}}!\n\nBase Points: {{base}}\nQuality Bonus: {{quality_bonus}}\nDeadline Bonus: +{{deadline_bonus}}\n\nTotal: {{total}} points",
+    "enterTitle": "Please enter a title!",
+    "addAtLeastOneTask": "Please add at least one task!",
+    "errorSaving": "Error saving",
+    "photoExamplePlaceholder": "E.g. Please take photo of clean bed",
+    "checkAllTasks": "Please check all tasks before completing!",
+    "selectHelper": "Please select a helper!",
+    "errorCompleting": "Error completing",
+    "warningCheckAll": "⚠️ Please check all tasks before completing",
+    "errorApprovingTask": "Error approving",
+    "provideReasonOrSelect": "Please provide a reason or select rejected items!",
+    "errorRejectingTask": "Error rejecting",
+    "pleaseRedoTask": "Please redo task",
+    "selectHelperFirst": "Please select a helper",
+    "checkAllItems": "Please check all items!",
+    "enterTitlePlease": "Please enter a title",
+    "errorCreatingRequest": "Error creating request"
   },
   "checklists": {
     "title": "Checklists",
@@ -305,7 +330,10 @@
     "employeeUpdated": "Employee updated",
     "employeeDeleted": "Employee deleted",
     "resetPassword": "Reset password",
-    "passwordReset": "Password has been reset"
+    "passwordReset": "Password has been reset",
+    "employeeCreatedEmailConfirm": "IMPORTANT: Employee created but email confirmation required!\n\nThe employee must click the email confirmation link before they can log in.\n\nAlternatively: Please disable email confirmation in Supabase settings (Authentication > Providers > Email > Confirm email = OFF)",
+    "tooManyRequests": "Too many requests. Please wait a moment and try again.",
+    "errorCreatingEmployee": "Error creating employee"
   },
   "departure": {
     "title": "Departure Request",
@@ -406,7 +434,9 @@
     "editMessage": "Edit message",
     "deleteMessage": "Delete message",
     "messageContent": "Message content",
-    "sortOrder": "Sort order"
+    "sortOrder": "Sort order",
+    "errorSendingMessage": "Error sending message",
+    "errorDeleting": "Error deleting"
   },
   "auth": {
     "login": "Login",

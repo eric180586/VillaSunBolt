@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { Plus, X, Edit2, Trash2, Users, Mail, Shield, Award, ArrowLeft } from 'lucide-react';
 import { supabase } from '../lib/supabase';
+import { useTranslation } from 'react-i18next';
 
 interface Employee {
   id: string;
@@ -91,7 +92,7 @@ export function EmployeeManagement({ onBack }: { onBack?: () => void } = {}) {
       }
 
       if (authData.user.identities && authData.user.identities.length === 0) {
-        alert('WICHTIG: Mitarbeiter erstellt, aber Email-Bestätigung ist erforderlich!\n\nDer Mitarbeiter muss die Email-Bestätigung in seinem Posteingang anklicken, bevor er sich anmelden kann.\n\nAlternativ: Bitte deaktivieren Sie die Email-Bestätigung in den Supabase Einstellungen (Authentication > Providers > Email > Confirm email = OFF)');
+        alert(t('employees.employeeCreatedEmailConfirm'));
       } else {
         alert('Mitarbeiter erfolgreich erstellt! Login ist jetzt möglich.');
       }
@@ -105,9 +106,9 @@ export function EmployeeManagement({ onBack }: { onBack?: () => void } = {}) {
       if (error.message?.includes('User already registered')) {
         alert('Diese Email-Adresse ist bereits registriert.');
       } else if (error.message?.includes('Email rate limit')) {
-        alert('Zu viele Anfragen. Bitte warten Sie einen Moment und versuchen Sie es erneut.');
+        alert(t('employees.tooManyRequests'));
       } else {
-        alert(error.message || 'Fehler beim Erstellen des Mitarbeiters');
+        alert(error.message || t('employees.errorCreatingEmployee'));
       }
     }
   };

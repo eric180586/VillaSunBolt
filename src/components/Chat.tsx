@@ -4,6 +4,7 @@ import { useProfiles } from '../hooks/useProfiles';
 import { supabase } from '../lib/supabase';
 import { Send, Image as ImageIcon, X, Loader, ArrowLeft } from 'lucide-react';
 import { toLocaleTimeStringCambodia, toLocaleDateStringCambodia } from '../lib/dateUtils';
+import { useTranslation } from 'react-i18next';
 
 interface ChatMessage {
   id: string;
@@ -152,7 +153,7 @@ export function Chat({ onBack }: { onBack?: () => void } = {}) {
       setPhotoPreview(null);
     } catch (error) {
       console.error('Error sending message:', error);
-      alert('Fehler beim Senden der Nachricht');
+      alert(t('howTo.errorSendingMessage'));
     } finally {
       setSending(false);
     }
@@ -182,7 +183,7 @@ export function Chat({ onBack }: { onBack?: () => void } = {}) {
       if (error) throw error;
     } catch (error) {
       console.error('Error deleting message:', error);
-      alert('Fehler beim Löschen');
+      alert(t('howTo.errorDeleting'));
     }
   };
 

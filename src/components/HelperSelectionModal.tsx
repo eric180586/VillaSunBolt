@@ -2,6 +2,7 @@ import { X, Users, Upload } from 'lucide-react';
 import { useState } from 'react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
+import { useTranslation } from 'react-i18next';
 
 interface HelperSelectionModalProps {
   isOpen: boolean;
@@ -52,7 +53,7 @@ export function HelperSelectionModal({
 
   const handleSubmit = async (helperChoice: 'none' | 'helper') => {
     if (helperChoice === 'helper' && !selectedHelper) {
-      alert('Bitte wähle einen Helfer aus');
+      alert(t('tasks.selectHelperFirst'));
       return;
     }
 
@@ -109,7 +110,7 @@ export function HelperSelectionModal({
       onClose();
     } catch (error) {
       console.error('Error completing task:', error);
-      alert('Fehler beim Abschließen: ' + (error as any).message);
+      alert(t('tasks.errorCompleting') + ': ' + (error as any).message);
     } finally {
       setLoading(false);
     }

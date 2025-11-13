@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { X, Upload } from 'lucide-react';
 import { supabase } from '../lib/supabase';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../contexts/AuthContext';
 import { getTodayDateString } from '../lib/dateUtils';
 
@@ -31,7 +32,7 @@ export function RepairRequestModal({ onClose, onComplete }: RepairRequestModalPr
     e.preventDefault();
 
     if (!formData.title.trim()) {
-      alert('Bitte geben Sie einen Titel ein');
+      alert(t('tasks.enterTitlePlease'));
       return;
     }
 
@@ -86,7 +87,7 @@ export function RepairRequestModal({ onClose, onComplete }: RepairRequestModalPr
       onComplete();
     } catch (error) {
       console.error('Error creating repair request:', error);
-      alert('Fehler beim Erstellen der Anfrage');
+      alert(t('tasks.errorCreatingRequest'));
     } finally {
       setIsSubmitting(false);
     }
