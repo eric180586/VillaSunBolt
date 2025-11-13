@@ -1,7 +1,7 @@
 import { useAuth } from '../contexts/AuthContext';
 import { useTasks } from '../hooks/useTasks';
 import { useTranslation } from 'react-i18next';
-import { ArrowLeft, CheckCircle2, Clock, AlertCircle } from 'lucide-react';
+import { CheckCircle2, Clock, AlertCircle } from 'lucide-react';
 
 interface TodayTasksOverviewProps {
   onBack?: () => void;

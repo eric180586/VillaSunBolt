@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../contexts/AuthContext';
 import { useProfiles } from '../hooks/useProfiles';
-import { Calendar, ChevronLeft, ChevronRight, Clock, X, Check, ArrowLeft } from 'lucide-react';
+import { Calendar, ChevronLeft, ChevronRight, Clock, X, Check } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 
 type ShiftType = 'early' | 'late' | 'off';

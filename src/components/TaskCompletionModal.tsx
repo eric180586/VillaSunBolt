@@ -1,8 +1,6 @@
 import { useState } from 'react';
-import { X, Upload, Users } from 'lucide-react';
+import { X, Users } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
-import { TaskItemsList } from './TaskItemsList';
-import { PhotoRequirementDice } from './PhotoRequirementDice';
 import { supabase } from '../lib/supabase';
 import { useTranslation } from 'react-i18next';
 

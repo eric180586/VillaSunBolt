@@ -55,7 +55,7 @@ export function Chat({ onBack }: { onBack?: () => void } = {}) {
       if (error) throw error;
 
       const messagesWithProfiles = await Promise.all(
-        (data || []).map(async (msg: any) => {
+        (data || []).map(async (msg) => {
           const { data: profileData } = await supabase
             .from('profiles')
             .select('full_name, avatar_url')

@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../lib/supabase';
 import { getTodayDateString } from '../lib/dateUtils';
@@ -23,7 +23,37 @@ export function CheckIn({ onBack }: { onBack?: () => void } = {}) {
   const [lateReason, setLateReason] = useState('');
   const [pendingShiftType, setPendingShiftType] = useState<'früh' | 'spät' | null>(null);
 
-  const checkIfAlreadySpunToday = useCallback(async () => {
+  useEffect(() => {
+    if (profile?.id) {
+      fetchTodayCheckIns();
+      checkScheduleForToday();
+      checkIfAlreadySpunToday();
+      checkForMissedFortuneWheel();
+
+      const channel = supabase
+        .channel(`check_ins_changes_${Date.now()}`)
+        .on(
+          'postgres_changes',
+          {
+            event: '*',
+            schema: 'public',
+            table: 'check_ins',
+            filter: `user_id=eq.${profile.id}`,
+          },
+          () => {
+            fetchTodayCheckIns();
+          }
+        )
+        .subscribe();
+
+      return () => {
+        supabase.removeChannel(channel);
+      };
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [profile]);
+
+  const checkIfAlreadySpunToday = async () => {
     if (!profile?.id) return false;
 
     const today = getTodayDateString();
@@ -38,7 +68,7 @@ export function CheckIn({ onBack }: { onBack?: () => void } = {}) {
     const hasSpun = !error && !!data;
     setAlreadySpunToday(hasSpun);
     return hasSpun;
-  }, [profile]);
+  };
 
   const checkForMissedFortuneWheel = async () => {
     if (!profile?.id || isCheckingWheel) {

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../lib/supabase';
-import { ArrowLeft, Calendar, Download, Filter } from 'lucide-react';
+import { ArrowLeft, Calendar, Filter } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 interface CheckInRecord {

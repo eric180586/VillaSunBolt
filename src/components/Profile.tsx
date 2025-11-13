@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useProfiles } from '../hooks/useProfiles';
-import { User, Mail, Award, Shield, Calendar, Globe, ArrowLeft } from 'lucide-react';
+import { User, Mail, Award, Shield, Calendar, Globe } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 export function Profile({ onBack }: { onBack?: () => void } = {}) {

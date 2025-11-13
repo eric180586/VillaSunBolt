@@ -1,6 +1,6 @@
 import { useAuth } from '../contexts/AuthContext';
 import { useMonthlyProgress, useTeamMonthlyProgress } from '../hooks/useDailyPointGoals';
-import { Trophy, Target, Users, TrendingUp } from 'lucide-react';
+import { Trophy, Target, Users } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 export function MonthlyGoalProgress() {

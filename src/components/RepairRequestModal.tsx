@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { X, Upload } from 'lucide-react';
+import { X } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../contexts/AuthContext';

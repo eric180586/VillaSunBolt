@@ -138,7 +138,7 @@ export function FortuneWheel({ onClose, onSpinComplete }: FortuneWheelProps) {
     const segmentAngle = 360 / WHEEL_SEGMENTS.length;
     const pointerAngle = 90;
 
-    let winnerIndex = Math.floor(((360 - currentAngle + pointerAngle) % 360) / segmentAngle) % WHEEL_SEGMENTS.length;
+    const winnerIndex = Math.floor(((360 - currentAngle + pointerAngle) % 360) / segmentAngle) % WHEEL_SEGMENTS.length;
     const winner = WHEEL_SEGMENTS[winnerIndex];
 
     setIsSpinning(false);
