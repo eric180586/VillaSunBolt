@@ -3,6 +3,7 @@ import { X, Plus, Trash2, Upload } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { combineDateAndTime, getTodayDateString } from '../lib/dateUtils';
 import { useTranslation } from 'react-i18next';
+import { MultilingualInput } from './MultilingualInput';
 
 const CATEGORIES = [
   { id: 'daily_morning', label: 'Daily Morning', color: 'bg-orange-500' },
@@ -35,7 +36,13 @@ export function TaskCreateModal({ onClose, onComplete, profiles, editingTask }: 
   const [formData, setFormData] = useState({
     category: 'extras',
     title: '',
+    title_de: '',
+    title_en: '',
+    title_km: '',
     description: '',
+    description_de: '',
+    description_en: '',
+    description_km: '',
     due_date: getTodayDateString(),
     due_time: '23:59',
     duration_minutes: 30,
@@ -61,7 +68,13 @@ export function TaskCreateModal({ onClose, onComplete, profiles, editingTask }: 
       setFormData({
         category: editingTask.category || 'extras',
         title: editingTask.title || '',
+        title_de: editingTask.title_de || editingTask.title || '',
+        title_en: editingTask.title_en || editingTask.title || '',
+        title_km: editingTask.title_km || editingTask.title || '',
         description: editingTask.description || '',
+        description_de: editingTask.description_de || editingTask.description || '',
+        description_en: editingTask.description_en || editingTask.description || '',
+        description_km: editingTask.description_km || editingTask.description || '',
         due_date: editingTask.due_date ? new Date(editingTask.due_date).toISOString().split('T')[0] : getTodayDateString(),
         due_time: editingTask.due_date ? new Date(editingTask.due_date).toTimeString().slice(0, 5) : '23:59',
         duration_minutes: editingTask.duration_minutes || 30,
@@ -161,7 +174,13 @@ export function TaskCreateModal({ onClose, onComplete, profiles, editingTask }: 
         const taskData = {
           category: formData.category,
           title: formData.title,
+          title_de: formData.title_de || formData.title,
+          title_en: formData.title_en || formData.title,
+          title_km: formData.title_km || formData.title,
           description: formData.description,
+          description_de: formData.description_de || formData.description,
+          description_en: formData.description_en || formData.description,
+          description_km: formData.description_km || formData.description,
           due_date: dueDateTime,
           duration_minutes: formData.duration_minutes,
           points_value: formData.points_value,
@@ -191,7 +210,13 @@ export function TaskCreateModal({ onClose, onComplete, profiles, editingTask }: 
           const tasksToCreate = formData.assigned_to.map(staffId => ({
             category: formData.category,
             title: formData.title,
+            title_de: formData.title_de || formData.title,
+            title_en: formData.title_en || formData.title,
+            title_km: formData.title_km || formData.title,
             description: formData.description,
+            description_de: formData.description_de || formData.description,
+            description_en: formData.description_en || formData.description,
+            description_km: formData.description_km || formData.description,
             due_date: dueDateTime,
             duration_minutes: formData.duration_minutes,
             points_value: formData.points_value,
@@ -220,7 +245,13 @@ export function TaskCreateModal({ onClose, onComplete, profiles, editingTask }: 
           const taskData = {
             category: formData.category,
             title: formData.title,
+            title_de: formData.title_de || formData.title,
+            title_en: formData.title_en || formData.title,
+            title_km: formData.title_km || formData.title,
             description: formData.description,
+            description_de: formData.description_de || formData.description,
+            description_en: formData.description_en || formData.description,
+            description_km: formData.description_km || formData.description,
             due_date: dueDateTime,
             duration_minutes: formData.duration_minutes,
             points_value: formData.points_value,
@@ -373,30 +404,39 @@ export function TaskCreateModal({ onClose, onComplete, profiles, editingTask }: 
           </div>
         ) : (
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Titel *
-            </label>
-            <input
+            <MultilingualInput
+              label={t('tasks.title') + ' *'}
+              value_de={formData.title_de}
+              value_en={formData.title_en}
+              value_km={formData.title_km}
+              onChange={(values) => setFormData({
+                ...formData,
+                title: values.de,
+                title_de: values.de,
+                title_en: values.en,
+                title_km: values.km
+              })}
+              required
               type="text"
-              value={formData.title}
-              onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-              className="w-full p-2 border border-gray-300 rounded-lg"
-              placeholder="Z.B. Wäsche waschen"
             />
           </div>
         )}
 
         {/* Description */}
         <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Beschreibung
-          </label>
-          <textarea
-            value={formData.description}
-            onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-            rows={3}
-            className="w-full p-2 border border-gray-300 rounded-lg"
-            placeholder="Zusätzliche Details..."
+          <MultilingualInput
+            label={t('tasks.description')}
+            value_de={formData.description_de}
+            value_en={formData.description_en}
+            value_km={formData.description_km}
+            onChange={(values) => setFormData({
+              ...formData,
+              description: values.de,
+              description_de: values.de,
+              description_en: values.en,
+              description_km: values.km
+            })}
+            type="textarea"
           />
         </div>
 
