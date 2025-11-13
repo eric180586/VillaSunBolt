@@ -4,6 +4,7 @@ import { useProfiles } from '../hooks/useProfiles';
 import { supabase } from '../lib/supabase';
 import { getTodayDateString } from '../lib/dateUtils';
 import { CheckCircle, XCircle, Clock, AlertCircle, Users, ArrowLeft, LogOut, History, Check, X as XIcon } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 interface CheckInStatus {
   user_id: string;
@@ -29,6 +30,7 @@ interface CheckInOverviewProps {
 }
 
 export function CheckInOverview({ onBack, onNavigate }: CheckInOverviewProps = {}) {
+  const { t } = useTranslation();
   const { profile } = useAuth();
   const { profiles } = useProfiles();
   const [checkInStatuses, setCheckInStatuses] = useState<CheckInStatus[]>([]);
@@ -279,8 +281,8 @@ export function CheckInOverview({ onBack, onNavigate }: CheckInOverviewProps = {
         .from('notifications')
         .insert({
           user_id: userId,
-          title: 'Feierabend genehmigt',
-          message: 'Deine Feierabend-Anfrage wurde genehmigt. Schönen Feierabend!',
+          title: t('departure.departureApprovedTitle'),
+          message: t('departure.departureApprovedMessage'),
           type: 'success',
         });
 
@@ -357,8 +359,8 @@ export function CheckInOverview({ onBack, onNavigate }: CheckInOverviewProps = {
         .from('notifications')
         .insert({
           user_id: userId,
-          title: 'Feierabend abgelehnt',
-          message: 'Deine Feierabend-Anfrage wurde abgelehnt. Bitte arbeite weiter.',
+          title: t('departure.departureRejectedTitle'),
+          message: t('departure.departureRejectedMessage'),
           type: 'error',
         });
 

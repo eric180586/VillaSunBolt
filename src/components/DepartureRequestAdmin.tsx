@@ -4,8 +4,10 @@ import { useDepartureRequests } from '../hooks/useDepartureRequests';
 import { useProfiles } from '../hooks/useProfiles';
 import { Home, Check, X, ArrowLeft } from 'lucide-react';
 import { supabase } from '../lib/supabase';
+import { useTranslation } from 'react-i18next';
 
 export function DepartureRequestAdmin({ onBack }: { onBack?: () => void } = {}) {
+  const { t } = useTranslation();
   const { profile } = useAuth();
   const { requests, refetch } = useDepartureRequests();
   const { profiles } = useProfiles();
@@ -17,7 +19,7 @@ export function DepartureRequestAdmin({ onBack }: { onBack?: () => void } = {}) 
       // First verify user has checked in today
       const request = requests.find(r => r.id === requestId);
       if (!request) {
-        alert('Request not found');
+        alert(t('common.error'));
         return;
       }
 
@@ -32,12 +34,12 @@ export function DepartureRequestAdmin({ onBack }: { onBack?: () => void } = {}) 
       if (checkInError) throw checkInError;
 
       if (!checkIn) {
-        alert('FEHLER: Mitarbeiter hat heute nicht eingecheckt! Feierabend kann nicht genehmigt werden.');
+        alert(t('departure.errorNoCheckIn'));
         return;
       }
 
       if (checkIn.check_out_time) {
-        alert('FEHLER: Mitarbeiter ist bereits ausgecheckt!');
+        alert(t('common.error'));
         return;
       }
 
@@ -66,8 +68,8 @@ export function DepartureRequestAdmin({ onBack }: { onBack?: () => void } = {}) 
         .from('notifications')
         .insert({
           user_id: userId,
-          title: 'Feierabend genehmigt',
-          message: 'Deine Feierabend-Anfrage wurde genehmigt. Schönen Feierabend!',
+          title: t('departure.departureApprovedTitle'),
+          message: t('departure.departureApprovedMessage'),
           type: 'success',
         });
 
@@ -78,7 +80,7 @@ export function DepartureRequestAdmin({ onBack }: { onBack?: () => void } = {}) 
       await refetch();
     } catch (error) {
       console.error('Error approving request:', error);
-      alert('Fehler beim Genehmigen der Anfrage');
+      alert(t('admin.errorApproving'));
     }
   };
 
@@ -99,8 +101,8 @@ export function DepartureRequestAdmin({ onBack }: { onBack?: () => void } = {}) 
         .from('notifications')
         .insert({
           user_id: userId,
-          title: 'Feierabend abgelehnt',
-          message: 'Deine Feierabend-Anfrage wurde abgelehnt. Bitte arbeite weiter.',
+          title: t('departure.departureRejectedTitle'),
+          message: t('departure.departureRejectedMessage'),
           type: 'error',
         });
 
@@ -111,7 +113,7 @@ export function DepartureRequestAdmin({ onBack }: { onBack?: () => void } = {}) 
       await refetch();
     } catch (error) {
       console.error('Error rejecting request:', error);
-      alert('Fehler beim Ablehnen der Anfrage');
+      alert(t('admin.errorRejecting'));
     }
   };
 
@@ -127,15 +129,15 @@ export function DepartureRequestAdmin({ onBack }: { onBack?: () => void } = {}) 
               <ArrowLeft className="w-6 h-6 text-gray-700" />
             </button>
           )}
-          <h2 className="text-3xl font-bold text-gray-900">Feierabend Anfragen</h2>
+          <h2 className="text-3xl font-bold text-gray-900">{t('departure.departureRequests')}</h2>
         </div>
       </div>
 
       {pendingRequests.length === 0 ? (
         <div className="bg-white rounded-xl p-12 text-center shadow-sm border border-gray-200">
           <Home className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-          <h3 className="text-xl font-bold text-gray-900 mb-2">Keine offenen Anfragen</h3>
-          <p className="text-gray-600">Alle Feierabend-Anfragen wurden bearbeitet</p>
+          <h3 className="text-xl font-bold text-gray-900 mb-2">{t('admin.noPendingItems')}</h3>
+          <p className="text-gray-600">{t('departure.allProcessed')}</p>
         </div>
       ) : (
         <div className="space-y-4">
@@ -151,10 +153,10 @@ export function DepartureRequestAdmin({ onBack }: { onBack?: () => void } = {}) 
                     <div>
                       <h3 className="text-lg font-bold text-gray-900">{user?.full_name}</h3>
                       <p className="text-sm text-gray-600">
-                        Schicht: <span className="font-medium">{request.shift_type === 'früh' ? 'Frühschicht' : 'Spätschicht'}</span>
+                        {t('schedules.shift')}: <span className="font-medium">{request.shift_type === 'früh' ? t('schedules.morning') : t('schedules.late')}</span>
                       </p>
                       <p className="text-xs text-gray-500 mt-1">
-                        Angefragt: {new Date(request.created_at).toLocaleString('de-DE')}
+                        {t('departure.requestTime')}: {new Date(request.created_at).toLocaleString('de-DE')}
                       </p>
                     </div>
                   </div>
@@ -164,14 +166,14 @@ export function DepartureRequestAdmin({ onBack }: { onBack?: () => void } = {}) 
                       className="flex items-center space-x-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
                     >
                       <Check className="w-5 h-5" />
-                      <span>Genehmigen</span>
+                      <span>{t('departure.approve')}</span>
                     </button>
                     <button
                       onClick={() => handleReject(request.id, request.user_id)}
                       className="flex items-center space-x-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
                     >
                       <X className="w-5 h-5" />
-                      <span>Ablehnen</span>
+                      <span>{t('departure.reject')}</span>
                     </button>
                   </div>
                 </div>

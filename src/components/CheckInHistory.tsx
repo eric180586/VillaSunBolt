@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../lib/supabase';
 import { ArrowLeft, Calendar, Download, Filter } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 interface CheckInRecord {
   id: string;
@@ -22,6 +23,7 @@ interface CheckInRecord {
 }
 
 export function CheckInHistory({ onBack }: { onBack?: () => void } = {}) {
+  const { t } = useTranslation();
   const { profile } = useAuth();
   const [checkIns, setCheckIns] = useState<CheckInRecord[]>([]);
   const [loading, setLoading] = useState(true);
@@ -220,8 +222,8 @@ export function CheckInHistory({ onBack }: { onBack?: () => void } = {}) {
       ) : checkIns.length === 0 ? (
         <div className="bg-white rounded-xl p-12 shadow-lg border border-gray-200 text-center">
           <Calendar className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-          <h3 className="text-xl font-bold text-gray-900 mb-2">Keine Einträge</h3>
-          <p className="text-gray-600">Keine Check-Ins im gewählten Zeitraum</p>
+          <h3 className="text-xl font-bold text-gray-900 mb-2">{t('admin.noPendingItems')}</h3>
+          <p className="text-gray-600">{t('admin.noCheckInsOpen')}</p>
         </div>
       ) : (
         <>
