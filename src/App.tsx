@@ -13,7 +13,6 @@ import { EmployeeManagement } from './components/EmployeeManagement';
 import { HumorModuleSettings } from './components/HumorModuleSettings';
 import { PointsManager } from './components/PointsManager';
 import { CheckIn } from './components/CheckIn';
-import { CheckInApproval } from './components/CheckInApproval';
 import { CheckInOverview } from './components/CheckInOverview';
 import { CheckInHistory } from './components/CheckInHistory';
 import { ShoppingList } from './components/ShoppingList';

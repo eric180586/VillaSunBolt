@@ -4,9 +4,8 @@ import { useTasks } from '../hooks/useTasks';
 import { useDepartureRequests } from '../hooks/useDepartureRequests';
 import { useProfiles } from '../hooks/useProfiles';
 import { supabase } from '../lib/supabase';
-import { Plus, TrendingUp, FileText, StickyNote, CheckCircle, Home, AlertCircle, QrCode, Users, UserCheck, Shield, ArrowLeft, History, Edit2 } from 'lucide-react';
+import { Plus, TrendingUp, StickyNote, CheckCircle, Home, AlertCircle, QrCode, Users, UserCheck, Shield, ArrowLeft, History, Edit2 } from 'lucide-react';
 import { isSameDay, getTodayDateString } from '../lib/dateUtils';
-import { CheckInOverview } from './CheckInOverview';
 import { checkAndRunDailyReset } from '../lib/dailyReset';
 import { TaskCreateModal } from './TaskCreateModal';
 import { useTranslation } from 'react-i18next';
@@ -18,7 +17,7 @@ interface ActionButtonProps {
   color: string;
 }
 
-function ActionButton({ icon: Icon, label, onClick, color }: ActionButtonProps) {
+function ActionButton({ icon: Icon, label, onClick }: ActionButtonProps) {
   return (
     <button
       onClick={onClick}
@@ -82,9 +81,9 @@ interface AdminDashboardProps {
 export function AdminDashboard({ onNavigate, onBack }: AdminDashboardProps = {}) {
   const { t } = useTranslation();
   const { profile } = useAuth();
-  const { tasks, createTask, refetch } = useTasks();
+  const { tasks, refetch } = useTasks();
   const { requests } = useDepartureRequests();
-  const { profiles, addPoints } = useProfiles();
+  const { profiles } = useProfiles();
 
   const [showCreateTaskModal, setShowCreateTaskModal] = useState(false);
   const [editingTask, setEditingTask] = useState<any>(null);

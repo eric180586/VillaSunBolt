@@ -1,17 +1,18 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../lib/supabase';
 import { getTodayDateString } from '../lib/dateUtils';
-import { CheckCircle, XCircle, Clock, Award, AlertCircle, ArrowLeft, Trophy } from 'lucide-react';
+import { CheckCircle, XCircle, Clock, Award, AlertCircle, Trophy } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { FortuneWheel } from './FortuneWheel';
+import type { CheckInResult, CheckIn, ScheduleShift, FortuneWheelSegment } from '../types/common';
 
 export function CheckIn({ onBack }: { onBack?: () => void } = {}) {
   const { profile } = useAuth();
   const { t } = useTranslation();
-  const [checkInResult, setCheckInResult] = useState<any>(null);
+  const [checkInResult, setCheckInResult] = useState<CheckInResult | null>(null);
   const [loading, setLoading] = useState(false);
-  const [todayCheckIns, setTodayCheckIns] = useState<any[]>([]);
+  const [todayCheckIns, setTodayCheckIns] = useState<CheckIn[]>([]);
   const [hasScheduleToday, setHasScheduleToday] = useState<boolean | null>(null);
   const [scheduledShift, setScheduledShift] = useState<string | null>(null);
   const [showFortuneWheel, setShowFortuneWheel] = useState(false);
@@ -22,38 +23,7 @@ export function CheckIn({ onBack }: { onBack?: () => void } = {}) {
   const [lateReason, setLateReason] = useState('');
   const [pendingShiftType, setPendingShiftType] = useState<'früh' | 'spät' | null>(null);
 
-  useEffect(() => {
-    if (profile?.id) {
-      fetchTodayCheckIns();
-      checkScheduleForToday();
-      checkIfAlreadySpunToday();
-      checkForMissedFortuneWheel();
-
-      const channel = supabase
-        .channel(`check_ins_changes_${Date.now()}`)
-        .on(
-          'postgres_changes',
-          {
-            event: '*',
-            schema: 'public',
-            table: 'check_ins',
-            filter: `user_id=eq.${profile.id}`,
-          },
-          async (payload) => {
-            console.log('Realtime: Check-in changed!', payload);
-            fetchTodayCheckIns();
-            // Fortune wheel appears immediately after check-in, not after approval
-          }
-        )
-        .subscribe();
-
-      return () => {
-        supabase.removeChannel(channel);
-      };
-    }
-  }, [profile]);
-
-  const checkIfAlreadySpunToday = async () => {
+  const checkIfAlreadySpunToday = useCallback(async () => {
     if (!profile?.id) return false;
 
     const today = getTodayDateString();
@@ -68,7 +38,7 @@ export function CheckIn({ onBack }: { onBack?: () => void } = {}) {
     const hasSpun = !error && !!data;
     setAlreadySpunToday(hasSpun);
     return hasSpun;
-  };
+  }, [profile]);
 
   const checkForMissedFortuneWheel = async () => {
     if (!profile?.id || isCheckingWheel) {
@@ -144,8 +114,8 @@ export function CheckIn({ onBack }: { onBack?: () => void } = {}) {
       let todayShift = null;
       for (const schedule of data) {
         console.log('Checking schedule:', schedule);
-        const shift = (schedule.shifts as any[])?.find(
-          (s: any) => {
+        const shift = (schedule.shifts as ScheduleShift[])?.find(
+          (s) => {
             console.log('Comparing shift date:', s.date, 'with today:', today);
             return s.date === today;
           }
@@ -293,7 +263,7 @@ export function CheckIn({ onBack }: { onBack?: () => void } = {}) {
     setPendingShiftType(null);
   };
 
-  const handleFortuneWheelComplete = async (segment: any) => {
+  const handleFortuneWheelComplete = async (segment: FortuneWheelSegment) => {
     if (!profile?.id || !currentCheckInId) {
       console.error('handleFortuneWheelComplete: Missing profile or check-in ID');
       return;
