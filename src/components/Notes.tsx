@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useNotes } from '../hooks/useNotes';
 import { Plus, AlertCircle, X, Edit, ArrowLeft, StickyNote } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 export function Notes({ onBack }: { onBack?: () => void } = {}) {
   const { profile } = useAuth();
@@ -108,7 +109,7 @@ export function Notes({ onBack }: { onBack?: () => void } = {}) {
         {notes.length === 0 && (
           <div className="col-span-full text-center py-16 bg-white rounded-xl border border-beige-200">
             <StickyNote className="w-16 h-16 text-beige-300 mx-auto mb-4" />
-            <h3 className="text-lg font-semibold text-gray-700 mb-2">Keine aktuellen Infos</h3>
+            <h3 className="text-lg font-semibold text-gray-700 mb-2">{t('howTo.noCurrentInfo')}</h3>
             <p className="text-gray-500 text-sm">Es wurden noch keine Notizen erstellt.</p>
           </div>
         )}

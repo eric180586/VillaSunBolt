@@ -436,7 +436,15 @@
     "messageContent": "Nachrichteninhalt",
     "sortOrder": "Sortierreihenfolge",
     "errorSendingMessage": "Fehler beim Senden der Nachricht",
-    "errorDeleting": "Fehler beim Löschen"
+    "errorDeleting": "Fehler beim Löschen",
+    "errorUploading": "Fehler beim Hochladen",
+    "errorUpdating": "Fehler beim Aktualisieren",
+    "errorDownloading": "Fehler beim Herunterladen",
+    "noCurrentInfo": "Keine aktuellen Infos",
+    "unknownError": "Unbekannter Fehler",
+    "errorLoadingSlides": "Fehler beim Laden der Slides",
+    "errorAddingSlide": "Fehler beim Hinzufügen der Slide",
+    "errorMoving": "Fehler beim Verschieben"
   },
   "auth": {
     "login": "Anmelden",
@@ -476,6 +484,7 @@
     "checkInAndDeparture": "Check-In & Feierabend Anfragen",
     "noCheckInsOpen": "Keine offenen Check-In Anfragen",
     "noDeparturesOpen": "Keine offenen Feierabend Anfragen",
-    "rejectTitle": "{{type}} ablehnen"
+    "rejectTitle": "{{type}} ablehnen",
+    "provideRejectionReason": "Bitte gib einen Grund für die Ablehnung an:"
   }
 }

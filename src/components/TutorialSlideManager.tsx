@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import { Plus, X, ChevronUp, ChevronDown, Trash2, Upload, Image as ImageIcon } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 interface TutorialSlide {
   id: string;
@@ -44,8 +45,8 @@ export default function TutorialSlideManager({ onClose }: { onClose: () => void 
       setSlides(data || []);
     } catch (error: any) {
       console.error('Error loading slides:', error);
-      const errorMessage = error?.message || 'Unbekannter Fehler';
-      alert(`Fehler beim Laden der Slides: ${errorMessage}`);
+      const errorMessage = error?.message || t('howTo.unknownError');
+      alert(`${t('howTo.errorLoadingSlides')}: ${errorMessage}`);
     }
   };
 
@@ -93,8 +94,8 @@ export default function TutorialSlideManager({ onClose }: { onClose: () => void 
       alert('Slide erfolgreich hinzugefügt!');
     } catch (error: any) {
       console.error('Error adding slide:', error);
-      const errorMessage = error?.message || 'Unbekannter Fehler';
-      alert(`Fehler beim Hinzufügen der Slide: ${errorMessage}`);
+      const errorMessage = error?.message || t('howTo.unknownError');
+      alert(`${t('howTo.errorAddingSlide')}: ${errorMessage}`);
     } finally {
       setLoading(false);
     }
@@ -119,8 +120,8 @@ export default function TutorialSlideManager({ onClose }: { onClose: () => void 
       await loadSlides();
     } catch (error: any) {
       console.error('Error deleting slide:', error);
-      const errorMessage = error?.message || 'Unbekannter Fehler';
-      alert(`Fehler beim Löschen: ${errorMessage}`);
+      const errorMessage = error?.message || t('howTo.unknownError');
+      alert(`${t('howTo.errorDeleting')}: ${errorMessage}`);
     } finally {
       setLoading(false);
     }
@@ -150,8 +151,8 @@ export default function TutorialSlideManager({ onClose }: { onClose: () => void 
       await loadSlides();
     } catch (error: any) {
       console.error('Error reordering slides:', error);
-      const errorMessage = error?.message || 'Unbekannter Fehler';
-      alert(`Fehler beim Verschieben: ${errorMessage}`);
+      const errorMessage = error?.message || t('howTo.unknownError');
+      alert(`${t('howTo.errorMoving')}: ${errorMessage}`);
     }
   };
 

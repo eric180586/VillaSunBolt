@@ -436,7 +436,15 @@
     "messageContent": "Message content",
     "sortOrder": "Sort order",
     "errorSendingMessage": "Error sending message",
-    "errorDeleting": "Error deleting"
+    "errorDeleting": "Error deleting",
+    "errorUploading": "Error uploading",
+    "errorUpdating": "Error updating",
+    "errorDownloading": "Error downloading",
+    "noCurrentInfo": "No current info",
+    "unknownError": "Unknown error",
+    "errorLoadingSlides": "Error loading slides",
+    "errorAddingSlide": "Error adding slide",
+    "errorMoving": "Error moving"
   },
   "auth": {
     "login": "Login",
@@ -476,6 +484,7 @@
     "checkInAndDeparture": "Check-In & Departure Requests",
     "noCheckInsOpen": "No open check-in requests",
     "noDeparturesOpen": "No open departure requests",
-    "rejectTitle": "Reject {{type}}"
+    "rejectTitle": "Reject {{type}}",
+    "provideRejectionReason": "Please provide a reason for rejection:"
   }
 }

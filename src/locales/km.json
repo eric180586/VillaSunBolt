@@ -404,7 +404,15 @@
     "answer": "ចម្លើយ",
     "submit": "ដាក់ស្នើរ",
     "errorSendingMessage": "កំហុសក្នុងការផ្ញើសារ",
-    "errorDeleting": "កំហុសក្នុងការលុប"
+    "errorDeleting": "កំហុសក្នុងការលុប",
+    "errorUploading": "កំហុសក្នុងការផ្ទុកឡើង",
+    "errorUpdating": "កំហុសក្នុងការធ្វើបច្ចុប្បន្នភាព",
+    "errorDownloading": "កំហុសក្នុងការទាញយក",
+    "noCurrentInfo": "មិនមានព័ត៌មានបច្ចុប្បន្ន",
+    "unknownError": "កំហុសមិនស្គាល់",
+    "errorLoadingSlides": "កំហុសក្នុងការផ្ទុក slides",
+    "errorAddingSlide": "កំហុសក្នុងការបន្ថែម slide",
+    "errorMoving": "កំហុសក្នុងការផ្លាស់ទី"
   },
   "performance": {
     "title": "រូបមែត្រសម្រេចកិច្ចការ",
@@ -470,6 +478,7 @@
     "checkInAndDeparture": "Check-In & Departure Requests",
     "noCheckInsOpen": "គ្មានស្នើរ Check-In កំពុងបើក",
     "noDeparturesOpen": "គ្មានស្នើរ Departure កំពុងបើក",
-    "rejectTitle": "បដិសេធ {{type}}"
+    "rejectTitle": "បដិសេធ {{type}}",
+    "provideRejectionReason": "សូមផ្តល់មូលហេតុសម្រាប់ការបដិសេធ:"
   }
 }

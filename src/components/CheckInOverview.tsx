@@ -241,7 +241,7 @@ export function CheckInOverview({ onBack, onNavigate }: CheckInOverviewProps = {
 
       if (updateError) {
         console.error('Error updating departure request:', updateError);
-        alert(`Fehler beim Genehmigen: ${updateError.message}`);
+        alert(`${t('admin.errorApproving')}: ${updateError.message}`);
         return;
       }
 
@@ -293,7 +293,7 @@ export function CheckInOverview({ onBack, onNavigate }: CheckInOverviewProps = {
       await fetchCheckInStatuses();
     } catch (error: any) {
       console.error('Error approving departure request:', error);
-      alert(`Fehler beim Genehmigen: ${error.message || 'Unbekannter Fehler'}`);
+      alert(`${t('admin.errorApproving')}: ${error.message || t('howTo.unknownError')}`);
     }
   };
 
@@ -312,7 +312,7 @@ export function CheckInOverview({ onBack, onNavigate }: CheckInOverviewProps = {
       await fetchCheckInStatuses();
     } catch (error: any) {
       console.error('Error approving check-in:', error);
-      alert(`Fehler beim Genehmigen: ${error.message || 'Unbekannter Fehler'}`);
+      alert(`${t('admin.errorApproving')}: ${error.message || t('howTo.unknownError')}`);
     }
   };
 
@@ -334,7 +334,7 @@ export function CheckInOverview({ onBack, onNavigate }: CheckInOverviewProps = {
       await fetchCheckInStatuses();
     } catch (error: any) {
       console.error('Error rejecting check-in:', error);
-      alert(`Fehler beim Ablehnen: ${error.message || 'Unbekannter Fehler'}`);
+      alert(`${t('admin.errorRejecting')}: ${error.message || t('howTo.unknownError')}`);
     }
   };
 
@@ -351,7 +351,7 @@ export function CheckInOverview({ onBack, onNavigate }: CheckInOverviewProps = {
 
       if (updateError) {
         console.error('Error updating departure request:', updateError);
-        alert(`Fehler beim Ablehnen: ${updateError.message}`);
+        alert(`${t('admin.errorRejecting')}: ${updateError.message}`);
         return;
       }
 
@@ -371,7 +371,7 @@ export function CheckInOverview({ onBack, onNavigate }: CheckInOverviewProps = {
       await fetchCheckInStatuses();
     } catch (error: any) {
       console.error('Error rejecting departure request:', error);
-      alert(`Fehler beim Ablehnen: ${error.message || 'Unbekannter Fehler'}`);
+      alert(`${t('admin.errorRejecting')}: ${error.message || t('howTo.unknownError')}`);
     }
   };
 

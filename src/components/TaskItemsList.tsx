@@ -1,5 +1,6 @@
 import { CheckCircle } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
+import { useTranslation } from 'react-i18next';
 
 interface TaskItem {
   id: string;
@@ -32,7 +33,7 @@ export function TaskItemsList({ items, onToggleItem, readOnly = false, showCompl
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-between mb-4">
-        <h4 className="font-semibold text-gray-700">Aufgaben</h4>
+        <h4 className="font-semibold text-gray-700">{t('tasks.title')}</h4>
         <div className="text-sm text-gray-600">
           {completedCount}/{totalCount} erledigt
         </div>

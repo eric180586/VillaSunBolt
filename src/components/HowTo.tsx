@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../lib/supabase';
 import { Upload, FileText, Video, Image, Plus, X, Edit2, Trash2, ChevronUp, ChevronDown, Download, Eye, ArrowLeft, BookOpen, Trophy, Settings, Sparkles } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import TutorialViewer from './TutorialViewer';
 import QuizGame from './QuizGame';
 import TutorialSlideManager from './TutorialSlideManager';
@@ -123,7 +124,7 @@ export function HowTo({ onBack }: { onBack?: () => void } = {}) {
       await fetchDocuments();
     } catch (error) {
       console.error('Error uploading document:', error);
-      alert('Fehler beim Hochladen');
+      alert(t('howTo.errorUploading'));
     } finally {
       setLoading(false);
     }
@@ -153,7 +154,7 @@ export function HowTo({ onBack }: { onBack?: () => void } = {}) {
       await fetchDocuments();
     } catch (error) {
       console.error('Error updating document:', error);
-      alert('Fehler beim Aktualisieren');
+      alert(t('howTo.errorUpdating'));
     } finally {
       setLoading(false);
     }
@@ -178,7 +179,7 @@ export function HowTo({ onBack }: { onBack?: () => void } = {}) {
       await fetchDocuments();
     } catch (error) {
       console.error('Error deleting document:', error);
-      alert('Fehler beim Löschen');
+      alert(t('howTo.errorDeleting'));
     } finally {
       setLoading(false);
     }
@@ -223,7 +224,7 @@ export function HowTo({ onBack }: { onBack?: () => void } = {}) {
       document.body.removeChild(a);
     } catch (error) {
       console.error('Error downloading file:', error);
-      alert('Fehler beim Herunterladen');
+      alert(t('howTo.errorDownloading'));
     }
   };
 

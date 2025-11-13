@@ -543,7 +543,7 @@ export function CheckIn({ onBack }: { onBack?: () => void } = {}) {
                       }`}>
                         {checkIn.points_awarded > 0 ? '+' : ''}{checkIn.points_awarded}
                       </span>
-                      <p className="text-xs text-gray-600">Punkte</p>
+                      <p className="text-xs text-gray-600">{t('common.points')}</p>
                     </>
                   )}
                   {checkIn.status === 'pending' && (

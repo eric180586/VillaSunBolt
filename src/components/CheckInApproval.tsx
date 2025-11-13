@@ -549,7 +549,7 @@ export function CheckInApproval({ onNavigate }: CheckInApprovalProps = {}) {
             <h3 className="text-xl font-bold text-gray-900 mb-4">
               {t('admin.rejectTitle', { type: activeTab === 'checkin' ? 'Check-In' : 'Departure' })}
             </h3>
-            <p className="text-gray-600 mb-4">Bitte gib einen Grund für die Ablehnung an:</p>
+            <p className="text-gray-600 mb-4">{t('admin.provideRejectionReason')}</p>
             <textarea
               value={rejectReason[showRejectModal] || ''}
               onChange={(e) => setRejectReason({ ...rejectReason, [showRejectModal]: e.target.value })}
