@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Shield, Download, ArrowLeft } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import QRCode from 'qrcode';
@@ -12,6 +13,7 @@ interface PatrolLocation {
 }
 
 export function PatrolQRCodes({ onBack }: { onBack?: () => void } = {}) {
+  const { t } = useTranslation();
   const [locations, setLocations] = useState<PatrolLocation[]>([]);
   const [qrCodeURLs, setQrCodeURLs] = useState<{ [key: string]: string }>({});
 

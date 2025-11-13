@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../contexts/AuthContext';
 import { useProfiles } from '../hooks/useProfiles';
 import { supabase } from '../lib/supabase';
@@ -13,6 +14,7 @@ interface PointTemplate {
 }
 
 export function PointsManager({ onBack }: { onBack?: () => void } = {}) {
+  const { t } = useTranslation();
   const { profile } = useAuth();
   const { profiles, addPoints } = useProfiles();
   const [templates, setTemplates] = useState<PointTemplate[]>([]);

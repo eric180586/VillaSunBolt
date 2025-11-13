@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Camera, X } from 'lucide-react';
 
 interface PhotoRequirementDiceProps {
@@ -7,6 +8,7 @@ interface PhotoRequirementDiceProps {
 }
 
 export function PhotoRequirementDice({ onResult, onCancel }: PhotoRequirementDiceProps) {
+  const { t } = useTranslation();
   const [isRolling, setIsRolling] = useState(true);
   const [currentValue, setCurrentValue] = useState('🎲');
   const [finalResult, setFinalResult] = useState<boolean | null>(null);

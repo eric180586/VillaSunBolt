@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { supabase } from '../lib/supabase';
 import { useProfiles } from '../hooks/useProfiles';
 import { getTodayDateString } from '../lib/dateUtils';
@@ -17,6 +18,7 @@ interface DailyGoal {
 }
 
 export function DailyPointsOverview({ onBack }: { onBack?: () => void } = {}) {
+  const { t } = useTranslation();
   const { profiles } = useProfiles();
   const [dailyGoals, setDailyGoals] = useState<DailyGoal[]>([]);
   const [loading, setLoading] = useState(true);

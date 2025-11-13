@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../contexts/AuthContext';
 import { useTasks } from '../hooks/useTasks';
 import { supabase } from '../lib/supabase';
@@ -6,6 +7,7 @@ import { getTodayDateString } from '../lib/dateUtils';
 import { Clock } from 'lucide-react';
 
 export function ShiftProjection() {
+  const { t } = useTranslation();
   const { profile } = useAuth();
   const { tasks } = useTasks();
   const [projectedEndTime, setProjectedEndTime] = useState<string>('');

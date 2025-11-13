@@ -31,6 +31,7 @@ const CATEGORIES = [
 ];
 
 export function HowTo({ onBack }: { onBack?: () => void } = {}) {
+  const { t } = useTranslation();
   const { profile } = useAuth();
   const [documents, setDocuments] = useState<HowToDocument[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string>('all');

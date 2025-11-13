@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../contexts/AuthContext';
 import { useSchedules } from '../hooks/useSchedules';
 import { useDepartureRequests } from '../hooks/useDepartureRequests';
@@ -7,6 +8,7 @@ import { supabase } from '../lib/supabase';
 import { getTodayDateString, isSameDay } from '../lib/dateUtils';
 
 export function EndOfDayRequest() {
+  const { t } = useTranslation();
   const { profile } = useAuth();
   const { schedules } = useSchedules();
   const { requests, createRequest } = useDepartureRequests();

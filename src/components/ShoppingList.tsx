@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../contexts/AuthContext';
 import { Plus, Check, X, Camera, ShoppingCart, ArrowLeft } from 'lucide-react';
 import { supabase } from '../lib/supabase';
@@ -22,6 +23,7 @@ interface ShoppingItem {
 }
 
 export function ShoppingList({ onBack }: { onBack?: () => void } = {}) {
+  const { t } = useTranslation();
   const { profile } = useAuth();
   const [items, setItems] = useState<ShoppingItem[]>([]);
   const [showModal, setShowModal] = useState(false);

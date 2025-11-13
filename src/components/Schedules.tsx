@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../contexts/AuthContext';
 import { useProfiles } from '../hooks/useProfiles';
 import { Calendar, ChevronLeft, ChevronRight, Clock, X, Check, ArrowLeft } from 'lucide-react';
@@ -52,6 +53,7 @@ onNavigate?: (view: string) => void;
 }
 
 export function Schedules({ onNavigate, onBack }: SchedulesProps = {}) {
+  const { t } = useTranslation();
   const { profile } = useAuth();
   const { profiles } = useProfiles();
   const [currentWeekStart, setCurrentWeekStart] = useState<Date>(getMonday(new Date()));

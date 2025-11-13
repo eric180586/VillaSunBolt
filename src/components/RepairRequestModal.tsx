@@ -11,6 +11,7 @@ interface RepairRequestModalProps {
 }
 
 export function RepairRequestModal({ onClose, onComplete }: RepairRequestModalProps) {
+  const { t } = useTranslation();
   const { profile } = useAuth();
   const [formData, setFormData] = useState({
     title: '',

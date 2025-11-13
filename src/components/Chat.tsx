@@ -19,6 +19,7 @@ interface ChatMessage {
 }
 
 export function Chat({ onBack }: { onBack?: () => void } = {}) {
+  const { t } = useTranslation();
   const { profile } = useAuth();
   const { profiles } = useProfiles();
   const [messages, setMessages] = useState<ChatMessage[]>([]);

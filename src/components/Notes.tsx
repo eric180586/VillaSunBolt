@@ -5,6 +5,7 @@ import { Plus, AlertCircle, X, Edit, ArrowLeft, StickyNote } from 'lucide-react'
 import { useTranslation } from 'react-i18next';
 
 export function Notes({ onBack }: { onBack?: () => void } = {}) {
+  const { t } = useTranslation();
   const { profile } = useAuth();
   const { notes, createNote, updateNote, deleteNote } = useNotes();
   const [showModal, setShowModal] = useState(false);

@@ -12,6 +12,7 @@ interface TaskWithItemsModalProps {
 }
 
 export function TaskWithItemsModal({ task, onClose, onComplete, onOpenHelperPopup }: TaskWithItemsModalProps) {
+  const { t } = useTranslation();
   const { profile } = useAuth();
   const [items, setItems] = useState(task.items || []);
   const [saving, setSaving] = useState(false);

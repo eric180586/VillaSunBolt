@@ -16,6 +16,7 @@ interface TutorialSlide {
 }
 
 export default function TutorialSlideManager({ onClose }: { onClose: () => void }) {
+  const { t } = useTranslation();
   const { profile } = useAuth();
   const [slides, setSlides] = useState<TutorialSlide[]>([]);
   const [loading, setLoading] = useState(false);

@@ -11,6 +11,7 @@ interface TaskReviewModalProps {
 }
 
 export function TaskReviewModal({ task, onClose, onComplete }: TaskReviewModalProps) {
+  const { t } = useTranslation();
   const [rejectedItems, setRejectedItems] = useState<string[]>([]);
   const [adminPhotos, setAdminPhotos] = useState<File[]>([]);
   const [adminNotes, setAdminNotes] = useState('');

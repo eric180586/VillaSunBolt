@@ -15,6 +15,7 @@ interface TaskCompletionModalProps {
 }
 
 export function TaskCompletionModal({ task, items, onClose, onComplete, profiles }: TaskCompletionModalProps) {
+  const { t } = useTranslation();
   const { profile } = useAuth();
   const [hasHelper, setHasHelper] = useState(false);
   const [selectedHelper, setSelectedHelper] = useState<string>('');

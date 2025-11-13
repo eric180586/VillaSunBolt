@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../contexts/AuthContext';
 import { Shield, Camera, CheckCircle, AlertCircle, Clock, QrCode, ArrowLeft } from 'lucide-react';
 import { supabase } from '../lib/supabase';
@@ -37,6 +38,7 @@ interface PatrolScan {
 const TIME_SLOTS = ['11:00', '12:15', '13:30', '14:45', '16:00', '17:15', '18:30', '19:45', '21:00'];
 
 export function PatrolRounds({ onBack }: { onBack?: () => void } = {}) {
+  const { t } = useTranslation();
   const { profile } = useAuth();
   const [locations, setLocations] = useState<PatrolLocation[]>([]);
   const [todayRounds, setTodayRounds] = useState<PatrolRound[]>([]);

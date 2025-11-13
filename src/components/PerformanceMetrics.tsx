@@ -1,4 +1,5 @@
 import { useAuth } from '../contexts/AuthContext';
+import { useTranslation } from 'react-i18next';
 import { useTasks } from '../hooks/useTasks';
 import { useSchedules } from '../hooks/useSchedules';
 import { useProfiles } from '../hooks/useProfiles';
@@ -131,6 +132,7 @@ interface PerformanceMetricsProps {
 }
 
 export function PerformanceMetrics({ onNavigate }: PerformanceMetricsProps = {}) {
+  const { t } = useTranslation();
   const { profile } = useAuth();
   const { tasks } = useTasks();
   const { schedules } = useSchedules();

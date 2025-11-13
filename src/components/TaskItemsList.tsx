@@ -21,6 +21,7 @@ interface TaskItemsListProps {
 }
 
 export function TaskItemsList({ items, onToggleItem, readOnly = false, showCompletedBy = false }: TaskItemsListProps) {
+  const { t } = useTranslation();
   const { profile } = useAuth();
 
   if (!items || items.length === 0) {

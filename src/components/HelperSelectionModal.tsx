@@ -19,6 +19,7 @@ export function HelperSelectionModal({
   onComplete,
   staffMembers,
 }: HelperSelectionModalProps) {
+  const { t } = useTranslation();
   const { profile } = useAuth();
   const [selectedHelper, setSelectedHelper] = useState<string | null>(null);
   const [photos, setPhotos] = useState<File[]>([]);

@@ -1,9 +1,11 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useNotifications } from '../hooks/useNotifications';
 import { useNotes } from '../hooks/useNotes';
 import { Bell, CheckCheck, ChevronDown, ChevronUp, Eye, ArrowLeft } from 'lucide-react';
 
 export function Notifications({ onBack }: { onBack?: () => void } = {}) {
+  const { t } = useTranslation();
   const { notifications, markAsRead, markAllAsRead } = useNotifications();
   const { notes } = useNotes();
   const [expandedNotes, setExpandedNotes] = useState<Set<string>>(new Set());
