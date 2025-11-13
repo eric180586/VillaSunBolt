@@ -1,18 +1,15 @@
-const CACHE_VERSION = 'v5-2025-10-16-order-index-fix';
+const CACHE_VERSION = 'v6-2025-11-13-notification-fix';
 
 self.addEventListener('install', (event) => {
-  console.log('Service Worker installing...', CACHE_VERSION);
   self.skipWaiting();
 });
 
 self.addEventListener('activate', (event) => {
-  console.log('Service Worker activating...', CACHE_VERSION);
   event.waitUntil(
     caches.keys().then((cacheNames) => {
       return Promise.all(
         cacheNames.map((cacheName) => {
           if (cacheName !== CACHE_VERSION) {
-            console.log('Deleting old cache:', cacheName);
             return caches.delete(cacheName);
           }
         })
@@ -22,10 +19,7 @@ self.addEventListener('activate', (event) => {
 });
 
 self.addEventListener('push', (event) => {
-  console.log('Push notification received:', event);
-
   if (!event.data) {
-    console.log('Push event but no data');
     return;
   }
 
@@ -33,7 +27,6 @@ self.addEventListener('push', (event) => {
   try {
     notificationData = event.data.json();
   } catch (error) {
-    console.error('Error parsing push data:', error);
     notificationData = {
       title: 'Villa Sun Notification',
       body: event.data.text(),
@@ -58,7 +51,6 @@ self.addEventListener('push', (event) => {
 });
 
 self.addEventListener('notificationclick', (event) => {
-  console.log('Notification clicked:', event);
   event.notification.close();
 
   const urlToOpen = event.notification.data?.url || '/';
@@ -80,11 +72,9 @@ self.addEventListener('notificationclick', (event) => {
 });
 
 self.addEventListener('pushsubscriptionchange', (event) => {
-  console.log('Push subscription changed');
   event.waitUntil(
     self.registration.pushManager.subscribe(event.oldSubscription.options)
       .then((subscription) => {
-        console.log('Resubscribed to push notifications');
         return fetch('/api/update-subscription', {
           method: 'POST',
           headers: {
