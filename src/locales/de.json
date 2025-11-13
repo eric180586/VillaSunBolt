@@ -324,7 +324,14 @@
     "message": "Me work a lot, me go home now",
     "buttonText": "Ok?",
     "adminNotified": "Admin wurde benachrichtigt",
-    "noShiftFound": "Keine Schicht für heute gefunden. Bitte checke zuerst ein."
+    "noShiftFound": "Keine Schicht für heute gefunden. Bitte checke zuerst ein.",
+    "departureApprovedTitle": "Feierabend genehmigt",
+    "departureApprovedMessage": "Deine Feierabend-Anfrage wurde genehmigt. Schönen Feierabend!",
+    "departureRejectedTitle": "Feierabend abgelehnt",
+    "departureRejectedMessage": "Deine Feierabend-Anfrage wurde abgelehnt. Bitte arbeite weiter.",
+    "departureRequests": "Feierabend Anfragen",
+    "allProcessed": "Alle Feierabend-Anfragen wurden bearbeitet",
+    "errorNoCheckIn": "FEHLER: Mitarbeiter hat heute nicht eingecheckt! Feierabend kann nicht genehmigt werden."
   },
   "notifications": {
     "title": "Benachrichtigungen",
@@ -433,6 +440,12 @@
   "admin": {
     "allDone": "Alles erledigt!",
     "noPendingItems": "Keine ausstehenden Elemente",
-    "approveReject": "{{type}} genehmigen oder ablehnen"
+    "approveReject": "{{type}} genehmigen oder ablehnen",
+    "errorApproving": "Fehler beim Bestätigen",
+    "errorRejecting": "Fehler beim Ablehnen",
+    "checkInAndDeparture": "Check-In & Feierabend Anfragen",
+    "noCheckInsOpen": "Keine offenen Check-In Anfragen",
+    "noDeparturesOpen": "Keine offenen Feierabend Anfragen",
+    "rejectTitle": "{{type}} ablehnen"
   }
 }

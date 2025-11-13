@@ -324,7 +324,14 @@
     "message": "Me work a lot, me go home now",
     "buttonText": "Ok?",
     "adminNotified": "Admin has been notified",
-    "noShiftFound": "No shift found for today. Please check in first."
+    "noShiftFound": "No shift found for today. Please check in first.",
+    "departureApprovedTitle": "Departure approved",
+    "departureApprovedMessage": "Your departure request has been approved. Have a nice evening!",
+    "departureRejectedTitle": "Departure rejected",
+    "departureRejectedMessage": "Your departure request was rejected. Please continue working.",
+    "departureRequests": "Departure Requests",
+    "allProcessed": "All departure requests have been processed",
+    "errorNoCheckIn": "ERROR: Employee has not checked in today! Departure cannot be approved."
   },
   "notifications": {
     "title": "Notifications",
@@ -433,6 +440,12 @@
   "admin": {
     "allDone": "All done!",
     "noPendingItems": "No pending items",
-    "approveReject": "Approve or reject {{type}}"
+    "approveReject": "Approve or reject {{type}}",
+    "errorApproving": "Error approving",
+    "errorRejecting": "Error rejecting",
+    "checkInAndDeparture": "Check-In & Departure Requests",
+    "noCheckInsOpen": "No open check-in requests",
+    "noDeparturesOpen": "No open departure requests",
+    "rejectTitle": "Reject {{type}}"
   }
 }

@@ -3,6 +3,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../lib/supabase';
 import { CheckCircle, XCircle, Clock, User, AlertCircle, ArrowLeft, Home } from 'lucide-react';
 import { toLocaleTimeStringCambodia, toLocaleStringCambodia } from '../lib/dateUtils';
+import { useTranslation } from 'react-i18next';
 
 interface CheckInWithProfile {
   id: string;
@@ -34,6 +35,7 @@ interface DepartureRequest {
 }
 
 export function CheckInApproval({ onNavigate }: CheckInApprovalProps = {}) {
+  const { t } = useTranslation();
   const { profile } = useAuth();
   const [pendingCheckIns, setPendingCheckIns] = useState<CheckInWithProfile[]>([]);
   const [pendingDepartures, setPendingDepartures] = useState<DepartureRequest[]>([]);
@@ -142,7 +144,7 @@ export function CheckInApproval({ onNavigate }: CheckInApprovalProps = {}) {
       fetchPendingDepartures();
     } catch (error) {
       console.error('Error approving departure:', error);
-      alert('Fehler beim Bestätigen');
+      alert(t('admin.errorApproving'));
     } finally {
       setLoading(false);
     }
@@ -175,7 +177,7 @@ export function CheckInApproval({ onNavigate }: CheckInApprovalProps = {}) {
       fetchPendingDepartures();
     } catch (error) {
       console.error('Error rejecting departure:', error);
-      alert('Fehler beim Ablehnen');
+      alert(t('admin.errorRejecting'));
     } finally {
       setLoading(false);
     }
@@ -209,7 +211,7 @@ export function CheckInApproval({ onNavigate }: CheckInApprovalProps = {}) {
       fetchPendingCheckIns();
     } catch (error) {
       console.error('Error approving check-in:', error);
-      alert('Fehler beim Bestätigen');
+      alert(t('admin.errorApproving'));
     } finally {
       setLoading(false);
     }
@@ -242,7 +244,7 @@ export function CheckInApproval({ onNavigate }: CheckInApprovalProps = {}) {
       fetchPendingCheckIns();
     } catch (error) {
       console.error('Error rejecting check-in:', error);
-      alert('Fehler beim Ablehnen');
+      alert(t('admin.errorRejecting'));
     } finally {
       setLoading(false);
     }
@@ -270,7 +272,7 @@ export function CheckInApproval({ onNavigate }: CheckInApprovalProps = {}) {
         <div>
           <h2 className="text-3xl font-bold text-gray-900">Anfragen Übersicht</h2>
           <p className="text-gray-600 mt-1">
-            Check-In & Feierabend Anfragen
+            {t('admin.checkInAndDeparture')}
           </p>
         </div>
       </div>
@@ -294,15 +296,15 @@ export function CheckInApproval({ onNavigate }: CheckInApprovalProps = {}) {
               : 'text-gray-600 hover:text-gray-900'
           }`}
         >
-          Feierabend ({pendingDepartures.length})
+          {t('dashboard.departure')} ({pendingDepartures.length})
         </button>
       </div>
 
       {activeTab === 'checkin' && (pendingCheckIns.length === 0 ? (
         <div className="bg-white rounded-xl p-12 shadow-lg border border-gray-200 text-center">
           <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4" />
-          <h3 className="text-xl font-bold text-gray-900 mb-2">Alles erledigt!</h3>
-          <p className="text-gray-600">Keine offenen Check-In Anfragen</p>
+          <h3 className="text-xl font-bold text-gray-900 mb-2">{t('admin.allDone')}</h3>
+          <p className="text-gray-600">{t('admin.noCheckInsOpen')}</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 gap-4">
@@ -545,7 +547,7 @@ export function CheckInApproval({ onNavigate }: CheckInApprovalProps = {}) {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50" onClick={() => setShowRejectModal(null)}>
           <div className="bg-white rounded-xl p-6 w-full max-w-md" onClick={(e) => e.stopPropagation()}>
             <h3 className="text-xl font-bold text-gray-900 mb-4">
-              {activeTab === 'checkin' ? 'Check-In' : 'Feierabend'} ablehnen
+              {t('admin.rejectTitle', { type: activeTab === 'checkin' ? 'Check-In' : 'Departure' })}
             </h3>
             <p className="text-gray-600 mb-4">Bitte gib einen Grund für die Ablehnung an:</p>
             <textarea
@@ -577,8 +579,8 @@ export function CheckInApproval({ onNavigate }: CheckInApprovalProps = {}) {
       {activeTab === 'departure' && (pendingDepartures.length === 0 ? (
         <div className="bg-white rounded-xl p-12 shadow-lg border border-beige-200 text-center">
           <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4" />
-          <h3 className="text-xl font-bold text-gray-900 mb-2">Alles erledigt!</h3>
-          <p className="text-gray-600">Keine offenen Feierabend Anfragen</p>
+          <h3 className="text-xl font-bold text-gray-900 mb-2">{t('admin.allDone')}</h3>
+          <p className="text-gray-600">{t('admin.noDeparturesOpen')}</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

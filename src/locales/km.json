@@ -324,7 +324,14 @@
     "message": "Me work a lot, me go home now",
     "buttonText": "Ok?",
     "adminNotified": "អ្នកគ្រប់គ្រូងបានទទួលការជូនដំណឹង",
-    "noShiftFound": "មិនរកឃើញវេនសំរាប់ថ្ងៃនេះទេ។ សូមចុះឈ្មោះមុន។"
+    "noShiftFound": "មិនរកឃើញវេនសំរាប់ថ្ងៃនេះទេ។ សូមចុះឈ្មោះមុន។",
+    "departureApprovedTitle": "បានអនុម័តការចាកចេញ",
+    "departureApprovedMessage": "ស្នើសុំចាកចេញរបស់អ្នកបានអនុម័ត។ សូមស្រួលល្ងាចសុខស្រួល!",
+    "departureRejectedTitle": "បានបដិសេធការចាកចេញ",
+    "departureRejectedMessage": "ស្នើសុំចាកចេញរបស់អ្នកបានបដិសេធ។ សូមបន្តធ្វើការ។",
+    "departureRequests": "Departure Requests",
+    "allProcessed": "បានដំណើរការស្នើសុំចាកចេញទាំងអស់",
+    "errorNoCheckIn": "កំហុស: បុគ្គលិកមិនបាន Check-In ថ្ងៃនេះទេ! Departure មិនអាចអនុម័តបានទេ។"
   },
   "notifications": {
     "title": "ការជូនដំណឹង",
@@ -433,6 +440,12 @@
   "admin": {
     "allDone": "បានបញ្ចប់ទាំងអស់!",
     "noPendingItems": "គ្មានធាតុកំពុងរង់ចាំ",
-    "approveReject": "អនុម័តឬបដិសេធ {{type}}"
+    "approveReject": "អនុម័តឬបដិសេធ {{type}}",
+    "errorApproving": "កំហុសក្នុងការអនុម័ត",
+    "errorRejecting": "កំហុសក្នុងការបដិសេធ",
+    "checkInAndDeparture": "Check-In & Departure Requests",
+    "noCheckInsOpen": "គ្មានស្នើរ Check-In កំពុងបើក",
+    "noDeparturesOpen": "គ្មានស្នើរ Departure កំពុងបើក",
+    "rejectTitle": "បដិសេធ {{type}}"
   }
 }
