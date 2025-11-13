@@ -10,21 +10,18 @@ export interface PushSubscriptionData {
 
 export async function registerServiceWorker(): Promise<ServiceWorkerRegistration | null> {
   if (!('serviceWorker' in navigator)) {
-    console.log('Service Worker not supported');
     return null;
   }
 
   try {
     const existingRegistration = await navigator.serviceWorker.getRegistration('/');
     if (existingRegistration) {
-      console.log('Service Worker already registered:', existingRegistration);
       return existingRegistration;
     }
 
     const registration = await navigator.serviceWorker.register('/service-worker.js', {
       scope: '/',
     });
-    console.log('Service Worker registered:', registration);
     await navigator.serviceWorker.ready;
     return registration;
   } catch (error) {
@@ -35,12 +32,14 @@ export async function registerServiceWorker(): Promise<ServiceWorkerRegistration
 
 export async function requestNotificationPermission(): Promise<NotificationPermission> {
   if (!('Notification' in window)) {
-    console.log('Notifications not supported');
     return 'denied';
   }
 
+  if (Notification.permission !== 'default') {
+    return Notification.permission;
+  }
+
   const permission = await Notification.requestPermission();
-  console.log('Notification permission:', permission);
   return permission;
 }
 
@@ -49,7 +48,6 @@ export async function subscribeToPushNotifications(
 ): Promise<PushSubscription | null> {
   try {
     if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
-      console.log('Push notifications not supported');
       return null;
     }
 
@@ -57,25 +55,27 @@ export async function subscribeToPushNotifications(
 
     const registration = await navigator.serviceWorker.getRegistration('/');
     if (!registration) {
-      console.error('No service worker registration found');
       return null;
     }
 
     const existingSubscription = await registration.pushManager.getSubscription();
     if (existingSubscription) {
-      console.log('Push subscription already exists');
       return existingSubscription;
     }
 
-    const permission = await requestNotificationPermission();
-    if (permission !== 'granted') {
-      console.log('Notification permission not granted');
+    if (!('Notification' in window)) {
       return null;
+    }
+
+    if (Notification.permission !== 'granted') {
+      const permission = await requestNotificationPermission();
+      if (permission !== 'granted') {
+        return null;
+      }
     }
 
     const vapidKey = import.meta.env.VITE_VAPID_PUBLIC_KEY;
     if (!vapidKey) {
-      console.error('VAPID public key not configured');
       return null;
     }
 
@@ -85,7 +85,6 @@ export async function subscribeToPushNotifications(
     });
 
     await savePushSubscription(userId, subscription);
-    console.log('Push subscription created successfully');
     return subscription;
   } catch (error) {
     console.error('Push subscription failed:', error);
@@ -151,7 +150,6 @@ export async function checkPushSubscription(): Promise<PushSubscription | null> 
     const subscription = await registration.pushManager.getSubscription();
     return subscription;
   } catch (error) {
-    console.log('Push subscription check failed:', error);
     return null;
   }
 }
@@ -177,7 +175,7 @@ export async function sendPushNotification(params: {
   icon?: string;
   data?: any;
 }): Promise<void> {
-  const { data, error } = await supabase.functions.invoke('send-push-notification', {
+  const { error } = await supabase.functions.invoke('send-push-notification', {
     body: params,
   });
 
@@ -185,6 +183,4 @@ export async function sendPushNotification(params: {
     console.error('Error sending push notification:', error);
     throw error;
   }
-
-  console.log('Push notification sent:', data);
 }
