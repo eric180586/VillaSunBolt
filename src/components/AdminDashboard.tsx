@@ -110,6 +110,8 @@ export function AdminDashboard({ onNavigate, onBack }: AdminDashboardProps = {})
   const [teamAchieved, setTeamAchieved] = useState(0);
   const [totalTasksToday, setTotalTasksToday] = useState(0);
   const [completedTasksToday, setCompletedTasksToday] = useState(0);
+  const [totalChecklistsToday, setTotalChecklistsToday] = useState(0);
+  const [completedChecklistsToday, setCompletedChecklistsToday] = useState(0);
 
   // Daily reset is now only triggered manually by admin or via scheduled cron job
   // Removed automatic call on mount to prevent errors on every page load
@@ -175,6 +177,18 @@ export function AdminDashboard({ onNavigate, onBack }: AdminDashboardProps = {})
         } else {
           setTotalTasksToday(0);
           setCompletedTasksToday(0);
+        }
+
+        // Fetch team checklist counts
+        const { data: checklistData, error: checklistError } = await supabase
+          .rpc('get_team_daily_checklist_counts');
+
+        if (!checklistError && checklistData && checklistData.length > 0) {
+          setTotalChecklistsToday(checklistData[0].total_checklists || 0);
+          setCompletedChecklistsToday(checklistData[0].completed_checklists || 0);
+        } else {
+          setTotalChecklistsToday(0);
+          setCompletedChecklistsToday(0);
         }
 
       } catch (error) {
