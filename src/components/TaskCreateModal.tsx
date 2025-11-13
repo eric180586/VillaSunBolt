@@ -33,6 +33,7 @@ interface TaskCreateModalProps {
 }
 
 export function TaskCreateModal({ onClose, onComplete, profiles, editingTask }: TaskCreateModalProps) {
+  const { t } = useTranslation();
   const [formData, setFormData] = useState({
     category: 'extras',
     title: '',
