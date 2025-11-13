@@ -68,6 +68,81 @@ Deno.serve(async (req: Request) => {
 
     console.log(`Admin ${user.id} deleting user ${userId}`);
 
+    // Delete all related data first (in correct order to avoid FK violations)
+
+    // 1. Delete daily_point_goals
+    await supabaseAdmin
+      .from("daily_point_goals")
+      .delete()
+      .eq("user_id", userId);
+
+    // 2. Delete monthly_point_goals
+    await supabaseAdmin
+      .from("monthly_point_goals")
+      .delete()
+      .eq("user_id", userId);
+
+    // 3. Delete points_history
+    await supabaseAdmin
+      .from("points_history")
+      .delete()
+      .eq("user_id", userId);
+
+    // 4. Delete check_ins
+    await supabaseAdmin
+      .from("check_ins")
+      .delete()
+      .eq("user_id", userId);
+
+    // 5. Delete tasks assigned to user
+    await supabaseAdmin
+      .from("tasks")
+      .delete()
+      .eq("assigned_to", userId);
+
+    // 6. Delete notifications
+    await supabaseAdmin
+      .from("notifications")
+      .delete()
+      .eq("user_id", userId);
+
+    // 7. Delete chat messages
+    await supabaseAdmin
+      .from("team_chat")
+      .delete()
+      .eq("user_id", userId);
+
+    // 8. Delete schedules
+    await supabaseAdmin
+      .from("weekly_schedules")
+      .delete()
+      .eq("staff_id", userId);
+
+    // 9. Delete fortune wheel spins
+    await supabaseAdmin
+      .from("fortune_wheel_spins")
+      .delete()
+      .eq("user_id", userId);
+
+    // 10. Delete patrol rounds
+    await supabaseAdmin
+      .from("patrol_rounds")
+      .delete()
+      .eq("user_id", userId);
+
+    // 11. Delete departure requests
+    await supabaseAdmin
+      .from("departure_requests")
+      .delete()
+      .eq("user_id", userId);
+
+    // 12. Delete notes
+    await supabaseAdmin
+      .from("notes")
+      .delete()
+      .eq("author_id", userId);
+
+    // Finally delete the profile
     const { error: profileError } = await supabaseAdmin
       .from("profiles")
       .delete()
@@ -78,7 +153,7 @@ Deno.serve(async (req: Request) => {
       throw new Error(`Failed to delete profile: ${profileError.message}`);
     }
 
-    console.log(`Profile deleted for user ${userId}`);
+    console.log(`Profile and all related data deleted for user ${userId}`);
 
     const { error: authDeleteError } = await supabaseAdmin.auth.admin.deleteUser(userId);
 
