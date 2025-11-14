@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Globe } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
@@ -30,6 +30,14 @@ export function MultilingualInput({
     en: value_en,
     km: value_km
   });
+
+  useEffect(() => {
+    setValues({
+      de: value_de,
+      en: value_en,
+      km: value_km
+    });
+  }, [value_de, value_en, value_km]);
 
   const currentLang = i18n.language;
 
