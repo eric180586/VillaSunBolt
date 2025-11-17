@@ -177,13 +177,12 @@ export function CheckIn({ onBack }: { onBack?: () => void } = {}) {
     if (!profile?.id) return;
 
     const today = getTodayDateString();
-    const todayStart = `${today}T00:00:00+07:00`;
 
     const { data, error } = await supabase
       .from('check_ins')
       .select('*')
       .eq('user_id', profile.id)
-      .gte('check_in_time', todayStart)
+      .eq('check_in_date', today)
       .order('check_in_time', { ascending: false});
 
     if (error) {
