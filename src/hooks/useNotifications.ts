@@ -18,7 +18,7 @@ export function useNotifications() {
 
     try {
       const { data, error } = await supabase
-        .from('notifications')
+        .from('notifications_translated')
         .select('*')
         .eq('user_id', user.id)
         .order('created_at', { ascending: false })
@@ -40,14 +40,21 @@ export function useNotifications() {
 
   useRealtimeSubscription<Notification>(
     'notifications',
-    (payload) => {
+    async (payload) => {
       if (payload.new.user_id === user?.id) {
-        setNotifications((current) => [payload.new as Notification, ...current]);
+        const { data: translatedNotification } = await supabase
+          .from('notifications_translated')
+          .select('*')
+          .eq('id', payload.new.id)
+          .single();
+
+        const notificationToAdd = translatedNotification || payload.new;
+        setNotifications((current) => [notificationToAdd as Notification, ...current]);
         setUnreadCount((count) => count + 1);
 
         if ('Notification' in window && Notification.permission === 'granted') {
-          new Notification(payload.new.title, {
-            body: payload.new.message,
+          new Notification(notificationToAdd.title, {
+            body: notificationToAdd.message,
             icon: '/icon.png',
           });
         }
@@ -55,9 +62,6 @@ export function useNotifications() {
     },
     (payload) => {
       if (payload.new.user_id === user?.id) {
-        setNotifications((current) =>
-          current.map((n) => (n.id === payload.new.id ? (payload.new as Notification) : n))
-        );
         fetchNotifications();
       }
     },
