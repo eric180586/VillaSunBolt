@@ -538,7 +538,11 @@ export function CheckIn({ onBack }: { onBack?: () => void } = {}) {
                       {getStatusBadge(checkIn.status)}
                     </div>
                     <p className="text-sm text-gray-600">
-                      {new Date(checkIn.check_in_time).toLocaleTimeString('de-DE')}
+                      {new Date(checkIn.check_in_time).toLocaleTimeString('de-DE', {
+                        timeZone: 'Asia/Phnom_Penh',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                      })}
                     </p>
                     {checkIn.is_late && (
                       <p className="text-xs text-orange-600">
