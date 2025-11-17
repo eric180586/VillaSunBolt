@@ -320,6 +320,7 @@ export function CheckIn({ onBack }: { onBack?: () => void } = {}) {
           user_id: profile.id,
           check_in_id: currentCheckInId,
           spin_date: today,
+          points_won: segment.actualPoints || 0,
           reward_type: segment.rewardType,
           reward_value: segment.rewardValue,
           reward_label: segment.label,
