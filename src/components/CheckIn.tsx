@@ -479,27 +479,39 @@ export function CheckIn({ onBack }: { onBack?: () => void } = {}) {
               </p>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              <button
-                onClick={() => handleCheckIn('früh')}
-                disabled={loading}
-                className="flex flex-col items-center justify-center p-8 bg-white border-2 border-gray-200 rounded-xl hover:shadow-xl hover:border-gray-300 transform hover:scale-105 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-md"
-              >
-                <Clock className="w-12 h-12 mb-3 text-gray-700" />
-                <span className="font-semibold text-gray-900 text-lg">{t('checkin.earlyShift')}</span>
-                <span className="text-sm text-gray-600">9:00</span>
-              </button>
+            {todayCheckIns.length > 0 ? (
+              <div className="bg-green-50 border-2 border-green-400 rounded-xl p-6">
+                <div className="flex items-center space-x-4">
+                  <CheckCircle className="w-12 h-12 text-green-600" />
+                  <div>
+                    <h4 className="font-bold text-gray-900 text-lg">{t('checkin.alreadyCheckedIn', 'Bereits eingecheckt!')}</h4>
+                    <p className="text-gray-700">{t('checkin.alreadyCheckedInMessage', 'Du hast dich heute bereits eingestempelt.')}</p>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div className="grid grid-cols-2 gap-4">
+                <button
+                  onClick={() => handleCheckIn('früh')}
+                  disabled={loading}
+                  className="flex flex-col items-center justify-center p-8 bg-white border-2 border-gray-200 rounded-xl hover:shadow-xl hover:border-gray-300 transform hover:scale-105 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-md"
+                >
+                  <Clock className="w-12 h-12 mb-3 text-gray-700" />
+                  <span className="font-semibold text-gray-900 text-lg">{t('checkin.earlyShift')}</span>
+                  <span className="text-sm text-gray-600">9:00</span>
+                </button>
 
-              <button
-                onClick={() => handleCheckIn('spät')}
-                disabled={loading}
-                className="flex flex-col items-center justify-center p-8 bg-white border-2 border-gray-200 rounded-xl hover:shadow-xl hover:border-gray-300 transform hover:scale-105 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-md"
-              >
-                <Clock className="w-12 h-12 mb-3 text-gray-700" />
-                <span className="font-semibold text-gray-900 text-lg">{t('checkin.lateShift')}</span>
-                <span className="text-sm text-gray-600">15:00</span>
-              </button>
-            </div>
+                <button
+                  onClick={() => handleCheckIn('spät')}
+                  disabled={loading}
+                  className="flex flex-col items-center justify-center p-8 bg-white border-2 border-gray-200 rounded-xl hover:shadow-xl hover:border-gray-300 transform hover:scale-105 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-md"
+                >
+                  <Clock className="w-12 h-12 mb-3 text-gray-700" />
+                  <span className="font-semibold text-gray-900 text-lg">{t('checkin.lateShift')}</span>
+                  <span className="text-sm text-gray-600">15:00</span>
+                </button>
+              </div>
+            )}
           </div>
         )}
       </div>
