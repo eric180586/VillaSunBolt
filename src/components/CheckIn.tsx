@@ -561,7 +561,7 @@ export function CheckIn({ onBack }: { onBack?: () => void } = {}) {
         )}
       </div>
 
-      {showFortuneWheel && !alreadySpunToday && (
+      {showFortuneWheel && (
         <div className="fixed inset-0 z-[9999]">
           <FortuneWheel
             onClose={handleCloseFortuneWheel}
