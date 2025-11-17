@@ -45,6 +45,6 @@ npm run build
 - ✅ Shopping Liste
 - ✅ Notizen System
 - ✅ Departure Requests
-- ✅ Push Notifications
+- ✅ Push Notifications ebenfalls automatisch übersetzt
 - ✅ Mehrsprachigkeit (DE/EN/KM)
 
