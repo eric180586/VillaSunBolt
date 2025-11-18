@@ -1,7 +1,9 @@
+import { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useTasks } from '../hooks/useTasks';
+import { supabase } from '../lib/supabase';
 import { useTranslation } from 'react-i18next';
-import { CheckCircle2, Clock, AlertCircle } from 'lucide-react';
+import { CheckCircle2, Clock, AlertCircle, ArrowLeft } from 'lucide-react';
 
 interface TodayTasksOverviewProps {
   onBack?: () => void;
@@ -11,9 +13,56 @@ export function TodayTasksOverview({ onBack }: TodayTasksOverviewProps) {
   const { profile } = useAuth();
   const { tasks } = useTasks();
   const { t } = useTranslation();
+  const [checklistInstances, setChecklistInstances] = useState<any[]>([]);
 
   const today = new Date();
   today.setHours(0, 0, 0, 0);
+
+  useEffect(() => {
+    async function fetchChecklistInstances() {
+      const todayStr = today.toISOString().split('T')[0];
+      const { data, error } = await supabase
+        .from('checklist_instances')
+        .select(`
+          id,
+          title,
+          status,
+          instance_date,
+          items,
+          assigned_to,
+          checklists!checklist_instances_checklist_id_fkey (
+            points_value,
+            duration_minutes
+          )
+        `)
+        .eq('instance_date', todayStr)
+        .in('status', ['pending', 'in_progress', 'review', 'completed']);
+
+      if (!error && data) {
+        setChecklistInstances(data);
+      }
+    }
+    fetchChecklistInstances();
+
+    const channel = supabase
+      .channel('checklist_instances_today')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'checklist_instances',
+        },
+        () => {
+          fetchChecklistInstances();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
 
   const todayTasks = tasks.filter((task) => {
     // Include daily recurring tasks (they don't have due_date)
@@ -28,13 +77,26 @@ export function TodayTasksOverview({ onBack }: TodayTasksOverviewProps) {
     return taskDate.getTime() === today.getTime();
   });
 
-  const pendingTasks = todayTasks.filter(
+  // Merge checklist instances as tasks
+  const checklistsAsTasks = checklistInstances.map((ci) => ({
+    id: ci.id,
+    title: ci.title,
+    description: null,
+    status: ci.status,
+    points_value: ci.checklists?.points_value || 0,
+    duration_minutes: ci.checklists?.duration_minutes || null,
+    is_checklist: true,
+  }));
+
+  const allTodayTasks = [...todayTasks, ...checklistsAsTasks];
+
+  const pendingTasks = allTodayTasks.filter(
     (task) => task.status === 'pending' || task.status === 'in_progress'
   );
-  const completedTasks = todayTasks.filter(
+  const completedTasks = allTodayTasks.filter(
     (task) => task.status === 'completed'
   );
-  const reviewTasks = todayTasks.filter(
+  const reviewTasks = allTodayTasks.filter(
     (task) => task.status === 'review'
   );
 
@@ -97,7 +159,7 @@ export function TodayTasksOverview({ onBack }: TodayTasksOverviewProps) {
               {t('dashboard.todaysTasks')}
             </h1>
             <p className="text-gray-600 mt-1">
-              {todayTasks.length} {todayTasks.length === 1 ? 'Task' : 'Tasks'}
+              {allTodayTasks.length} {allTodayTasks.length === 1 ? 'Task' : 'Tasks'}
             </p>
           </div>
         </div>
@@ -117,7 +179,7 @@ export function TodayTasksOverview({ onBack }: TodayTasksOverviewProps) {
           </div>
         </div>
 
-        {todayTasks.length === 0 ? (
+        {allTodayTasks.length === 0 ? (
           <div className="bg-white rounded-lg shadow-md p-12 text-center">
             <CheckCircle2 className="w-16 h-16 text-green-500 mx-auto mb-4" />
             <h3 className="text-xl font-semibold text-gray-900 mb-2">
@@ -129,7 +191,7 @@ export function TodayTasksOverview({ onBack }: TodayTasksOverviewProps) {
           </div>
         ) : (
           <div className="space-y-3">
-            {todayTasks.map((task) => (
+            {allTodayTasks.map((task) => (
               <div
                 key={task.id}
                 className={`bg-white rounded-lg shadow-md p-5 border-l-4 ${
