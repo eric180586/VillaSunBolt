@@ -226,7 +226,7 @@ export function CheckIn({ onBack }: { onBack?: () => void } = {}) {
 
     try {
       // Map German shift types to English for database
-      const mappedShiftType = shiftType === 'früh' ? 'morning' : 'late';
+      const mappedShiftType = shiftType === 'früh' ? 'early' : 'late';
 
       const { data, error } = await supabase.rpc('process_check_in', {
         p_user_id: profile.id,
