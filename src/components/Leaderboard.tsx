@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useProfiles } from '../hooks/useProfiles';
 import { supabase } from '../lib/supabase';
-import { Award, Trophy, Medal, Plus, Minus, Users, ArrowUp, ArrowDown, Minus as MinusIcon } from 'lucide-react';
+import { Award, Trophy, Medal, Plus, Minus, Users, ArrowUp, ArrowDown, Minus as MinusIcon, ArrowLeft } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 interface DailyGoal {
