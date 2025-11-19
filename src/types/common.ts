@@ -6,6 +6,8 @@ export interface CheckInResult {
   check_in_id?: string;
   points_awarded?: number;
   status?: string;
+  is_late?: boolean;
+  minutes_late?: number;
 }
 
 export interface CheckIn {
@@ -19,6 +21,8 @@ export interface CheckIn {
   points_awarded?: number;
   late_reason?: string | null;
   check_in_date?: string;
+  is_late?: boolean;
+  minutes_late?: number;
 }
 
 export interface ScheduleShift {
@@ -38,6 +42,16 @@ export interface FortuneWheelSegment {
   label: string;
   points: number;
   color: string;
+  actualPoints?: number;
+  rewardType?: string;
+  rewardValue?: number;
+}
+
+export interface WheelSegment {
+  id: string;
+  label: string;
+  color: string;
+  points: number;
 }
 
 export interface ChatMessage {
