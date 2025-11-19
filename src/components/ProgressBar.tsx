@@ -30,7 +30,7 @@ interface WeeklySchedule {
   shifts: Array<{
     day: string;
     date: string;
-    shift: 'early' | 'late' | 'off';
+    shift: 'morning' | 'late' | 'off';
   }>;
   is_published: boolean;
 }
@@ -73,14 +73,14 @@ export function ProgressBar() {
       let scheduledCountEarly = 0;
       let scheduledCountLate = 0;
       let userIsScheduled = false;
-      let userShiftType: 'early' | 'late' | null = null;
+      let userShiftType: 'morning' | 'late' | null = null;
 
       weeklySchedules?.forEach((schedule) => {
         const shiftsArray = schedule.shifts as Array<{ date: string; shift: string }>;
         const todayShift = shiftsArray.find((s) => s.date === todayStr);
 
-        if (todayShift && (todayShift.shift === 'early' || todayShift.shift === 'late')) {
-          if (todayShift.shift === 'early') {
+        if (todayShift && (todayShift.shift === 'morning' || todayShift.shift === 'late')) {
+          if (todayShift.shift === 'morning') {
             scheduledCountEarly++;
           } else {
             scheduledCountLate++;
@@ -88,7 +88,7 @@ export function ProgressBar() {
 
           if (schedule.staff_id === profile.id) {
             userIsScheduled = true;
-            userShiftType = todayShift.shift as 'early' | 'late';
+            userShiftType = todayShift.shift as 'morning' | 'late';
           }
         }
       });
@@ -100,7 +100,7 @@ export function ProgressBar() {
         return;
       }
 
-      const scheduledCount = userShiftType === 'early' ? scheduledCountEarly : scheduledCountLate;
+      const scheduledCount = userShiftType === 'morning' ? scheduledCountEarly : scheduledCountLate;
 
       const todayTasks = tasks.filter((t) => {
         if (!t.due_date) return false;
@@ -119,9 +119,9 @@ export function ProgressBar() {
         // Skip tasks that are for the opposite shift
         const taskTitle = (task.title || '').toLowerCase();
         const isLateShiftTask = taskTitle.includes('late') || taskTitle.includes('spät');
-        const isEarlyShiftTask = taskTitle.includes('early') || taskTitle.includes('früh');
+        const isEarlyShiftTask = taskTitle.includes('morning') || taskTitle.includes('früh');
 
-        if (userShiftType === 'early' && isLateShiftTask && !task.assigned_to && !task.helper_id) {
+        if (userShiftType === 'morning' && isLateShiftTask && !task.assigned_to && !task.helper_id) {
           return; // Skip late shift tasks for early shift staff
         }
         if (userShiftType === 'late' && isEarlyShiftTask && !task.assigned_to && !task.helper_id) {
@@ -155,7 +155,7 @@ export function ProgressBar() {
       );
 
       // Only show "go home at" for early shift
-      if (todayShift && todayShift.shift === 'early') {
+      if (todayShift && todayShift.shift === 'morning') {
         const shiftStartTime = { hours: 10, minutes: 0 };
 
         const baseTime = new Date();

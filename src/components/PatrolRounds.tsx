@@ -155,12 +155,12 @@ export function PatrolRounds({ onBack }: { onBack?: () => void } = {}) {
     if (!schedule || schedule.length === 0) return;
 
     const currentHour = new Date().getHours();
-    const currentShift = currentHour < 15 ? 'early' : 'late';
+    const currentShift = currentHour < 15 ? 'morning' : 'late';
     const assignedSchedule = schedule.find((s) => s.shift === currentShift);
 
     if (!assignedSchedule) return;
 
-    const relevantTimeSlots = currentShift === 'early'
+    const relevantTimeSlots = currentShift === 'morning'
       ? TIME_SLOTS.filter((slot) => parseInt(slot.split(':')[0]) < 15)
       : TIME_SLOTS.filter((slot) => parseInt(slot.split(':')[0]) >= 15);
 

@@ -5,7 +5,7 @@ import { useProfiles } from '../hooks/useProfiles';
 import { Calendar, ChevronLeft, ChevronRight, Clock, X, Check, ArrowLeft } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 
-type ShiftType = 'early' | 'late' | 'off';
+type ShiftType = 'morning' | 'late' | 'off';
 
 interface DayShift {
   day: string;
@@ -158,7 +158,7 @@ export function Schedules({ onNavigate, onBack }: SchedulesProps = {}) {
   const handleShiftClick = async (staffId: string, dayIndex: number, currentShift?: ShiftType) => {
     if (!isAdmin) return;
 
-    const shifts: ShiftType[] = ['early', 'late', 'off'];
+    const shifts: ShiftType[] = ['morning', 'late', 'off'];
     const currentIndex = currentShift ? shifts.indexOf(currentShift) : -1;
     const nextShift = shifts[(currentIndex + 1) % shifts.length];
 

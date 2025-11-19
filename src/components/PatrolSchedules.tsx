@@ -9,7 +9,7 @@ const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'
 
 interface PatrolSchedule {
   date: string;
-  shift: 'early' | 'late';
+  shift: 'morning' | 'late';
   assigned_to: string | null;
   staff_name?: string;
 }
@@ -70,11 +70,11 @@ export function PatrolSchedules({ onNavigate, onBack }: PatrolSchedulesProps = {
 
       const scheduleMap: PatrolSchedule[] = [];
       weekDates.forEach((date) => {
-        ['early', 'late'].forEach((shift) => {
+        ['morning', 'late'].forEach((shift) => {
           const existing = data?.find((s) => s.date === date && s.shift === shift);
           scheduleMap.push({
             date,
-            shift: shift as 'early' | 'late',
+            shift: shift as 'morning' | 'late',
             assigned_to: existing?.assigned_to || null,
             staff_name: existing?.profiles?.full_name || null,
           });
@@ -89,7 +89,7 @@ export function PatrolSchedules({ onNavigate, onBack }: PatrolSchedulesProps = {
     }
   };
 
-  const handleAssignment = async (date: string, shift: 'early' | 'late', currentStaffId: string | null) => {
+  const handleAssignment = async (date: string, shift: 'morning' | 'late', currentStaffId: string | null) => {
     if (!isAdmin) return;
 
     const currentIndex = currentStaffId
@@ -198,10 +198,10 @@ export function PatrolSchedules({ onNavigate, onBack }: PatrolSchedulesProps = {
                 </tr>
               </thead>
               <tbody>
-                {['early', 'late'].map((shift) => (
+                {['morning', 'late'].map((shift) => (
                   <tr key={shift} className="border-t border-gray-200 hover:bg-beige-50">
                     <td className="p-2 font-medium text-gray-900 capitalize bg-beige-50 text-sm">
-                      {shift === 'early' ? 'Early' : 'Late'}
+                      {shift === 'morning' ? 'Early' : 'Late'}
                     </td>
                     {weekDates.map((date, dayIndex) => {
                       const dateStr = formatDate(date);
@@ -213,10 +213,10 @@ export function PatrolSchedules({ onNavigate, onBack }: PatrolSchedulesProps = {
                         <td key={dayIndex} className="p-1 text-center">
                           {isAdmin ? (
                             <button
-                              onClick={() => handleAssignment(dateStr, shift as 'early' | 'late', schedule?.assigned_to || null)}
+                              onClick={() => handleAssignment(dateStr, shift as 'morning' | 'late', schedule?.assigned_to || null)}
                               className={`w-full px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
                                 schedule?.assigned_to
-                                  ? shift === 'early'
+                                  ? shift === 'morning'
                                     ? 'bg-blue-100 text-blue-800 hover:bg-blue-200'
                                     : 'bg-orange-100 text-orange-800 hover:bg-orange-200'
                                   : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
@@ -228,7 +228,7 @@ export function PatrolSchedules({ onNavigate, onBack }: PatrolSchedulesProps = {
                             <div
                               className={`w-full px-3 py-2 rounded-lg text-sm font-medium ${
                                 schedule?.assigned_to
-                                  ? shift === 'early'
+                                  ? shift === 'morning'
                                     ? 'bg-blue-100 text-blue-800'
                                     : 'bg-orange-100 text-orange-800'
                                   : 'bg-gray-100 text-gray-500'

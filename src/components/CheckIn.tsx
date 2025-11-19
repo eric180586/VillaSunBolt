@@ -130,14 +130,14 @@ export function CheckIn({ onBack }: { onBack?: () => void } = {}) {
       if (error) {
         console.error('Schedule query error:', error);
         setHasScheduleToday(true);
-        setScheduledShift('early');
+        setScheduledShift('morning');
         return;
       }
 
       if (!data || data.length === 0) {
         console.log('No schedules found for user - allowing check-in anyway');
         setHasScheduleToday(true);
-        setScheduledShift('early');
+        setScheduledShift('morning');
         return;
       }
 
@@ -160,7 +160,7 @@ export function CheckIn({ onBack }: { onBack?: () => void } = {}) {
       if (!todayShift || todayShift.shift === 'off') {
         console.log('No valid shift for today (off day or not found) - allowing check-in anyway');
         setHasScheduleToday(true);
-        setScheduledShift('early');
+        setScheduledShift('morning');
       } else {
         console.log('User has shift today:', todayShift.shift);
         setHasScheduleToday(true);
@@ -169,7 +169,7 @@ export function CheckIn({ onBack }: { onBack?: () => void } = {}) {
     } catch (error) {
       console.error('Error checking schedule:', error);
       setHasScheduleToday(true);
-      setScheduledShift('early');
+      setScheduledShift('morning');
     }
   };
 
@@ -226,7 +226,7 @@ export function CheckIn({ onBack }: { onBack?: () => void } = {}) {
 
     try {
       // Map German shift types to English for database
-      const mappedShiftType = shiftType === 'früh' ? 'early' : 'late';
+      const mappedShiftType = shiftType === 'früh' ? 'morning' : 'late';
 
       const { data, error } = await supabase.rpc('process_check_in', {
         p_user_id: profile.id,
@@ -475,7 +475,7 @@ export function CheckIn({ onBack }: { onBack?: () => void } = {}) {
 
             <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-4">
               <p className="text-sm text-green-800">
-                <strong>{t('checkin.scheduledFor', 'Eingeplant für:')}</strong> {scheduledShift === 'early' ? t('checkin.earlyShift', 'Frühschicht') : t('checkin.lateShift', 'Spätschicht')}
+                <strong>{t('checkin.scheduledFor', 'Eingeplant für:')}</strong> {scheduledShift === 'morning' ? t('checkin.earlyShift', 'Frühschicht') : t('checkin.lateShift', 'Spätschicht')}
               </p>
             </div>
 

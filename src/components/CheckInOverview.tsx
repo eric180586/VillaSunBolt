@@ -486,7 +486,7 @@ export function CheckInOverview({ onBack, onNavigate }: CheckInOverviewProps = {
                         {!status.has_schedule ? (
                           <span className="text-gray-500">Off</span>
                         ) : (
-                          <span className="capitalize">{status.shift_type === 'early' ? 'Früh' : 'Spät'}</span>
+                          <span className="capitalize">{status.shift_type === 'morning' ? 'Früh' : 'Spät'}</span>
                         )}
                       </p>
                     </td>

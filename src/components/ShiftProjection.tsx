@@ -31,14 +31,14 @@ export function ShiftProjection() {
       let scheduledCountEarly = 0;
       let scheduledCountLate = 0;
       let userIsScheduled = false;
-      let userShiftType: 'early' | 'late' | null = null;
+      let userShiftType: 'morning' | 'late' | null = null;
 
       weeklySchedules?.forEach((schedule) => {
         const shiftsArray = schedule.shifts as Array<{ date: string; shift: string }>;
         const todayShift = shiftsArray.find((s) => s.date === todayDateString);
 
-        if (todayShift && (todayShift.shift === 'early' || todayShift.shift === 'late')) {
-          if (todayShift.shift === 'early') {
+        if (todayShift && (todayShift.shift === 'morning' || todayShift.shift === 'late')) {
+          if (todayShift.shift === 'morning') {
             scheduledCountEarly++;
           } else {
             scheduledCountLate++;
@@ -46,7 +46,7 @@ export function ShiftProjection() {
 
           if (schedule.staff_id === profile?.id) {
             userIsScheduled = true;
-            userShiftType = todayShift.shift as 'early' | 'late';
+            userShiftType = todayShift.shift as 'morning' | 'late';
           }
         }
       });
@@ -57,7 +57,7 @@ export function ShiftProjection() {
       }
 
       // Use the count for the user's shift type
-      const scheduledCount = userShiftType === 'early' ? scheduledCountEarly : scheduledCountLate;
+      const scheduledCount = userShiftType === 'morning' ? scheduledCountEarly : scheduledCountLate;
 
       // Hole alle offenen Tasks von heute (due today, not just created today)
       const todayTasks = tasks.filter((t) => {
@@ -78,9 +78,9 @@ export function ShiftProjection() {
         // Skip tasks that are for the opposite shift
         const taskTitle = (task.title || '').toLowerCase();
         const isLateShiftTask = taskTitle.includes('late') || taskTitle.includes('spät');
-        const isEarlyShiftTask = taskTitle.includes('early') || taskTitle.includes('früh');
+        const isEarlyShiftTask = taskTitle.includes('morning') || taskTitle.includes('früh');
 
-        if (userShiftType === 'early' && isLateShiftTask && !task.assigned_to && !task.helper_id) {
+        if (userShiftType === 'morning' && isLateShiftTask && !task.assigned_to && !task.helper_id) {
           // Skip late shift tasks for early shift staff (unless assigned)
           return;
         }

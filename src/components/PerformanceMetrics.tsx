@@ -262,7 +262,7 @@ export function PerformanceMetrics({ onNavigate }: PerformanceMetricsProps = {})
           const shiftsArray = schedule.shifts as Array<{ date: string; shift: string }>;
           const todayShift = shiftsArray.find((s) => s.date === today);
 
-          if (todayShift && (todayShift.shift === 'early' || todayShift.shift === 'late')) {
+          if (todayShift && (todayShift.shift === 'morning' || todayShift.shift === 'late')) {
             scheduledCount++;
           }
         });
