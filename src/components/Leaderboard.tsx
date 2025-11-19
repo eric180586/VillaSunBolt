@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useProfiles } from '../hooks/useProfiles';
 import { supabase } from '../lib/supabase';
-import { Award, Trophy, Medal, Plus, Minus, Users, ArrowUp, ArrowDown, Minus as MinusIcon, ArrowLeft } from 'lucide-react';
+import { Award, Trophy, Medal, Plus, Users, ArrowUp, ArrowDown, Minus as MinusIcon, ArrowLeft } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 interface DailyGoal {
@@ -23,18 +23,12 @@ interface MonthlyStats {
   daysCount: number;
 }
 
-export function Leaderboard({ onBack }: { onBack?: () => void } = {}) {
+export function Leaderboard({ onBack, onNavigate }: { onBack?: () => void; onNavigate?: (view: string) => void } = {}) {
   const { profile } = useAuth();
   const { t } = useTranslation();
-  const { profiles, addPoints, getPointsHistory } = useProfiles();
+  const { profiles, getPointsHistory } = useProfiles();
 
   const staffProfiles = profiles.filter((p) => p.role !== 'admin');
-  const [showModal, setShowModal] = useState(false);
-  const [selectedUserId, setSelectedUserId] = useState('');
-  const [pointsForm, setPointsForm] = useState({
-    points: 0,
-    reason: '',
-  });
   const [historyUserId, setHistoryUserId] = useState<string | null>(null);
   const [history, setHistory] = useState<any[]>([]);
   const [dailyGoals, setDailyGoals] = useState<DailyGoal[]>([]);
@@ -104,22 +98,6 @@ export function Leaderboard({ onBack }: { onBack?: () => void } = {}) {
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    try {
-      await addPoints(
-        selectedUserId,
-        pointsForm.points,
-        pointsForm.reason,
-        profile?.id || ''
-      );
-      setShowModal(false);
-      setPointsForm({ points: 0, reason: '' });
-      setSelectedUserId('');
-    } catch (error) {
-      console.error('Error adding points:', error);
-    }
-  };
 
   const handleViewHistory = async (userId: string) => {
     try {
@@ -301,13 +279,15 @@ export function Leaderboard({ onBack }: { onBack?: () => void } = {}) {
           <h2 className="text-3xl font-bold text-gray-900">🏆 {t('leaderboard.title')}</h2>
         </div>
         {isManager && (
-          <button
-            onClick={() => setShowModal(true)}
-            className="flex items-center space-x-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
-          >
-            <Award className="w-5 h-5" />
-            <span>{t('leaderboard.managePoints')}</span>
-          </button>
+          <div className="flex items-center space-x-2">
+            <button
+              onClick={() => onNavigate?.('points-manager')}
+              className="flex items-center space-x-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+            >
+              <Award className="w-5 h-5" />
+              <span>Punkte verwalten</span>
+            </button>
+          </div>
         )}
       </div>
 
@@ -536,100 +516,6 @@ export function Leaderboard({ onBack }: { onBack?: () => void } = {}) {
         </div>
       </div>
 
-      {showModal && (
-        <div
-          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50"
-          onClick={() => {
-            setShowModal(false);
-            setSelectedUserId('');
-            setPointsForm({ points: 0, reason: '' });
-          }}
-        >
-          <div
-            className="bg-white rounded-xl p-6 w-full max-w-md"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <h3 className="text-xl font-bold text-gray-900 mb-4">{t('leaderboard.managePoints')}</h3>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  {t('leaderboard.staffMember')}
-                </label>
-                <select
-                  value={selectedUserId}
-                  onChange={(e) => setSelectedUserId(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg"
-                  required
-                >
-                  <option value="">{t('leaderboard.selectStaff')}</option>
-                  {staffProfiles.map((p) => (
-                    <option key={p.id} value={p.id}>
-                      {p.full_name} ({p.total_points} pts)
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  {t('leaderboard.pointsNote')}
-                </label>
-                <div className="flex space-x-2">
-                  <button
-                    type="button"
-                    onClick={() => setPointsForm({ ...pointsForm, points: pointsForm.points - 10 })}
-                    className="px-3 py-2 bg-red-100 text-red-700 rounded-lg hover:bg-red-200"
-                  >
-                    <Minus className="w-4 h-4" />
-                  </button>
-                  <input
-                    type="number"
-                    value={pointsForm.points}
-                    onChange={(e) =>
-                      setPointsForm({ ...pointsForm, points: parseInt(e.target.value) || 0 })
-                    }
-                    className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-center"
-                    required
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setPointsForm({ ...pointsForm, points: pointsForm.points + 10 })}
-                    className="px-3 py-2 bg-green-100 text-green-700 rounded-lg hover:bg-green-200"
-                  >
-                    <Plus className="w-4 h-4" />
-                  </button>
-                </div>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  {t('leaderboard.reason')}
-                </label>
-                <textarea
-                  value={pointsForm.reason}
-                  onChange={(e) => setPointsForm({ ...pointsForm, reason: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg"
-                  rows={3}
-                  required
-                />
-              </div>
-              <div className="flex space-x-3 pt-4">
-                <button
-                  type="button"
-                  onClick={() => setShowModal(false)}
-                  className="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
-                >
-                  {t('common.cancel')}
-                </button>
-                <button
-                  type="submit"
-                  className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-                >
-                  {t('common.apply')}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
 
       {historyUserId && (
         <div

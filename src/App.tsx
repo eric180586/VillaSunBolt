@@ -20,7 +20,6 @@ import { PatrolRounds } from './components/PatrolRounds';
 import { PatrolSchedules } from './components/PatrolSchedules';
 import { PatrolQRCodes } from './components/PatrolQRCodes';
 import { CheckInPopup } from './components/CheckInPopup';
-import { DailyPointsOverview } from './components/DailyPointsOverview';
 import { MonthlyPointsOverview } from './components/MonthlyPointsOverview';
 import { DepartureRequestAdmin } from './components/DepartureRequestAdmin';
 import { HowTo } from './components/HowTo';
@@ -140,7 +139,7 @@ function AppContent() {
       case 'how-to':
         return <HowTo onBack={handleBack} />;
       case 'leaderboard':
-        return <Leaderboard onBack={handleBack} />;
+        return <Leaderboard onBack={handleBack} onNavigate={handleNavigate} />;
       case 'notifications':
         return <Notifications onBack={handleBack} />;
       case 'profile':
@@ -159,8 +158,6 @@ function AppContent() {
         return <CheckInHistory onBack={handleBack} />;
       case 'checklist-review':
         return <Tasks onBack={handleBack} filterStatus="pending_review" />;
-      case 'daily-points':
-        return <DailyPointsOverview onBack={handleBack} />;
       case 'monthly-points':
         return <MonthlyPointsOverview />;
       case 'departure-requests':

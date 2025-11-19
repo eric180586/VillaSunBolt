@@ -47,8 +47,7 @@ export function Layout({ children, currentView, onViewChange }: LayoutProps) {
     { id: 'leaderboard', label: t('nav.leaderboard'), icon: Award },
     ...(isAdmin ? [
       { id: 'employees', label: t('nav.employees'), icon: Users },
-      { id: 'humor-settings', label: t('nav.humorSettings'), icon: Smile },
-      { id: 'daily-points', label: 'Punkteübersicht', icon: TrendingUp }
+      { id: 'humor-settings', label: t('nav.humorSettings'), icon: Smile }
     ] : []),
   ];
 
