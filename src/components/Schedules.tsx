@@ -36,13 +36,13 @@ interface TimeOffRequest {
 const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
 const SHIFT_COLORS = {
-  early: 'bg-blue-100 text-blue-800 border-blue-300',
+  morning: 'bg-blue-100 text-blue-800 border-blue-300',
   late: 'bg-orange-100 text-orange-800 border-orange-300',
   off: 'bg-gray-100 text-gray-800 border-gray-300',
 };
 
 const SHIFT_LABELS = {
-  early: 'Early',
+  morning: 'Morning',
   late: 'Late',
   off: 'Off',
 };
@@ -65,7 +65,6 @@ export function Schedules({ onNavigate, onBack }: SchedulesProps = {}) {
   const [timeOffReason, setTimeOffReason] = useState('');
   const [selectedDate, setSelectedDate] = useState('');
   const [rejectionReason, setRejectionReason] = useState('');
-  const [activeTab, setActiveTab] = useState<'shifts' | 'patrol'>('shifts');
 
   const isAdmin = profile?.role === 'admin';
   const staffMembers = profiles.filter((p) => p.role === 'staff');
@@ -377,7 +376,7 @@ export function Schedules({ onNavigate, onBack }: SchedulesProps = {}) {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between mb-4">
         <div className="flex items-center space-x-4">
           {onBack && (
             <button
@@ -389,15 +388,15 @@ export function Schedules({ onNavigate, onBack }: SchedulesProps = {}) {
           )}
           <h2 className="text-3xl font-bold text-gray-900">Schedule</h2>
         </div>
-        {isAdmin && onNavigate && (
-          <button
-            onClick={() => onNavigate('patrol-schedules')}
-            className="flex items-center space-x-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
-          >
-            <span>Patrol Schedule</span>
-          </button>
-        )}
-        <div className="flex items-center space-x-4">
+        <div className="flex items-center space-x-2">
+          {isAdmin && onNavigate && (
+            <button
+              onClick={() => onNavigate('patrol-schedules')}
+              className="flex items-center space-x-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+            >
+              <span>Patrol Schedule</span>
+            </button>
+          )}
           {!isAdmin && (
             <button
               onClick={() => setShowTimeOffModal(true)}
