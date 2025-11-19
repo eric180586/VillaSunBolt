@@ -13,6 +13,10 @@ interface PointTemplate {
   category: string;
 }
 
+interface MonthlyPoints {
+  [userId: string]: number;
+}
+
 export function PointsManager({ onBack }: { onBack?: () => void } = {}) {
   const { t } = useTranslation();
   const { profile } = useAuth();
@@ -32,11 +36,13 @@ export function PointsManager({ onBack }: { onBack?: () => void } = {}) {
     reason: '',
     category: 'general',
   });
+  const [monthlyPoints, setMonthlyPoints] = useState<MonthlyPoints>({});
 
   const staffProfiles = profiles.filter((p) => p.role !== 'admin');
 
   useEffect(() => {
     fetchTemplates();
+    fetchMonthlyPoints();
 
     // Realtime subscription for templates
     const templatesChannel = supabase
@@ -71,6 +77,31 @@ export function PointsManager({ onBack }: { onBack?: () => void } = {}) {
     }
 
     setTemplates(data || []);
+  };
+
+  const fetchMonthlyPoints = async () => {
+    const firstDayOfMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 1)
+      .toISOString().split('T')[0];
+
+    const { data, error } = await supabase
+      .from('daily_point_goals')
+      .select('user_id, achieved_points')
+      .gte('goal_date', firstDayOfMonth);
+
+    if (error) {
+      console.error('Error fetching monthly points:', error);
+      return;
+    }
+
+    const pointsMap: MonthlyPoints = {};
+    data?.forEach((day) => {
+      if (!pointsMap[day.user_id]) {
+        pointsMap[day.user_id] = 0;
+      }
+      pointsMap[day.user_id] += day.achieved_points;
+    });
+
+    setMonthlyPoints(pointsMap);
   };
 
   const handleTemplateSelect = (templateId: string) => {
@@ -298,7 +329,7 @@ export function PointsManager({ onBack }: { onBack?: () => void } = {}) {
                 />
                 <div>
                   <p className="font-medium text-gray-900">{staff.full_name}</p>
-                  <p className="text-xs text-gray-600">{staff.total_points} pts</p>
+                  <p className="text-xs text-gray-600">{monthlyPoints[staff.id] || 0} pts (monthly)</p>
                 </div>
               </label>
             ))}

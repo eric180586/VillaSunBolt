@@ -102,21 +102,16 @@ export function PatrolRounds({ onBack }: { onBack?: () => void } = {}) {
 
   const loadTodayData = async () => {
     const today = getTodayDateString();
-    const isAdmin = profile?.role === 'admin';
 
-    let query = supabase
+    // EVERYONE can see ALL rounds
+    const { data: roundsData, error: roundsError } = await supabase
       .from('patrol_rounds')
       .select(`
         *,
         profiles:assigned_to (full_name)
       `)
-      .eq('date', today);
-
-    if (!isAdmin) {
-      query = query.eq('assigned_to', profile?.id || '');
-    }
-
-    const { data: roundsData, error: roundsError } = await query.order('time_slot');
+      .eq('date', today)
+      .order('time_slot');
 
     if (roundsError) {
       console.error('Error loading rounds:', roundsError);
@@ -192,19 +187,30 @@ export function PatrolRounds({ onBack }: { onBack?: () => void } = {}) {
     const now = new Date();
     const currentTime = now.getHours() * 60 + now.getMinutes();
 
+    // Find the FIRST incomplete round that is past its start time
     for (const round of rounds) {
       if (round.completed_at) continue;
 
       const [hours, minutes] = round.time_slot.split(':').map(Number);
       const slotTime = hours * 60 + minutes;
 
-      // Allow scanning anytime after the scheduled time (no time limit)
+      // Round is active if current time >= start time (no deadline)
       if (currentTime >= slotTime) {
         return round;
       }
     }
 
     return null;
+  };
+
+  const canStartRound = (round: PatrolRound): boolean => {
+    const now = new Date();
+    const currentTime = now.getHours() * 60 + now.getMinutes();
+    const [hours, minutes] = round.time_slot.split(':').map(Number);
+    const slotTime = hours * 60 + minutes;
+
+    // Can start if: current time >= start time AND not completed
+    return currentTime >= slotTime && !round.completed_at;
   };
 
   const isWithinPointsWindow = (round: PatrolRound): boolean => {
@@ -519,15 +525,28 @@ export function PatrolRounds({ onBack }: { onBack?: () => void } = {}) {
                     <Clock className="w-5 h-5 text-gray-600" />
                     <div>
                       <div className="font-semibold text-gray-900">{round.time_slot}</div>
-                      {(profile?.role === 'admin') && round.profiles && (
-                        <div className="text-xs text-gray-500">{round.profiles.full_name}</div>
+                      {round.profiles && (
+                        <div className="text-xs text-gray-500">Assigned: {round.profiles.full_name}</div>
                       )}
                       <div className="text-sm text-gray-600 capitalize">{status}</div>
                     </div>
                   </div>
-                  <div className="text-right">
-                    <div className="text-2xl font-bold text-gray-900">{progress}</div>
-                    <div className="text-xs text-gray-600">locations</div>
+                  <div className="flex items-center space-x-3">
+                    <div className="text-right mr-3">
+                      <div className="text-2xl font-bold text-gray-900">{progress}</div>
+                      <div className="text-xs text-gray-600">locations</div>
+                    </div>
+                    {profile?.role !== 'admin' && canStartRound(round) && (
+                      <button
+                        onClick={() => {
+                          setCurrentRound(round);
+                          setShowScanner(true);
+                        }}
+                        className="bg-orange-600 text-white px-4 py-2 rounded-lg hover:bg-orange-700 transition-colors font-semibold"
+                      >
+                        Start
+                      </button>
+                    )}
                   </div>
                 </div>
               </div>
