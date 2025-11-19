@@ -25,7 +25,8 @@ export async function registerServiceWorker(): Promise<ServiceWorkerRegistration
     await navigator.serviceWorker.ready;
     return registration;
   } catch (error) {
-    console.error('Service Worker registration failed:', error);
+    // Silently fail in environments without Service Worker support (e.g., StackBlitz)
+    // In production, Service Worker will work normally for push notifications
     return null;
   }
 }

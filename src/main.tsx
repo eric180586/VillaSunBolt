@@ -3,9 +3,11 @@ import { createRoot } from 'react-dom/client';
 import App from './App.tsx';
 import './index.css';
 import './lib/i18n';
+import { registerServiceWorker } from './lib/pushNotifications';
 
-// Service Worker removed - not needed in StackBlitz environment
-// Push notifications work via Supabase edge functions instead
+// Register Service Worker for push notifications in production
+// Silently fails in StackBlitz (not supported there)
+registerServiceWorker();
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
