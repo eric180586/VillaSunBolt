@@ -3,9 +3,9 @@ import { supabase } from '../lib/supabase';
 import { useRealtimeSubscription } from './useRealtimeSubscription';
 import type { Database } from '../lib/database.types';
 
-type Schedule = Database['public']['Tables']['schedules']['Row'];
-type ScheduleInsert = Database['public']['Tables']['schedules']['Insert'];
-type ScheduleUpdate = Database['public']['Tables']['schedules']['Update'];
+type Schedule = Database['public']['Tables']['weekly_schedules']['Row'];
+type ScheduleInsert = Database['public']['Tables']['weekly_schedules']['Insert'];
+type ScheduleUpdate = Database['public']['Tables']['weekly_schedules']['Update'];
 
 export function useSchedules() {
   const [schedules, setSchedules] = useState<Schedule[]>([]);
@@ -14,9 +14,9 @@ export function useSchedules() {
   const fetchSchedules = useCallback(async () => {
     try {
       const { data, error } = await supabase
-        .from('schedules')
+        .from('weekly_schedules')
         .select('*')
-        .order('start_time', { ascending: true });
+        .order('week_start_date', { ascending: true });
 
       if (error) throw error;
       setSchedules(data || []);
@@ -32,10 +32,10 @@ export function useSchedules() {
   }, [fetchSchedules]);
 
   useRealtimeSubscription<Schedule>(
-    'schedules',
+    'weekly_schedules',
     (payload) => {
       setSchedules((current) => [...current, payload.new as Schedule].sort((a, b) =>
-        new Date(a.start_time).getTime() - new Date(b.start_time).getTime()
+        new Date(a.week_start_date).getTime() - new Date(b.week_start_date).getTime()
       ));
     },
     (payload) => {
@@ -49,17 +49,17 @@ export function useSchedules() {
   );
 
   const createSchedule = async (schedule: ScheduleInsert) => {
-    const { error } = await supabase.from('schedules').insert(schedule);
+    const { error } = await supabase.from('weekly_schedules').insert(schedule);
     if (error) throw error;
   };
 
   const updateSchedule = async (id: string, updates: ScheduleUpdate) => {
-    const { error } = await supabase.from('schedules').update(updates).eq('id', id);
+    const { error } = await supabase.from('weekly_schedules').update(updates).eq('id', id);
     if (error) throw error;
   };
 
   const deleteSchedule = async (id: string) => {
-    const { error } = await supabase.from('schedules').delete().eq('id', id);
+    const { error } = await supabase.from('weekly_schedules').delete().eq('id', id);
     if (error) throw error;
   };
 
