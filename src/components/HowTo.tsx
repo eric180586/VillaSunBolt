@@ -1,12 +1,11 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../lib/supabase';
-import { Upload, FileText, Video, Image, Plus, X, Edit2, Trash2, ChevronUp, ChevronDown, Download, Eye, BookOpen, Trophy, Settings, Sparkles, ArrowLeft } from 'lucide-react';
+import { Upload, FileText, Video, Image, Plus, X, Edit2, Trash2, ChevronUp, ChevronDown, Download, Eye, BookOpen, Trophy, Settings, ArrowLeft } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import TutorialViewer from './TutorialViewer';
 import QuizGame from './QuizGame';
 import TutorialSlideManager from './TutorialSlideManager';
-import { FortuneWheel } from './FortuneWheel';
 
 interface HowToDocument {
   id: string;
@@ -43,7 +42,6 @@ export function HowTo({ onBack }: { onBack?: () => void } = {}) {
   const [showTutorial, setShowTutorial] = useState(false);
   const [showQuiz, setShowQuiz] = useState(false);
   const [showSlideManager, setShowSlideManager] = useState(false);
-  const [showFortuneWheel, setShowFortuneWheel] = useState(false);
 
   const isAdmin = profile?.role === 'admin';
 
@@ -277,7 +275,7 @@ export function HowTo({ onBack }: { onBack?: () => void } = {}) {
         )}
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
         <div className="relative">
           <button
             onClick={() => setShowTutorial(true)}
@@ -318,22 +316,6 @@ export function HowTo({ onBack }: { onBack?: () => void } = {}) {
           <h3 className="text-2xl font-bold mb-2">Quiz Game Challenge</h3>
           <p className="text-green-100">
             Test your knowledge! Compete with colleagues in a fun quiz game and earn bonus points.
-          </p>
-        </button>
-
-        <button
-          onClick={() => setShowFortuneWheel(true)}
-          className="bg-gradient-to-br from-purple-500 to-pink-600 text-white rounded-xl p-6 hover:shadow-lg transition-all group"
-        >
-          <div className="flex items-center justify-between mb-4">
-            <Sparkles className="w-12 h-12 group-hover:scale-110 transition-transform" />
-            <div className="bg-white bg-opacity-20 px-3 py-1 rounded-full text-sm font-semibold">
-              Fun
-            </div>
-          </div>
-          <h3 className="text-2xl font-bold mb-2">Fortune Wheel</h3>
-          <p className="text-purple-100">
-            Test your luck! Spin the wheel and win bonus points or fun challenges.
           </p>
         </button>
       </div>
@@ -692,15 +674,6 @@ export function HowTo({ onBack }: { onBack?: () => void } = {}) {
 
       {showSlideManager && (
         <TutorialSlideManager onClose={() => setShowSlideManager(false)} />
-      )}
-
-      {showFortuneWheel && (
-        <FortuneWheel
-          onClose={() => setShowFortuneWheel(false)}
-          onSpinComplete={(segment) => {
-            console.log('Wheel result:', segment);
-          }}
-        />
       )}
     </div>
   );
