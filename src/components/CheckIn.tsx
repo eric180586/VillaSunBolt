@@ -240,30 +240,25 @@ export function CheckIn({ onBack }: { onBack?: () => void } = {}) {
       }
 
       setCheckInResult(data);
-      fetchTodayCheckIns();
+      await fetchTodayCheckIns();
 
       console.log('Check-in response data:', data);
 
-      if (data?.check_in_id && !isCheckingWheel) {
-        setIsCheckingWheel(true);
-        try {
-          console.log('Checking fortune wheel for user:', profile.id);
+      if (data?.success && data?.check_in_id) {
+        console.log('Check-in successful, checking fortune wheel status...');
 
-          const hasSpun = await checkIfAlreadySpunToday();
-          console.log('Fortune wheel: Already spun?', hasSpun);
+        const hasSpun = await checkIfAlreadySpunToday();
+        console.log('Fortune wheel: Already spun today?', hasSpun);
 
-          if (!hasSpun && !showFortuneWheel) {
-            console.log('No spin found, showing fortune wheel IMMEDIATELY');
-            setCurrentCheckInId(data.check_in_id);
-            setShowFortuneWheel(true);
-          } else {
-            console.log('User already spun today or wheel already showing, skipping fortune wheel');
-          }
-        } finally {
-          setIsCheckingWheel(false);
+        if (!hasSpun) {
+          console.log('Opening Fortune Wheel for check-in:', data.check_in_id);
+          setCurrentCheckInId(data.check_in_id);
+          setShowFortuneWheel(true);
+        } else {
+          console.log('User already spun today, skipping wheel');
         }
       } else {
-        console.error('No check_in_id in response data or already checking!');
+        console.log('Check-in response missing required data:', data);
       }
 
       setTimeout(() => {
