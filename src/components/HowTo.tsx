@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../lib/supabase';
-import { Upload, FileText, Video, Image, Plus, X, Edit2, Trash2, ChevronUp, ChevronDown, Download, Eye, BookOpen, Trophy, Settings, Sparkles } from 'lucide-react';
+import { Upload, FileText, Video, Image, Plus, X, Edit2, Trash2, ChevronUp, ChevronDown, Download, Eye, BookOpen, Trophy, Settings, Sparkles, ArrowLeft } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import TutorialViewer from './TutorialViewer';
 import QuizGame from './QuizGame';
