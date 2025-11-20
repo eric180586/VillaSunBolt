@@ -228,21 +228,36 @@ export function CheckIn({ onBack }: { onBack?: () => void } = {}) {
       // Map German shift types to English for database
       const mappedShiftType = shiftType === 'früh' ? 'early' : 'late';
 
+      console.log('[CHECK-IN] Starting check-in with params:', {
+        user_id: profile.id,
+        shift_type: mappedShiftType,
+        late_reason: reason
+      });
+
       const { data, error } = await supabase.rpc('process_check_in', {
         p_user_id: profile.id,
         p_shift_type: mappedShiftType,
         p_late_reason: reason,
       });
 
+      console.log('[CHECK-IN] RPC Response:', { data, error });
+
       if (error) {
-        console.error('Check-in RPC error details:', error);
+        console.error('[CHECK-IN] RPC ERROR:', error);
+        alert(`Check-in failed: ${error.message || JSON.stringify(error)}`);
         throw error;
       }
 
+      if (!data) {
+        console.error('[CHECK-IN] No data returned from RPC');
+        alert('Check-in failed: No response from server');
+        return;
+      }
+
+      console.log('[CHECK-IN] Full response data:', JSON.stringify(data, null, 2));
+
       setCheckInResult(data);
       await fetchTodayCheckIns();
-
-      console.log('Check-in response data:', data);
 
       if (data?.success && data?.check_in_id) {
         console.log('Check-in successful, checking fortune wheel status...');
