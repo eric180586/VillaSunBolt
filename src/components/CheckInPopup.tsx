@@ -15,6 +15,7 @@ export function CheckInPopup({ onClose }: CheckInPopupProps) {
   const [loading, setLoading] = useState(false);
   const [checkInResult, setCheckInResult] = useState<any>(null);
   const [hasScheduleToday, setHasScheduleToday] = useState<boolean | null>(null);
+  const [scheduledShift, setScheduledShift] = useState<string | null>(null);
 
   useEffect(() => {
     checkScheduleForToday();
@@ -52,8 +53,10 @@ export function CheckInPopup({ onClose }: CheckInPopupProps) {
 
       if (!todayShift || todayShift.shift === 'off') {
         setHasScheduleToday(false);
+        setScheduledShift(null);
       } else {
         setHasScheduleToday(true);
+        setScheduledShift(todayShift.shift);
       }
     } catch (error) {
       console.error('Error checking schedule:', error);
@@ -64,16 +67,28 @@ export function CheckInPopup({ onClose }: CheckInPopupProps) {
   const handleCheckIn = async () => {
     if (!profile?.id) return;
 
+    if (!scheduledShift) {
+      alert('No shift scheduled for today');
+      return;
+    }
+
     setLoading(true);
 
     try {
-      const today = getTodayDateString();
+      const mappedShiftType = scheduledShift === 'morning' ? 'early' : 'late';
+
+      console.log('[CHECK-IN POPUP] Calling process_check_in with:', {
+        p_user_id: profile.id,
+        p_shift_type: mappedShiftType
+      });
 
       const { data, error } = await supabase.rpc('process_check_in', {
         p_user_id: profile.id,
-        p_shift_type: null,
+        p_shift_type: mappedShiftType,
         p_late_reason: null,
       });
+
+      console.log('[CHECK-IN POPUP] Response:', { data, error });
 
       if (error) throw error;
 
