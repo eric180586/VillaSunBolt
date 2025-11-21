@@ -104,15 +104,11 @@ export function CheckInOverview({ onBack, onNavigate }: CheckInOverviewProps = {
       }
       console.log('[CheckInOverview] Schedules fetched:', allSchedules?.length);
 
-      const todayStart = `${today}T00:00:00+07:00`;
-      const todayEnd = `${today}T23:59:59+07:00`;
-
       console.log('[CheckInOverview] Fetching check-ins...');
       const { data: allCheckIns, error: checkError } = await supabase
         .from('check_ins')
         .select('*')
-        .gte('check_in_time', todayStart)
-        .lte('check_in_time', todayEnd);
+        .eq('check_in_date', today);
 
       if (checkError) {
         console.error('[CheckInOverview] Check-in error:', checkError);

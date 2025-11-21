@@ -96,10 +96,10 @@ export function CheckInPopup({ onClose }: CheckInPopupProps) {
       if (error) throw error;
 
       setCheckInResult(data);
-      if (data?.check_in_id && data?.show_fortune_wheel) {
+      if (data?.check_in_id) {
         setCurrentCheckInId(data.check_in_id);
-        setShowFortuneWheel(true);
       }
+      setLoading(false);
     } catch (error) {
       console.error('Error checking in:', error);
       alert(t('checkin.errorCheckingIn', 'Error checking in. Please try again.'));
