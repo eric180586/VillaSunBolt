@@ -14,23 +14,15 @@ export function getTodayTasks(tasks: Task[]): Task[] {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
-  console.log('getTodayTasks input:', tasks.length, 'tasks');
-
-  const result = tasks.filter((task) => {
+  return tasks.filter((task) => {
     if (task.status === 'archived') return false;
 
-    if (task.recurrence === 'daily') {
-      console.log('Daily recurring task found:', task.title, task.id);
-      return true;
-    }
+    if (task.recurrence === 'daily') return true;
 
     if (!task.due_date) return false;
 
     return isSameDay(task.due_date, today);
   });
-
-  console.log('getTodayTasks result:', result.length, 'tasks');
-  return result;
 }
 
 export function getMyTasks(tasks: Task[], userId: string | undefined): Task[] {

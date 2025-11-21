@@ -5,6 +5,7 @@ import { useProfiles } from '../hooks/useProfiles';
 import { Plus, CheckCircle, Clock, Users, X, RefreshCw, ArrowLeft, Edit2 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { formatDateTimeForDisplay, formatDateForInput, getTodayDateString, isSameDay, combineDateAndTime } from '../lib/dateUtils';
+import { getTodayTasks } from '../lib/taskFilters';
 import { PhotoRequirementDice } from './PhotoRequirementDice';
 import { TaskWithItemsModal } from './TaskWithItemsModal';
 import { HelperSelectionModal } from './HelperSelectionModal';
