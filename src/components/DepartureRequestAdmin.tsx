@@ -1,4 +1,3 @@
-import { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useDepartureRequests } from '../hooks/useDepartureRequests';
 import { useProfiles } from '../hooks/useProfiles';

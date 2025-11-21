@@ -10,8 +10,6 @@ import { AdminDashboard } from './AdminDashboard';
 import { RepairRequestModal } from './RepairRequestModal';
 import { useTranslation } from 'react-i18next';
 import { Wrench, ShoppingCart } from 'lucide-react';
-import { supabase } from '../lib/supabase';
-
 interface DashboardProps {
   onNavigate?: (view: string, filter?: 'pending_review' | 'today' | null) => void;
   onBack?: () => void;
@@ -20,28 +18,29 @@ interface DashboardProps {
 export function Dashboard({ onNavigate, onBack }: DashboardProps = {}) {
   const { profile } = useAuth();
   const { t } = useTranslation();
-
-  if (profile?.role === 'admin') {
-    return <AdminDashboard onNavigate={onNavigate} onBack={onBack} />;
-  }
-  const { tasks, refetch } = useTasks();
-  const { schedules } = useSchedules();
+  const { refetch } = useTasks();
+  useSchedules();
   const [showNotesPopup, setShowNotesPopup] = useState(false);
   const [showRepairModal, setShowRepairModal] = useState(false);
 
   useEffect(() => {
-    const checkNotesPopup = () => {
-      const hasSeenNotesToday = sessionStorage.getItem('notesShownToday');
-      const today = new Date().toDateString();
+    if (profile?.role === 'staff') {
+      const checkNotesPopup = () => {
+        const hasSeenNotesToday = sessionStorage.getItem('notesShownToday');
+        const today = new Date().toDateString();
 
-      if (hasSeenNotesToday !== today) {
-        setShowNotesPopup(true);
-      }
-    };
+        if (hasSeenNotesToday !== today) {
+          setShowNotesPopup(true);
+        }
+      };
 
-    checkNotesPopup();
-    // Checklist generation is now handled by daily-reset edge function (manual or scheduled)
+      checkNotesPopup();
+    }
   }, [profile]);
+
+  if (profile?.role === 'admin') {
+    return <AdminDashboard onNavigate={onNavigate} onBack={onBack} />;
+  }
 
   const handleCloseNotesPopup = () => {
     setShowNotesPopup(false);

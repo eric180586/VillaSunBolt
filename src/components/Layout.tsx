@@ -6,7 +6,7 @@ import {
   Home,
   CheckSquare,
   Calendar,
-  ClipboardList,
+  
   StickyNote,
   Award,
   Bell,
@@ -17,7 +17,7 @@ import {
   X,
   Smile,
   Shield,
-  TrendingUp,
+  
   BookOpen,
   MessageCircle,
 } from 'lucide-react';

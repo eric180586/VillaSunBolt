@@ -5,7 +5,7 @@ import { useSchedules } from '../hooks/useSchedules';
 import { useDepartureRequests } from '../hooks/useDepartureRequests';
 import { Home, CheckCircle } from 'lucide-react';
 import { supabase } from '../lib/supabase';
-import { getTodayDateString, isSameDay } from '../lib/dateUtils';
+import { getTodayDateString } from '../lib/dateUtils';
 
 export function EndOfDayRequest() {
   const { t } = useTranslation();

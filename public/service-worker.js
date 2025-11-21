@@ -75,16 +75,10 @@ self.addEventListener('pushsubscriptionchange', (event) => {
   event.waitUntil(
     self.registration.pushManager.subscribe(event.oldSubscription.options)
       .then((subscription) => {
-        return fetch('/api/update-subscription', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            old: event.oldSubscription,
-            new: subscription,
-          }),
-        });
+        console.log('Push subscription changed:', subscription);
+      })
+      .catch((error) => {
+        console.error('Failed to resubscribe:', error);
       })
   );
 });

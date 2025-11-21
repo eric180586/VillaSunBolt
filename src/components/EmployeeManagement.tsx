@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
-import { Plus, X, Edit2, Trash2, Users, Mail, Shield, Award, ArrowLeft } from 'lucide-react';
+import { Plus, X, Edit2, Trash2, Users, Shield, Award, ArrowLeft } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useTranslation } from 'react-i18next';
 
