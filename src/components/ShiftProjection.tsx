@@ -7,8 +7,8 @@ import { getTodayDateString } from '../lib/dateUtils';
 import { Clock } from 'lucide-react';
 
 export function ShiftProjection() {
-  const { t: _t } = useTranslation();
-  const { profile: _profile } = useAuth();
+  const { t } = useTranslation();
+  const { profile } = useAuth();
   const { tasks } = useTasks();
   const [projectedEndTime, setProjectedEndTime] = useState<string>('');
   const [message, setMessage] = useState<string>('');

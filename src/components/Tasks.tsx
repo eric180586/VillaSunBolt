@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useTasks } from '../hooks/useTasks';
 import { useProfiles } from '../hooks/useProfiles';
@@ -11,7 +11,7 @@ import { HelperSelectionModal } from './HelperSelectionModal';
 import { TaskCreateModal } from './TaskCreateModal';
 import { useTranslation } from 'react-i18next';
 
-const _CATEGORIES = [
+const CATEGORIES = [
   { id: 'daily_morning', label: 'Daily Morning', color: 'bg-orange-500' },
   { id: 'room_cleaning', label: 'Room Cleaning', color: 'bg-blue-500' },
   { id: 'small_cleaning', label: 'Small Cleaning', color: 'bg-cyan-500' },
@@ -25,7 +25,7 @@ const _CATEGORIES = [
 
 // Unused: const NAMES = ['Venus', 'Earth', 'Mars', 'Jupiter', 'Saturn', 'Uranus', 'Neptune', 'Pluto'];
 
-const _MOTIVATIONAL_MESSAGES = [
+const MOTIVATIONAL_MESSAGES = [
   'Great job! Keep up the excellent work!',
   'Fantastic work! You are doing amazing!',
   'Outstanding! You are a star!',
@@ -43,8 +43,8 @@ interface TasksProps {
 }
 
 export function Tasks({ onNavigate, filterStatus, onBack }: TasksProps = {}) {
-  const { t: _t } = useTranslation();
-  const { profile: _profile } = useAuth();
+  const { t } = useTranslation();
+  const { profile } = useAuth();
   const { tasks, createTask, updateTask, deleteTask, refetch } = useTasks();
   const { profiles } = useProfiles();
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
@@ -61,8 +61,8 @@ export function Tasks({ onNavigate, filterStatus, onBack }: TasksProps = {}) {
   const [_pendingTaskCompletion, _setPendingTaskCompletion] = useState<any>(null);
   const [editingTask, setEditingTask] = useState<any>(null);
 
-  const _isAdmin = profile?.role === 'admin';
-  const _isRepairCategory = selectedCategory === 'repair';
+  const isAdmin = profile?.role === 'admin';
+  const isRepairCategory = selectedCategory === 'repair';
 
   const [formData, setFormData] = useState({
     category: 'extras' as string,
@@ -80,8 +80,8 @@ export function Tasks({ onNavigate, filterStatus, onBack }: TasksProps = {}) {
     photo_explanation_text: '',
   }) as any;
 
-  const _getDefaultDateTime = (category: string) => {
-    const _dateStr = getTodayDateString();
+  const getDefaultDateTime = (category: string) => {
+    const dateStr = getTodayDateString();
 
     switch (category) {
       case 'daily_morning':
@@ -95,7 +95,7 @@ export function Tasks({ onNavigate, filterStatus, onBack }: TasksProps = {}) {
 
   useEffect(() => {
     if (showModal) {
-      const _defaults = getDefaultDateTime(formData.category);
+      const defaults = getDefaultDateTime(formData.category);
       setFormData((prev: typeof formData) => ({
         ...prev,
         due_date: defaults.date,
@@ -108,10 +108,10 @@ export function Tasks({ onNavigate, filterStatus, onBack }: TasksProps = {}) {
   }, [formData.category, showModal]);
 
   useEffect(() => {
-    const _filterToday = sessionStorage.getItem('tasks_filter_today');
+    const filterToday = sessionStorage.getItem('tasks_filter_today');
     if (filterToday === 'true') {
       sessionStorage.removeItem('tasks_filter_today');
-      const _todayTasks = getTodayTasks(tasks).filter(t => t.status !== 'completed' && t.status !== 'archived');
+      const todayTasks = getTodayTasks(tasks).filter(t => t.status !== 'completed' && t.status !== 'archived');
       if (todayTasks.length > 0) {
         setSelectedCategory('all_today');
       }
@@ -119,12 +119,12 @@ export function Tasks({ onNavigate, filterStatus, onBack }: TasksProps = {}) {
   }, [tasks]);
 
 
-  const _getCategoryCounts = (categoryId: string) => {
-    const _categoryTasks = tasks.filter(
+  const getCategoryCounts = (categoryId: string) => {
+    const categoryTasks = tasks.filter(
       (t) => t.category === categoryId && (t.is_template !== true || t.recurrence === 'daily') && t.status !== 'archived'
     );
-    const _todayTasks = getTodayTasks(categoryTasks);
-    const _openTasks = todayTasks.filter((t) => t.status !== 'completed');
+    const todayTasks = getTodayTasks(categoryTasks);
+    const openTasks = todayTasks.filter((t: any) => t.status !== 'completed');
 
     return {
       totalTasks: todayTasks.length,
@@ -132,7 +132,7 @@ export function Tasks({ onNavigate, filterStatus, onBack }: TasksProps = {}) {
     };
   };
 
-  const _getDefaultPointsForCategory = (category: string): number => {
+  const getDefaultPointsForCategory = (category: string): number => {
     switch (category) {
       case 'room_cleaning':
         return 5;
@@ -152,10 +152,10 @@ export function Tasks({ onNavigate, filterStatus, onBack }: TasksProps = {}) {
     }));
   };
 
-  const _uploadPhoto = async (file: File, folder: string): Promise<string> => {
-    const _fileExt = file.name.split('.').pop();
-    const _fileName = `${Math.random()}.${fileExt}`;
-    const _filePath = `${folder}/${fileName}`;
+  const uploadPhoto = async (file: File, folder: string): Promise<string> => {
+    const fileExt = file.name.split('.').pop();
+    const fileName = `${Math.random()}.${fileExt}`;
+    const filePath = `${folder}/${fileName}`;
 
     const { error: uploadError } = await supabase.storage
       .from('task-photos')
@@ -170,23 +170,23 @@ export function Tasks({ onNavigate, filterStatus, onBack }: TasksProps = {}) {
     return data.publicUrl;
   };
 
-  const __getRandomMotivationalMessage = () => {
+  const getRandomMotivationalMessage = () => {
     return MOTIVATIONAL_MESSAGES[Math.floor(Math.random() * MOTIVATIONAL_MESSAGES.length)];
   };
 
-  const __handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const _dueDateTime = isRepairCategory ? null : combineDateAndTime(formData.due_date, formData.due_time);
+      const dueDateTime = isRepairCategory ? null : combineDateAndTime(formData.due_date, formData.due_time);
 
       let descriptionPhotoUrl: string[] | null = null;
 
       if (formData.description_photo && formData.description_photo.length > 0) {
         const uploadedUrls: string[] = [];
         for (const file of formData.description_photo) {
-          const _fileExt = file.name.split('.').pop();
-          const _fileName = `description_${Math.random().toString(36).substring(2)}_${Date.now()}.${fileExt}`;
-          const _filePath = `${fileName}`;
+          const fileExt = file.name.split('.').pop();
+          const fileName = `description_${Math.random().toString(36).substring(2)}_${Date.now()}.${fileExt}`;
+          const filePath = `${fileName}`;
 
           const { error: uploadError } = await supabase.storage
             .from('checklist-explanations')
@@ -238,7 +238,7 @@ export function Tasks({ onNavigate, filterStatus, onBack }: TasksProps = {}) {
       }
 
       if (!editingTask) {
-        const _staffUsers = profiles.filter((p) => p.role === 'staff');
+        const staffUsers = profiles.filter((p) => p.role === 'staff');
         if (staffUsers.length > 0) {
           await supabase.from('notifications').insert(
             staffUsers.map((p) => ({
@@ -273,10 +273,10 @@ export function Tasks({ onNavigate, filterStatus, onBack }: TasksProps = {}) {
     }
   };
 
-  const _handleAcceptTask = async (taskId: string) => {
+  const handleAcceptTask = async (taskId: string) => {
     try {
       console.log('Accepting task:', taskId, 'for user:', profile?.id);
-      const _result = await updateTask(taskId, {
+      const result = await updateTask(taskId, {
         assigned_to: profile?.id,
         status: 'in_progress',
       }) as any;
@@ -303,8 +303,8 @@ export function Tasks({ onNavigate, filterStatus, onBack }: TasksProps = {}) {
 
   // Old handleCompleteTask removed - now handled by HelperSelectionModal
 
-  const _handleApproveTask = async (quality: 'very_good' | 'ready' | 'not_ready') => {
-    const _task = selectedTask;
+  const handleApproveTask = async (quality: 'very_good' | 'ready' | 'not_ready') => {
+    const task = selectedTask;
     if (!task) return;
 
     try {
@@ -312,7 +312,7 @@ export function Tasks({ onNavigate, filterStatus, onBack }: TasksProps = {}) {
       if (adminPhoto && adminPhoto.length > 0) {
         const uploadedUrls: string[] = [];
         for (const file of adminPhoto) {
-          const _url = await uploadPhoto(file, 'admin-reviews');
+          const url = await uploadPhoto(file, 'admin-reviews');
           if (url) uploadedUrls.push(url);
         }
         adminPhotoUrls = uploadedUrls;
@@ -334,7 +334,7 @@ export function Tasks({ onNavigate, filterStatus, onBack }: TasksProps = {}) {
         throw error;
       }
 
-      const _qualityLabels = {
+      const qualityLabels = {
         very_good: 'Very Good (+2 bonus)',
         ready: 'Ready',
         not_ready: 'Not Ready (-1 penalty)',
@@ -355,8 +355,8 @@ export function Tasks({ onNavigate, filterStatus, onBack }: TasksProps = {}) {
     }
   };
 
-  const _handleNotReady = () => {
-    const _task = selectedTask;
+  const handleNotReady = () => {
+    const task = selectedTask;
     if (!task) return;
 
     if (task.items && task.items.length > 0) {
@@ -368,8 +368,8 @@ export function Tasks({ onNavigate, filterStatus, onBack }: TasksProps = {}) {
     }
   };
 
-  const _handleReopenEntireTask = async () => {
-    const _task = selectedTask;
+  const handleReopenEntireTask = async () => {
+    const task = selectedTask;
     if (!task) return;
 
     try {
@@ -377,7 +377,7 @@ export function Tasks({ onNavigate, filterStatus, onBack }: TasksProps = {}) {
       if (adminPhoto && adminPhoto.length > 0) {
         const uploadedUrls: string[] = [];
         for (const file of adminPhoto) {
-          const _url = await uploadPhoto(file, 'admin-reviews');
+          const url = await uploadPhoto(file, 'admin-reviews');
           if (url) uploadedUrls.push(url);
         }
         adminPhotoUrls = uploadedUrls;
@@ -409,8 +409,8 @@ export function Tasks({ onNavigate, filterStatus, onBack }: TasksProps = {}) {
     }
   };
 
-  const _handleReopenSelectedItems = async () => {
-    const _task = selectedTask;
+  const handleReopenSelectedItems = async () => {
+    const task = selectedTask;
     if (!task || !task.items) return;
 
     if (itemsToReopen.length === 0) {
@@ -436,7 +436,7 @@ export function Tasks({ onNavigate, filterStatus, onBack }: TasksProps = {}) {
       if (adminPhoto && adminPhoto.length > 0) {
         const uploadedUrls: string[] = [];
         for (const file of adminPhoto) {
-          const _url = await uploadPhoto(file, 'admin-reviews');
+          const url = await uploadPhoto(file, 'admin-reviews');
           if (url) uploadedUrls.push(url);
         }
         adminPhotoUrls = uploadedUrls;
@@ -550,22 +550,22 @@ export function Tasks({ onNavigate, filterStatus, onBack }: TasksProps = {}) {
   let categoryTasks = selectedCategory === 'all_today'
     ? getTodayTasks(tasks)
     : selectedCategory
-    ? tasks.filter((t) => {
+    ? tasks.filter((t: any) => {
         if (t.status === 'archived') return false;
         if (t.is_template && t.recurrence !== 'daily') return false;
         if (t.status === 'completed') {
-          const _today = getTodayDateString();
-          const _taskDate = t.due_date ? new Date(t.due_date).toISOString().split('T')[0] : '';
+          const today = getTodayDateString();
+          const taskDate = t.due_date ? new Date(t.due_date).toISOString().split('T')[0] : '';
           return taskDate === today && t.category === selectedCategory;
         }
         return t.category === selectedCategory;
       })
-    : tasks.filter((t) => {
+    : tasks.filter((t: any) => {
         if (t.status === 'archived') return false;
         if (t.is_template && t.recurrence !== 'daily') return false;
         if (t.status === 'completed') {
-          const _today = getTodayDateString();
-          const _taskDate = t.due_date ? new Date(t.due_date).toISOString().split('T')[0] : '';
+          const today = getTodayDateString();
+          const taskDate = t.due_date ? new Date(t.due_date).toISOString().split('T')[0] : '';
           return taskDate === today;
         }
         return true;

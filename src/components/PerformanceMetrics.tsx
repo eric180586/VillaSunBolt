@@ -133,7 +133,7 @@ interface PerformanceMetricsProps {
 }
 
 export function PerformanceMetrics({ onNavigate }: PerformanceMetricsProps = {}) {
-  const { t: _t } = useTranslation();
+  const { t } = useTranslation();
   const { profile } = useAuth();
   const { tasks } = useTasks();
   const { schedules } = useSchedules();

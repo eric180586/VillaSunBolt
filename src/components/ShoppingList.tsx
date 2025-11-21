@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../contexts/AuthContext';
 import { Plus, Check, X, Camera, ShoppingCart, ArrowLeft } from 'lucide-react';
@@ -23,8 +23,8 @@ interface ShoppingItem {
 }
 
 export function ShoppingList({ onBack }: { onBack?: () => void } = {}) {
-  const { t: _t } = useTranslation();
-  const { profile: _profile } = useAuth();
+  const { t } = useTranslation();
+  const { profile } = useAuth();
   const [items, setItems] = useState<ShoppingItem[]>([]);
   const [showModal, setShowModal] = useState(false);
   const [formData, setFormData] = useState({
@@ -34,7 +34,7 @@ export function ShoppingList({ onBack }: { onBack?: () => void } = {}) {
   const [photo, setPhoto] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
 
-  const _isAdmin = profile?.role === 'admin';
+  const isAdmin = profile?.role === 'admin';
 
   useEffect(() => {
     loadItems();
