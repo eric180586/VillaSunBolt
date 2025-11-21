@@ -37,9 +37,6 @@ interface PatrolScan {
 
 const TIME_SLOTS = ['11:00', '12:15', '13:30', '14:45', '16:00', '17:15', '18:30', '19:45', '21:00'];
 
-// TEST MODE: Set to true to enable test mode (no time restrictions, creates rounds for current user)
-const TEST_MODE = true;
-
 export function PatrolRounds({ onBack }: { onBack?: () => void } = {}) {
   const { profile } = useAuth();
   const [locations, setLocations] = useState<PatrolLocation[]>([]);
@@ -50,7 +47,8 @@ export function PatrolRounds({ onBack }: { onBack?: () => void } = {}) {
   const [showPhotoRequest, setShowPhotoRequest] = useState(false);
   const [pendingLocation, setPendingLocation] = useState<PatrolLocation | null>(null);
   const [photo, setPhoto] = useState<File | null>(null);
-  const [testMode] = useState(TEST_MODE);
+  const [showTestRound, setShowTestRound] = useState(false);
+  const [testRound, setTestRound] = useState<PatrolRound | null>(null);
 
   useEffect(() => {
     loadLocations();
@@ -143,39 +141,7 @@ export function PatrolRounds({ onBack }: { onBack?: () => void } = {}) {
 
   const checkAndCreateRounds = async () => {
     const today = getTodayDateString();
-    const { data: { user } } = await supabase.auth.getUser();
 
-    if (!user) return;
-
-    if (testMode) {
-      // TEST MODE: Create all time slots for current user
-      console.log('TEST MODE: Creating patrol rounds for current user');
-
-      for (const timeSlot of TIME_SLOTS) {
-        const { data: existing } = await supabase
-          .from('patrol_rounds')
-          .select('id')
-          .eq('date', today)
-          .eq('time_slot', timeSlot)
-          .eq('assigned_to', user.id)
-          .maybeSingle() as any;
-
-        if (!existing) {
-          const scheduledTime = `${today}T${timeSlot}:00+07:00`;
-          await supabase.from('patrol_rounds').insert({
-            date: today,
-            time_slot: timeSlot,
-            assigned_to: user.id,
-            scheduled_time: scheduledTime,
-          }) as any;
-        }
-      }
-
-      loadTodayData();
-      return;
-    }
-
-    // NORMAL MODE: Use schedule
     const { data: schedule } = await supabase
       .from('patrol_schedules')
       .select('*')
@@ -216,12 +182,26 @@ export function PatrolRounds({ onBack }: { onBack?: () => void } = {}) {
     loadTodayData();
   };
 
-  const findActiveRound = (rounds: PatrolRound[]): PatrolRound | null => {
-    if (testMode) {
-      // TEST MODE: First incomplete round is always active
-      return rounds.find(r => !r.completed_at) || null;
-    }
+  const createTestRound = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
 
+    // Create a temporary test round object (not saved to database)
+    const mockTestRound: PatrolRound = {
+      id: 'test-round-' + Date.now(),
+      date: getTodayDateString(),
+      time_slot: 'TEST',
+      assigned_to: user.id,
+      completed_at: null,
+    };
+
+    setTestRound(mockTestRound);
+    setCurrentRound(mockTestRound);
+    setShowTestRound(true);
+    setScans([]); // Reset test scans
+  };
+
+  const findActiveRound = (rounds: PatrolRound[]): PatrolRound | null => {
     const now = new Date();
     const currentTime = now.getHours() * 60 + now.getMinutes();
 
@@ -242,11 +222,6 @@ export function PatrolRounds({ onBack }: { onBack?: () => void } = {}) {
   };
 
   const canStartRound = (round: PatrolRound): boolean => {
-    if (testMode) {
-      // TEST MODE: Any incomplete round can be started
-      return !round.completed_at;
-    }
-
     const now = new Date();
     const currentTime = now.getHours() * 60 + now.getMinutes();
     const [hours, minutes] = round.time_slot.split(':').map(Number);
@@ -303,6 +278,46 @@ export function PatrolRounds({ onBack }: { onBack?: () => void } = {}) {
         return;
       }
 
+      // TEST MODE: Just add to local scans, don't save to database
+      if (showTestRound && roundId.startsWith('test-round-')) {
+        const alreadyScanned = scans.some(
+          (s: any) => s.patrol_round_id === roundId && s.location_id === locationId
+        );
+
+        if (alreadyScanned) {
+          alert('This location has already been scanned in this test.');
+          return;
+        }
+
+        const newScan: PatrolScan = {
+          id: 'test-scan-' + Date.now(),
+          patrol_round_id: roundId,
+          location_id: locationId,
+          scanned_at: new Date().toISOString(),
+          photo_url: photoUrl,
+          photo_requested: photoRequested,
+        };
+
+        const updatedScans = [...scans, newScan];
+        setScans(updatedScans);
+
+        const uniqueLocations = new Set(updatedScans.map(s => s.location_id));
+
+        if (uniqueLocations.size === locations.length) {
+          alert(`TEST: All locations scanned! (No points awarded - test mode)`);
+          setShowScanner(false);
+        } else {
+          alert(`TEST: Location scanned! ${uniqueLocations.size}/${locations.length} complete.`);
+          setShowScanner(true);
+        }
+
+        setShowPhotoRequest(false);
+        setPendingLocation(null);
+        setPhoto(null);
+        return;
+      }
+
+      // NORMAL MODE: Save to database
       const { error: scanError } = await supabase.from('patrol_scans').insert({
         patrol_round_id: roundId,
         location_id: locationId,
@@ -480,27 +495,87 @@ export function PatrolRounds({ onBack }: { onBack?: () => void } = {}) {
             </button>
           )}
           <div>
-            <div className="flex items-center space-x-3">
-              <h2 className="text-3xl font-bold text-gray-900">Patrol Rounds</h2>
-              {testMode && (
-                <span className="bg-yellow-400 text-yellow-900 px-3 py-1 rounded-full text-sm font-bold">
-                  TEST MODE
-                </span>
-              )}
-            </div>
+            <h2 className="text-3xl font-bold text-gray-900">Patrol Rounds</h2>
             <p className="text-gray-600 mt-1">
               {profile?.role === 'admin'
                 ? 'Übersicht aller Patrouillengänge'
-                : testMode
-                  ? 'Test Mode: All rounds available, no time restrictions'
-                  : 'Scanne QR Codes an den Kontrollpunkten'}
+                : 'Scanne QR Codes an den Kontrollpunkten'}
             </p>
           </div>
         </div>
-        <Shield className="w-8 h-8 text-orange-600" />
+        <div className="flex items-center space-x-3">
+          {profile?.role === 'admin' && !showTestRound && (
+            <button
+              onClick={createTestRound}
+              className="bg-yellow-500 text-white px-4 py-2 rounded-lg hover:bg-yellow-600 transition-colors font-semibold flex items-center space-x-2"
+            >
+              <Shield className="w-5 h-5" />
+              <span>Test Round</span>
+            </button>
+          )}
+          <Shield className="w-8 h-8 text-orange-600" />
+        </div>
       </div>
 
-      {currentRound && profile?.role !== 'admin' && (
+      {showTestRound && testRound && profile?.role === 'admin' && (
+        <div className="bg-gradient-to-r from-yellow-500 to-yellow-600 rounded-xl p-6 text-white shadow-lg border-4 border-yellow-700">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center space-x-3">
+              <Shield className="w-6 h-6" />
+              <div>
+                <div className="text-sm opacity-90 font-bold">TEST ROUND (Admin Only)</div>
+                <div className="text-xl">Not saved - for testing only</div>
+              </div>
+            </div>
+            <div className="flex items-center space-x-3">
+              <button
+                onClick={() => {
+                  setShowTestRound(false);
+                  setTestRound(null);
+                  setCurrentRound(null);
+                  setScans([]);
+                }}
+                className="bg-white text-red-600 px-4 py-2 rounded-lg font-semibold hover:bg-red-50 transition-colors"
+              >
+                End Test
+              </button>
+              <button
+                onClick={() => setShowScanner(true)}
+                className="bg-white text-yellow-600 px-6 py-3 rounded-lg font-semibold hover:bg-yellow-50 transition-colors flex items-center space-x-2"
+              >
+                <QrCode className="w-5 h-5" />
+                <span>Scan QR Code</span>
+              </button>
+            </div>
+          </div>
+          <div className="grid grid-cols-3 gap-3">
+            {locations.map((location) => {
+              const status = getLocationStatus(location.id);
+              return (
+                <div
+                  key={location.id}
+                  className={`p-3 rounded-lg ${
+                    status === 'completed'
+                      ? 'bg-green-400 bg-opacity-30'
+                      : 'bg-white bg-opacity-20'
+                  }`}
+                >
+                  <div className="flex items-center space-x-2">
+                    {status === 'completed' ? (
+                      <CheckCircle className="w-5 h-5" />
+                    ) : (
+                      <AlertCircle className="w-5 h-5" />
+                    )}
+                    <span className="text-sm font-medium">{location.name}</span>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {currentRound && !showTestRound && profile?.role !== 'admin' && (
         <div className="bg-gradient-to-r from-orange-500 to-orange-600 rounded-xl p-6 text-white shadow-lg">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center space-x-3">
@@ -545,10 +620,11 @@ export function PatrolRounds({ onBack }: { onBack?: () => void } = {}) {
         </div>
       )}
 
-      <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
-        <h3 className="text-lg font-bold text-gray-900 mb-4">Today's Rounds</h3>
-        <div className="space-y-3">
-          {todayRounds.map((round) => {
+      {!showTestRound && (
+        <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
+          <h3 className="text-lg font-bold text-gray-900 mb-4">Today's Rounds</h3>
+          <div className="space-y-3">
+            {todayRounds.map((round) => {
             const status = getRoundStatus(round);
             const roundScans = scans.filter((s: any) => s.patrol_round_id === round.id);
             const uniqueScans = new Set(roundScans.map(s => s.location_id));
@@ -599,15 +675,16 @@ export function PatrolRounds({ onBack }: { onBack?: () => void } = {}) {
               </div>
             );
           })}
-          {todayRounds.length === 0 && (
-            <div className="text-center py-12 text-gray-500">
-              {profile?.role === 'admin'
-                ? 'Heute keine Patrouillengänge geplant'
-                : 'Keine Patrouillengänge für heute zugewiesen'}
-            </div>
-          )}
+            {todayRounds.length === 0 && (
+              <div className="text-center py-12 text-gray-500">
+                {profile?.role === 'admin'
+                  ? 'Heute keine Patrouillengänge geplant'
+                  : 'Keine Patrouillengänge für heute zugewiesen'}
+              </div>
+            )}
+          </div>
         </div>
-      </div>
+      )}
 
       {showScanner && (
         <QRScanner
