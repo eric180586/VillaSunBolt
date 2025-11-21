@@ -214,12 +214,13 @@ export function PatrolRounds({ onBack }: { onBack?: () => void } = {}) {
   const handleQRScan = async (qrCode: string) => {
     if (!currentRound) {
       alert('No active patrol round at this time. Please wait for the next time slot.');
+      setShowScanner(false);
       return;
     }
 
     const location = locations.find((l) => l.qr_code === qrCode);
     if (!location) {
-      alert('Invalid QR code');
+      alert('Invalid QR code. Please try again.');
       return;
     }
 
@@ -239,6 +240,7 @@ export function PatrolRounds({ onBack }: { onBack?: () => void } = {}) {
       setShowPhotoRequest(true);
       setShowScanner(false);
     } else {
+      setShowScanner(false);
       await completeScan(location.id, currentRound.id, null, false);
     }
   };
@@ -266,15 +268,15 @@ export function PatrolRounds({ onBack }: { onBack?: () => void } = {}) {
 
       if (scanError) {
         console.error('Scan insert error:', scanError);
-        // Check if it's a duplicate scan error
         if (scanError.code === '23505') {
           alert('This location has already been scanned for this patrol round.');
-          setShowScanner(false);
-          setShowPhotoRequest(false);
-          loadTodayData();
-          return;
+        } else {
+          alert('Error recording scan: ' + (scanError.message || 'Unknown error'));
         }
-        throw scanError;
+        setShowScanner(false);
+        setShowPhotoRequest(false);
+        loadTodayData();
+        return;
       }
 
       // Award +1 point immediately for this scan
@@ -326,6 +328,8 @@ export function PatrolRounds({ onBack }: { onBack?: () => void } = {}) {
       // Calculate if within time window (simplified - always true for now)
       const withinWindow = true;
 
+      await loadTodayData();
+
       if (uniqueLocations.size === locations.length) {
         // Mark round as complete
         const pointsForRound = withinWindow ? locations.length : 0;
@@ -343,16 +347,15 @@ export function PatrolRounds({ onBack }: { onBack?: () => void } = {}) {
         } else {
           alert('Patrol round completed (time expired, no points awarded)');
         }
+
+        // Close scanner after round completion
+        setShowScanner(false);
       } else {
-        // Individual scan feedback
-        if (withinWindow) {
-          alert('Scan completed successfully! +1 point awarded.');
-        } else {
-          alert('Scan completed, but time window expired (no points awarded).');
-        }
+        // Individual scan feedback - reopen scanner for next scan
+        alert(`Location scanned! +1 point. ${uniqueLocations.size}/${locations.length} complete.`);
+        setShowScanner(true);
       }
 
-      loadTodayData();
       setShowPhotoRequest(false);
       setPendingLocation(null);
       setPhoto(null);
