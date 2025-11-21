@@ -286,6 +286,7 @@ export function PatrolRounds({ onBack }: { onBack?: () => void } = {}) {
 
         if (alreadyScanned) {
           alert('This location has already been scanned in this test.');
+          setShowScanner(false);
           return;
         }
 
@@ -301,19 +302,20 @@ export function PatrolRounds({ onBack }: { onBack?: () => void } = {}) {
         const updatedScans = [...scans, newScan];
         setScans(updatedScans);
 
+        setShowPhotoRequest(false);
+        setPendingLocation(null);
+        setPhoto(null);
+
         const uniqueLocations = new Set(updatedScans.map(s => s.location_id));
 
         if (uniqueLocations.size === locations.length) {
           alert(`TEST: All locations scanned! (No points awarded - test mode)`);
           setShowScanner(false);
         } else {
-          alert(`TEST: Location scanned! ${uniqueLocations.size}/${locations.length} complete.`);
-          setShowScanner(true);
+          alert(`TEST: Location scanned! ${uniqueLocations.size}/${locations.length} complete. Press "Scan QR Code" to continue.`);
+          setShowScanner(false);
         }
 
-        setShowPhotoRequest(false);
-        setPendingLocation(null);
-        setPhoto(null);
         return;
       }
 
@@ -388,6 +390,10 @@ export function PatrolRounds({ onBack }: { onBack?: () => void } = {}) {
       // Calculate if within time window (simplified - always true for now)
       const withinWindow = true;
 
+      setShowPhotoRequest(false);
+      setPendingLocation(null);
+      setPhoto(null);
+
       await loadTodayData();
 
       if (uniqueLocations.size === locations.length) {
@@ -411,14 +417,10 @@ export function PatrolRounds({ onBack }: { onBack?: () => void } = {}) {
         // Close scanner after round completion
         setShowScanner(false);
       } else {
-        // Individual scan feedback - reopen scanner for next scan
-        alert(`Location scanned! +1 point. ${uniqueLocations.size}/${locations.length} complete.`);
-        setShowScanner(true);
+        // Individual scan feedback - show alert, user must manually reopen scanner
+        alert(`Location scanned! +1 point. ${uniqueLocations.size}/${locations.length} complete. Press "Scan QR Code" to continue.`);
+        setShowScanner(false);
       }
-
-      setShowPhotoRequest(false);
-      setPendingLocation(null);
-      setPhoto(null);
     } catch (error) {
       console.error('Error completing scan:', error);
       alert('Error recording scan');
@@ -446,8 +448,17 @@ export function PatrolRounds({ onBack }: { onBack?: () => void } = {}) {
   const handlePhotoSubmit = async () => {
     if (!photo || !pendingLocation || !currentRound) return;
 
-    const photoUrl = await uploadPhoto(photo);
-    await completeScan(pendingLocation.id, currentRound.id, photoUrl, true);
+    try {
+      const photoUrl = await uploadPhoto(photo);
+      if (!photoUrl) {
+        alert('Photo upload failed. Please try again.');
+        return;
+      }
+      await completeScan(pendingLocation.id, currentRound.id, photoUrl, true);
+    } catch (error) {
+      console.error('Photo submit error:', error);
+      alert('Error uploading photo. Please try again.');
+    }
   };
 
   const handleScannerResult = (result: string) => {

@@ -13,44 +13,58 @@ export function QRScanner({ onScan, onClose }: QRScannerProps) {
   const scannerRef = useRef<Html5Qrcode | null>(null);
   const [error, setError] = useState<string>('');
   const [isScanning, setIsScanning] = useState(false);
+  const hasScannedRef = useRef(false);
 
   useEffect(() => {
-    const scanner = new Html5Qrcode('qr-reader');
-    scannerRef.current = scanner;
+    let scanner: Html5Qrcode | null = null;
 
-    const config = {
-      fps: 10,
-      qrbox: { width: 250, height: 250 },
-      aspectRatio: 1.0,
-    };
+    const initScanner = async () => {
+      try {
+        scanner = new Html5Qrcode('qr-reader');
+        scannerRef.current = scanner;
 
-    scanner
-      .start(
-        { facingMode: 'environment' },
-        config,
-        (decodedText) => {
-          scanner.stop().then(() => {
-            onScan(decodedText);
-          }) as any;
-        },
-        () => {
-        }
-      )
-      .then(() => {
+        const config = {
+          fps: 10,
+          qrbox: { width: 250, height: 250 },
+          aspectRatio: 1.0,
+        };
+
+        await scanner.start(
+          { facingMode: 'environment' },
+          config,
+          (decodedText) => {
+            // Prevent multiple scans
+            if (hasScannedRef.current) return;
+            hasScannedRef.current = true;
+
+            // Stop scanner first
+            if (scanner && scanner.isScanning) {
+              scanner.stop().then(() => {
+                onScan(decodedText);
+              }).catch(console.error);
+            }
+          },
+          () => {
+            // Error callback - ignore
+          }
+        );
+
         setIsScanning(true);
         setError('');
-      })
-      .catch((err) => {
+      } catch (err) {
         console.error('Scanner error:', err);
         setError('Kamera-Zugriff verweigert oder nicht verfügbar');
-      }) as any;
+      }
+    };
+
+    initScanner();
 
     return () => {
-      if (scanner.isScanning) {
+      if (scanner && scanner.isScanning) {
         scanner.stop().catch((err) => console.error('Error stopping scanner:', err));
       }
     };
-  }, [onScan]);
+  }, []);
 
   const handleClose = () => {
     if (scannerRef.current && scannerRef.current.isScanning) {
