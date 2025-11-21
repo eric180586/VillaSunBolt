@@ -513,14 +513,14 @@ export function CheckInOverview({ onBack, onNavigate }: CheckInOverviewProps = {
                           {status.status === 'pending' && status.check_in_id && (
                             <div className="flex items-center space-x-1">
                               <button
-                                onClick={() => handleApproveCheckIn(status.check_in_id!, status.user_id)}
+                                onClick={() => handleApproveCheckIn(status.check_in_id!)}
                                 className="p-1 text-green-600 hover:bg-green-50 rounded border border-green-300"
                                 title="Genehmigen"
                               >
                                 <Check className="w-4 h-4" />
                               </button>
                               <button
-                                onClick={() => handleRejectCheckIn(status.check_in_id!, status.user_id)}
+                                onClick={() => handleRejectCheckIn(status.check_in_id!)}
                                 className="p-1 text-red-600 hover:bg-red-50 rounded border border-red-300"
                                 title="Ablehnen"
                               >

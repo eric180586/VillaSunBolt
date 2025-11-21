@@ -146,10 +146,10 @@ export function Notifications({ onBack }: { onBack?: () => void } = {}) {
                   <div className="flex items-center space-x-2 mb-2">
                     <span
                       className={`px-2 py-1 rounded-full text-xs font-medium ${getTypeColor(
-                        notification.type
+                        notification.type || ''
                       )}`}
                     >
-                      {notification.type}
+                      {notification.type || ''}
                     </span>
                     {!notification.is_read && (
                       <span className="w-2 h-2 bg-blue-600 rounded-full" />
@@ -160,7 +160,7 @@ export function Notifications({ onBack }: { onBack?: () => void } = {}) {
                   </h3>
                   <p className="text-gray-700 mb-2">{notification.message}</p>
                   <p className="text-xs text-gray-500">
-                    {notification.created_at ? new Date(notification.created_at).toLocaleString : ""()}
+                    {notification.created_at ? new Date(notification.created_at).toLocaleString() : ""}
                   </p>
                 </div>
                 {!notification.is_read && (

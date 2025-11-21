@@ -321,7 +321,10 @@ export function PatrolRounds({ onBack }: { onBack?: () => void } = {}) {
         .select('location_id')
         .eq('patrol_round_id', roundId);
 
-      const uniqueLocations = new Set(roundScans?.map(s => s.location_id) || []);
+      const uniqueLocations = new Set(roundScans?.map((s: any) => s.location_id) || []);
+
+      // Calculate if within time window (simplified - always true for now)
+      const withinWindow = true;
 
       if (uniqueLocations.size === locations.length) {
         // Mark round as complete

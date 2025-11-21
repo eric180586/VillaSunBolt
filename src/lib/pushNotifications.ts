@@ -24,7 +24,7 @@ export async function registerServiceWorker(): Promise<ServiceWorkerRegistration
     }) as any;
     await navigator.serviceWorker.ready;
     return registration;
-  } catch (error) {
+  } catch {
     // Silently fail in environments without Service Worker support (e.g., StackBlitz)
     // In production, Service Worker will work normally for push notifications
     return null;
@@ -87,8 +87,8 @@ export async function subscribeToPushNotifications(
 
     await savePushSubscription(userId, subscription);
     return subscription;
-  } catch (error) {
-    console.error('Push subscription failed:', error);
+  } catch (err) {
+    console.error('Push subscription failed:', err);
     return null;
   }
 }
@@ -150,7 +150,7 @@ export async function checkPushSubscription(): Promise<PushSubscription | null> 
 
     const subscription = await registration.pushManager.getSubscription();
     return subscription;
-  } catch (error) {
+  } catch {
     return null;
   }
 }

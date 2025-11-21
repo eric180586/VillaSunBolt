@@ -12,7 +12,7 @@ interface PatrolLocation {
   order_index: number;
 }
 
-export function PatrolQRCodes({}: { onBack?: () => void } = {}) {
+export function PatrolQRCodes(_props: { onBack?: () => void } = {}) {
   const [locations, setLocations] = useState<PatrolLocation[]>([]);
   const [qrCodeURLs, setQrCodeURLs] = useState<{ [key: string]: string }>({}) as any;
 

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Camera, X } from 'lucide-react';
+import { X } from 'lucide-react';
 
 interface PhotoRequirementDiceProps {
   onResult: (requiresPhoto: boolean) => void;

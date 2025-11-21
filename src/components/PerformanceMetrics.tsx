@@ -158,7 +158,7 @@ export function PerformanceMetrics({ onNavigate }: PerformanceMetricsProps = {})
   useEffect(() => {
     const fetchChecklistInstances = async () => {
       // Checklists are now integrated into Tasks - return empty array
-      setChecklistInstances([]);
+      _setChecklistInstances([]);
     };
 
     const fetchTeamTaskCounts = async () => {
@@ -269,7 +269,7 @@ export function PerformanceMetrics({ onNavigate }: PerformanceMetricsProps = {})
         }) as any;
 
         if (scheduledCount === 0) {
-          setTeamEstimatedTime(120);
+          _setTeamEstimatedTime(120);
           return;
         }
 
@@ -291,11 +291,11 @@ export function PerformanceMetrics({ onNavigate }: PerformanceMetricsProps = {})
         const totalMinutes = totalTaskMinutes + totalChecklistMinutes;
         const estimatedMinutes = Math.ceil(totalMinutes / scheduledCount) + 120;
 
-        setTeamEstimatedTime(estimatedMinutes);
+        _setTeamEstimatedTime(estimatedMinutes);
 
       } catch (error: any) {
         console.error('Estimated time error:', error);
-        setTeamEstimatedTime(0);
+        _setTeamEstimatedTime(0);
       }
     };
 
@@ -306,7 +306,7 @@ export function PerformanceMetrics({ onNavigate }: PerformanceMetricsProps = {})
     return () => clearInterval(interval);
   }, []);
 
-  const _staffProfiles = profiles.filter((p: any) => p.role !== 'admin');
+  void profiles;
 
   const today = new Date();
   today.setHours(0, 0, 0, 0);
@@ -317,23 +317,17 @@ export function PerformanceMetrics({ onNavigate }: PerformanceMetricsProps = {})
     return scheduleDate.getTime() === today.getTime();
   }) as any;
 
-  const _currentUserSchedule = todaySchedules.find((s: any) => s.staff_id === profile?.id);
+  void todaySchedules;
 
   const myTasks = getTodayMyTasks(tasks, profile?.id);
   const completedMyTasks = myTasks.filter((t) => t.status === 'completed' || t.status === 'archived');
-  const _taskPercentage = myTasks.length > 0
-    ? (completedMyTasks.length / myTasks.length) * 100
-    : 0;
+  void myTasks;
+  void completedMyTasks;
 
   // Checklists are now integrated into Tasks - all checklist variables set to empty/zero
-  const _myChecklistInstances: any[] = [];
-  const _completedChecklists: any[] = [];
-  const _openChecklistInstances: any[] = [];
   const checklistTimeMinutes = 0;
 
-  const _estimatedTimeMinutes = myTasks
-    .filter((t) => t.status !== 'completed' && t.status !== 'archived')
-    .reduce((sum, t) => sum + (t.duration_minutes || 0), 0) + checklistTimeMinutes;
+  void checklistTimeMinutes;
 
   const dailyGoalPercentage = typeof dailyGoal?.percentage === 'string'
     ? parseFloat(dailyGoal.percentage)
@@ -427,7 +421,7 @@ export function PerformanceMetrics({ onNavigate }: PerformanceMetricsProps = {})
           value={dailyGoalAchieved.toString()}
           total={dailyGoalTotal.toString()}
           percentage={dailyGoalPercentage}
-          colorStatus={dailyColorStatus}
+          colorStatus={dailyColorStatus as 'red' | 'yellow' | 'orange' | 'green' | 'dark_green' | 'gray' | undefined}
           icon={Award}
           showProgressBar={true}
           onClick={() => onNavigate?.('tasks')}

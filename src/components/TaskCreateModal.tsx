@@ -208,7 +208,7 @@ export function TaskCreateModal({ onClose, onComplete, profiles, editingTask }: 
       } else {
         // When creating new, create one task per assigned staff member (or one unassigned task)
         if (formData.assigned_to.length > 0) {
-          const tasksToCreate = formData.assigned_to.map(staffId => ({
+          const tasksToCreate = formData.assigned_to.map((staffId: string) => ({
             category: formData.category,
             title: formData.title,
             title_de: formData.title_de || formData.title,
@@ -364,7 +364,7 @@ export function TaskCreateModal({ onClose, onComplete, profiles, editingTask }: 
                       if (e.target.checked) {
                         setFormData({ ...formData, assigned_to: [...formData.assigned_to, p.id] }) as any;
                       } else {
-                        setFormData({ ...formData, assigned_to: formData.assigned_to.filter(id => id !== p.id) }) as any;
+                        setFormData({ ...formData, assigned_to: formData.assigned_to.filter((id: string) => id !== p.id) }) as any;
                       }
                     }}
                     className="w-4 h-4 text-purple-600"
@@ -375,7 +375,7 @@ export function TaskCreateModal({ onClose, onComplete, profiles, editingTask }: 
             </div>
             {formData.assigned_to.length > 0 && (
               <p className="text-xs text-gray-500 mt-1">
-                Ausgewählt: {formData.assigned_to.map(id => staffProfiles.find(p => p.id === id)?.full_name).join(', ')}
+                Ausgewählt: {formData.assigned_to.map((id: string) => staffProfiles.find(p => p.id === id)?.full_name).join(', ')}
               </p>
             )}
           </div>

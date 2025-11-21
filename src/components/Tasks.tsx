@@ -35,7 +35,7 @@ interface TasksProps {
 export function Tasks({ onNavigate, filterStatus, onBack }: TasksProps = {}) {
   const { t } = useTranslation();
   const { profile } = useAuth();
-  const { tasks, createTask, updateTask, deleteTask, refetch } = useTasks();
+  const { tasks, updateTask, deleteTask, refetch } = useTasks();
   const { profiles } = useProfiles();
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [showModal, setShowModal] = useState(false);

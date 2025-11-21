@@ -88,7 +88,7 @@ export function NotesPopup({ onClose }: NotesPopupProps) {
             {currentNote.content}
           </p>
           <p className="text-sm text-gray-500 mt-4">
-            {currentNote.created_at ? new Date(currentNote.created_at) : new Date().toLocaleString()}
+            {currentNote.created_at ? new Date(currentNote.created_at).toLocaleString() : new Date().toLocaleString()}
           </p>
         </div>
 

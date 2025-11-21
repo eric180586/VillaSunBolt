@@ -59,7 +59,7 @@ export function Profile({ onBack: _onBack }: { onBack?: () => void } = {}) {
               </div>
               <div className="flex items-center space-x-2 text-gray-600">
                 <Calendar className="w-5 h-5" />
-                <span>{t('profile.memberSince')} {profile.created_at ? new Date(profile.created_at) : new Date().toLocaleDateString()}</span>
+                <span>{t('profile.memberSince')} {profile.created_at ? new Date(profile.created_at).toLocaleDateString() : new Date().toLocaleDateString()}</span>
               </div>
               <div className="flex items-center space-x-2 text-gray-600">
                 <Globe className="w-5 h-5" />
@@ -118,7 +118,7 @@ export function Profile({ onBack: _onBack }: { onBack?: () => void } = {}) {
             <Calendar className="w-12 h-12 text-green-500 mx-auto mb-3" />
             <h4 className="text-lg font-semibold text-gray-900 mb-1">{t('profile.memberSince')}</h4>
             <p className="text-sm font-medium text-green-600">
-              {profile.created_at ? new Date(profile.created_at) : new Date().toLocaleDateString()}
+              {profile.created_at ? new Date(profile.created_at).toLocaleDateString() : new Date().toLocaleDateString()}
             </p>
           </div>
         </div>
@@ -154,10 +154,10 @@ export function Profile({ onBack: _onBack }: { onBack?: () => void } = {}) {
                     acc[dateKey].push(entry);
                     return acc;
                   }, {} as Record<string, typeof history>)
-                ).map(([date, entries]) => {
-                  const dayTotal = entries.reduce((sum, e) => sum + e.points_change, 0);
-                  const dayAchievable = entries[0]?.daily_achievable || 0;
-                  const dayAchieved = entries[0]?.daily_achieved || 0;
+                ).map(([date, entries]: [string, any]) => {
+                  const dayTotal = (entries as any[]).reduce((sum: number, e: any) => sum + e.points_change, 0);
+                  const dayAchievable = (entries as any[])[0]?.daily_achievable || 0;
+                  const dayAchieved = (entries as any[])[0]?.daily_achieved || 0;
 
                   return (
                     <div key={date} className="border-2 border-gray-200 rounded-lg overflow-hidden">
@@ -165,7 +165,7 @@ export function Profile({ onBack: _onBack }: { onBack?: () => void } = {}) {
                       <div className="bg-gradient-to-r from-blue-50 to-purple-50 p-3 border-b-2 border-gray-200">
                         <div className="flex items-center justify-between">
                           <div>
-                            <p className="font-bold text-gray-900">{typeof date === "string" ? date : (date instanceof Date ? date.toLocaleDateString() : String(date))}</p>
+                            <p className="font-bold text-gray-900">{String(date)}</p>
                             {dayAchievable > 0 && (
                               <p className="text-sm text-gray-600">
                                 Daily: {dayAchieved}/{dayAchievable} pts ({((dayAchieved/dayAchievable)*100).toFixed(0)}%)
@@ -181,7 +181,7 @@ export function Profile({ onBack: _onBack }: { onBack?: () => void } = {}) {
                       </div>
                       {/* Day Entries */}
                       <div className="divide-y divide-gray-200">
-                        {entries.map((entry: any) => (
+                        {(entries as any[]).map((entry: any) => (
                           <div
                             key={entry.id}
                             className="flex items-center justify-between p-3 bg-white hover:bg-gray-50"

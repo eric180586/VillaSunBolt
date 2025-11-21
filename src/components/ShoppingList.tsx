@@ -207,7 +207,7 @@ export function ShoppingList({ onBack }: { onBack?: () => void } = {}) {
                     )}
                     <p className="text-xs text-gray-500 mt-2">
                       Added by {item.profiles?.full_name} on{' '}
-                      {item.created_at ? new Date(item.created_at) : new Date().toLocaleDateString()}
+                      {item.created_at ? new Date(item.created_at).toLocaleDateString() : new Date().toLocaleDateString()}
                     </p>
                   </div>
                   <div className="flex items-center space-x-2 ml-3">

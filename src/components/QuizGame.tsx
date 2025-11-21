@@ -339,7 +339,7 @@ export default function QuizGame({ onClose }: QuizGameProps) {
           <div className="bg-gray-50 rounded-lg p-6 mb-6">
             <h3 className="text-xl font-semibold mb-4">Final Scores</h3>
             <div className="space-y-3">
-              {players.map((player, index) => (
+              {players.map((player) => (
                 <div
                   key={player.id}
                   className="flex items-center justify-between p-3 rounded-lg"

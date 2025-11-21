@@ -1,7 +1,7 @@
 import { useHumorModules } from '../hooks/useHumorModules';
 import { ToggleLeft, ToggleRight } from 'lucide-react';
 
-export function HumorModuleSettings({}: { onBack?: () => void } = {}) {
+export function HumorModuleSettings(_props: { onBack?: () => void } = {}) {
   const { modules, loading, toggleModule } = useHumorModules();
 
   if (loading) {
