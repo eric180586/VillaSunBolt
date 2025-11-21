@@ -11,7 +11,7 @@ export function DepartureRequestAdmin({ onBack }: { onBack?: () => void } = {}) 
   const { requests, refetch } = useDepartureRequests();
   const { profiles } = useProfiles();
 
-  const pendingRequests = requests.filter((r) => r.status === 'pending');
+  const pendingRequests = requests.filter((r: any) => r.status === 'pending');
 
   const handleApprove = async (requestId: string, userId: string) => {
     try {
@@ -155,7 +155,7 @@ export function DepartureRequestAdmin({ onBack }: { onBack?: () => void } = {}) 
                         {t('schedules.shift')}: <span className="font-medium">{request.shift_type === 'früh' ? t('schedules.morning') : t('schedules.late')}</span>
                       </p>
                       <p className="text-xs text-gray-500 mt-1">
-                        {t('departure.requestTime')}: {new Date(request.created_at).toLocaleString('de-DE')}
+                        {t('departure.requestTime')}: {request.created_at ? new Date(request.created_at).toLocaleString('de-DE') : new Date().toLocaleString('de-DE')}
                       </p>
                     </div>
                   </div>

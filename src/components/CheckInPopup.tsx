@@ -4,7 +4,7 @@ import { supabase } from '../lib/supabase';
 import { getTodayDateString } from '../lib/dateUtils';
 import { CheckCircle, Clock, X, AlertCircle } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { FortuneWheel } from './FortuneWheel';
+// import { FortuneWheel } from './FortuneWheel';
 
 interface CheckInPopupProps {
   onClose: () => void;
@@ -17,8 +17,8 @@ export function CheckInPopup({ onClose }: CheckInPopupProps) {
   const [checkInResult, setCheckInResult] = useState<any>(null);
   const [hasScheduleToday, setHasScheduleToday] = useState<boolean | null>(null);
   const [scheduledShift, setScheduledShift] = useState<string | null>(null);
-  const [showFortuneWheel, setShowFortuneWheel] = useState(false);
-  const [currentCheckInId, setCurrentCheckInId] = useState<string | null>(null);
+  const [_showFortuneWheel, setShowFortuneWheel] = useState(false);
+  const [_currentCheckInId, setCurrentCheckInId] = useState<string | null>(null);
 
   useEffect(() => {
     checkScheduleForToday();
@@ -111,14 +111,11 @@ export function CheckInPopup({ onClose }: CheckInPopupProps) {
     onClose();
   };
 
-  const handleFortuneWheelComplete = () => {
+  const _handleFortuneWheelComplete = () => {
     setShowFortuneWheel(false);
     onClose();
   };
 
-  if (showFortuneWheel && currentCheckInId) {
-    return <FortuneWheel checkInId={currentCheckInId} onComplete={handleFortuneWheelComplete} />;
-  }
 
   return (
     <div

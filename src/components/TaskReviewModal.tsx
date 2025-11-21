@@ -230,7 +230,7 @@ export function TaskReviewModal({ task, onClose, onComplete }: TaskReviewModalPr
             className="w-full text-sm"
           />
           {adminPhotos.length > 0 && (
-            <p className="text-sm text-green-600 mt-2">{adminPhotos.length} Foto(s) ausgewählt</p>
+            <p className="text-sm text-green-600 mt-2">{adminPhotos.length} Foto(s: any) ausgewählt</p>
           )}
         </div>
 

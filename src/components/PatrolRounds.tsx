@@ -118,7 +118,7 @@ export function PatrolRounds({ onBack }: { onBack?: () => void } = {}) {
 
     setTodayRounds(roundsData || []);
 
-    const roundIds = (roundsData || []).map((r) => r.id);
+    const roundIds = (roundsData || []).map((r: any) => r.id);
     if (roundIds.length > 0) {
       const { data: scansData, error: scansError } = await supabase
         .from('patrol_scans')
@@ -149,7 +149,7 @@ export function PatrolRounds({ onBack }: { onBack?: () => void } = {}) {
 
     const currentHour = new Date().getHours();
     const currentShift = currentHour < 15 ? 'morning' : 'late';
-    const assignedSchedule = schedule.find((s) => s.shift === currentShift);
+    const assignedSchedule = schedule.find((s: any) => s.shift === currentShift);
 
     if (!assignedSchedule) return;
 
@@ -224,7 +224,7 @@ export function PatrolRounds({ onBack }: { onBack?: () => void } = {}) {
     }
 
     const alreadyScanned = scans.some(
-      (s) => s.patrol_round_id === currentRound.id && s.location_id === location.id
+      (s: any) => s.patrol_round_id === currentRound.id && s.location_id === location.id
     );
 
     if (alreadyScanned) {
@@ -391,7 +391,7 @@ export function PatrolRounds({ onBack }: { onBack?: () => void } = {}) {
 
   const getLocationStatus = (locationId: string): 'completed' | 'pending' => {
     if (!currentRound) return 'pending';
-    return scans.some((s) => s.patrol_round_id === currentRound.id && s.location_id === locationId)
+    return scans.some((s: any) => s.patrol_round_id === currentRound.id && s.location_id === locationId)
       ? 'completed'
       : 'pending';
   };
@@ -490,7 +490,7 @@ export function PatrolRounds({ onBack }: { onBack?: () => void } = {}) {
         <div className="space-y-3">
           {todayRounds.map((round) => {
             const status = getRoundStatus(round);
-            const roundScans = scans.filter((s) => s.patrol_round_id === round.id);
+            const roundScans = scans.filter((s: any) => s.patrol_round_id === round.id);
             const uniqueScans = new Set(roundScans.map(s => s.location_id));
             const progress = `${uniqueScans.size}/${locations.length}`;
 

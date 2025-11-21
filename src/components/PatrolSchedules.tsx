@@ -20,7 +20,7 @@ onNavigate?: (view: string) => void;
 }
 
 export function PatrolSchedules({ onNavigate, onBack }: PatrolSchedulesProps = {}) {
-  const { t } = useTranslation();
+  const { t: _t } = useTranslation();
   const { profile } = useAuth();
   const { profiles } = useProfiles();
   const [currentWeekStart, setCurrentWeekStart] = useState<Date>(getMonday(new Date()));
@@ -71,15 +71,15 @@ export function PatrolSchedules({ onNavigate, onBack }: PatrolSchedulesProps = {
       const scheduleMap: PatrolSchedule[] = [];
       weekDates.forEach((date) => {
         ['early', 'late'].forEach((shift) => {
-          const existing = data?.find((s) => s.date === date && s.shift === shift);
+          const existing = data?.find((s: any) => s.date === date && s.shift === shift);
           scheduleMap.push({
             date,
             shift: shift as 'early' | 'late',
             assigned_to: existing?.assigned_to || null,
             staff_name: existing?.profiles?.full_name || null,
-          }) as any;
-        }) as any;
-      }) as any;
+          });
+        });
+      });
 
       setSchedules(scheduleMap);
     } catch (error) {
@@ -93,7 +93,7 @@ export function PatrolSchedules({ onNavigate, onBack }: PatrolSchedulesProps = {
     if (!isAdmin) return;
 
     const currentIndex = currentStaffId
-      ? staffMembers.findIndex((s) => s.id === currentStaffId)
+      ? staffMembers.findIndex((s: any) => s.id === currentStaffId)
       : -1;
 
     const nextIndex = (currentIndex + 1) % (staffMembers.length + 1);
@@ -117,7 +117,7 @@ export function PatrolSchedules({ onNavigate, onBack }: PatrolSchedulesProps = {
             shift,
             assigned_to: nextStaff.id,
             created_by: profile?.id,
-          }) as any;
+          });
 
         if (insertError) throw insertError;
       }
@@ -206,7 +206,7 @@ export function PatrolSchedules({ onNavigate, onBack }: PatrolSchedulesProps = {
                     {weekDates.map((date, dayIndex) => {
                       const dateStr = formatDate(date);
                       const schedule = schedules.find(
-                        (s) => s.date === dateStr && s.shift === shift
+                        (s: any) => s.date === dateStr && s.shift === shift
                       );
 
                       return (

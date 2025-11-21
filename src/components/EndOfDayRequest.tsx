@@ -65,7 +65,7 @@ export function EndOfDayRequest() {
     console.log('[EndOfDayRequest] Creating request for shift type:', shiftType);
 
     const hasPendingRequest = requests.some(
-      (r) =>
+      (r: any) =>
         r.user_id === profile.id &&
         new Date(r.shift_date).toDateString() === today.toDateString() &&
         r.status === 'pending'

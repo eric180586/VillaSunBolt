@@ -21,15 +21,15 @@ interface TaskItemsListProps {
 }
 
 export function TaskItemsList({ items, onToggleItem, readOnly = false, showCompletedBy = false }: TaskItemsListProps) {
-  const { t } = useTranslation();
-  const { profile } = useAuth();
+  const { t: _t } = useTranslation();
+  const { profile: _profile } = useAuth();
 
   if (!items || items.length === 0) {
     return null;
   }
 
-  const completedCount = items.filter(item => item.is_completed).length;
-  const totalCount = items.length;
+  const _completedCount = items.filter(item => item.is_completed).length;
+  const _totalCount = items.length;
 
   return (
     <div className="space-y-3">

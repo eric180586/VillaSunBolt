@@ -50,7 +50,7 @@ export function PatrolQRCodes({}: { onBack?: () => void } = {}) {
           light: '#FFFFFF',
         },
       }) as any;
-      setQrCodeURLs((prev) => ({ ...prev, [locationId]: url }));
+      setQrCodeURLs((prev: any) => ({ ...prev, [locationId]: url }));
     } catch (error) {
       console.error('Error generating QR code:', error);
     }

@@ -29,7 +29,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     let mounted = true;
 
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    supabase.auth.getSession().then(({ data: { session } }: { data: { session: any } }) => {
       if (!mounted) return;
       setSession(session);
       setUser(session?.user ?? null);
@@ -38,9 +38,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       } else {
         setLoading(false);
       }
-    }) as any;
+    });
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event: string, session: any) => {
       (async () => {
         if (!mounted) return;
         setSession(session);
@@ -53,7 +53,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           setLoading(false);
         }
       })();
-    }) as any;
+    });
 
     return () => {
       mounted = false;
@@ -91,12 +91,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 if (!existingSub && 'Notification' in window) {
                   try {
                     await subscribeToPushNotifications(userId);
-                  } catch (error) {
+                  } catch (error: any) {
                     console.log('Push notification setup skipped:', error.message || error);
                   }
                 }
               })
-              .catch((error) => {
+              .catch((error: any) => {
                 console.log('Push notification check skipped:', error.message || error);
               }) as any;
           } else {
@@ -109,7 +109,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
 
       setLoading(false);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error loading profile:', error);
       setLoading(false);
     }
@@ -158,7 +158,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       sessionStorage.clear();
 
       window.location.href = '/';
-    } catch (error) {
+    } catch (error: any) {
       console.error('Sign out error:', error);
       window.location.href = '/';
     }
@@ -180,7 +180,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (profile) {
         setProfile({ ...profile, preferred_language: language }) as any;
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error updating language:', error);
       throw error;
     }

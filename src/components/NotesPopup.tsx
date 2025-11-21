@@ -14,8 +14,8 @@ export function NotesPopup({ onClose }: NotesPopupProps) {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
-  const importantNotes = notes.filter((note) => {
-    const noteDate = new Date(note.created_at);
+  const importantNotes = notes.filter((note: any) => {
+    const noteDate = note.created_at ? new Date(note.created_at) : new Date();
     noteDate.setHours(0, 0, 0, 0);
     return (
       noteDate.getTime() === today.getTime() &&
@@ -88,7 +88,7 @@ export function NotesPopup({ onClose }: NotesPopupProps) {
             {currentNote.content}
           </p>
           <p className="text-sm text-gray-500 mt-4">
-            {new Date(currentNote.created_at).toLocaleString()}
+            {currentNote.created_at ? new Date(currentNote.created_at) : new Date().toLocaleString()}
           </p>
         </div>
 

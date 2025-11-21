@@ -155,7 +155,7 @@ export function HelperSelectionModal({
             </div>
             {photos.length > 0 && (
               <p className="text-sm text-green-600 mt-2">
-                {photos.length} Foto(s) ausgewählt
+                {photos.length} Foto(s: any) ausgewählt
               </p>
             )}
           </div>

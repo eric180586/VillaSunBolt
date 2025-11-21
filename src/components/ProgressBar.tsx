@@ -42,8 +42,8 @@ const formatMinutesToTime = (totalMinutes: number): string => {
 };
 
 export function ProgressBar() {
-  const { t } = useTranslation();
-  const { profile } = useAuth();
+  const { t: _t } = useTranslation();
+  const { profile: _profile } = useAuth();
   const { tasks } = useTasks();
   const { activeModules } = useHumorModules();
   const [displayTime, setDisplayTime] = useState('--:--');
@@ -75,9 +75,9 @@ export function ProgressBar() {
       let userIsScheduled = false;
       let userShiftType: 'morning' | 'late' | null = null;
 
-      weeklySchedules?.forEach((schedule) => {
+      weeklySchedules?.forEach((schedule: any) => {
         const shiftsArray = schedule.shifts as Array<{ date: string; shift: string }>;
-        const todayShift = shiftsArray.find((s) => s.date === todayStr);
+        const todayShift = shiftsArray.find((s: any) => s.date === todayStr);
 
         if (todayShift && (todayShift.shift === 'morning' || todayShift.shift === 'late')) {
           if (todayShift.shift === 'morning') {
@@ -113,7 +113,7 @@ export function ProgressBar() {
       // Calculate minutes for current user based on their shift
       let minutesForCurrentUser = 0;
 
-      todayTasks.forEach((task) => {
+      todayTasks.forEach((task: any) => {
         const duration = task.duration_minutes || 30;
 
         // Skip tasks that are for the opposite shift
@@ -144,7 +144,7 @@ export function ProgressBar() {
       setDisplayTime(timeStr);
 
       // Find user's shift for today directly from the schedule data we already have
-      const currentUserSchedule = weeklySchedules?.find((s) => s.staff_id === profile.id);
+      const currentUserSchedule = weeklySchedules?.find((s: any) => s.staff_id === profile.id);
       if (!currentUserSchedule) {
         setHomeTime('');
         return;

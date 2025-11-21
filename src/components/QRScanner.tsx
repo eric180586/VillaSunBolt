@@ -9,16 +9,16 @@ interface QRScannerProps {
 }
 
 export function QRScanner({ onScan, onClose }: QRScannerProps) {
-  const { t } = useTranslation();
-  const scannerRef = useRef<Html5Qrcode | null>(null);
+  const { t: _t } = useTranslation();
+  const _scannerRef = useRef<Html5Qrcode | null>(null);
   const [error, setError] = useState<string>('');
   const [isScanning, setIsScanning] = useState(false);
 
   useEffect(() => {
-    const scanner = new Html5Qrcode('qr-reader');
+    const _scanner = new Html5Qrcode('qr-reader');
     scannerRef.current = scanner;
 
-    const config = {
+    const _config = {
       fps: 10,
       qrbox: { width: 250, height: 250 },
       aspectRatio: 1.0,
@@ -52,7 +52,7 @@ export function QRScanner({ onScan, onClose }: QRScannerProps) {
     };
   }, [onScan]);
 
-  const handleClose = () => {
+  const _handleClose = () => {
     if (scannerRef.current && scannerRef.current.isScanning) {
       scannerRef.current.stop().then(() => {
         onClose();

@@ -21,8 +21,8 @@ export function Notifications({ onBack }: { onBack?: () => void } = {}) {
     }) as any;
   };
 
-  const todayNotes = notes.filter((note) => {
-    const noteDate = new Date(note.created_at);
+  const todayNotes = notes.filter((note: any) => {
+    const noteDate = note.created_at ? new Date(note.created_at) : new Date();
     const today = new Date();
     return noteDate.toDateString() === today.toDateString();
   }) as any;
@@ -72,7 +72,7 @@ export function Notifications({ onBack }: { onBack?: () => void } = {}) {
       {todayNotes.length > 0 && (
         <div className="space-y-3">
           <h3 className="text-xl font-semibold text-gray-900">Today's Notes</h3>
-          {todayNotes.map((note) => (
+          {todayNotes.map((note: any) => (
             <div
               key={note.id}
               className="bg-white rounded-xl border-2 border-gray-200 overflow-hidden shadow-sm"
@@ -86,10 +86,10 @@ export function Notifications({ onBack }: { onBack?: () => void } = {}) {
                   <div className="text-left">
                     <h4 className="font-semibold text-gray-900">{note.title}</h4>
                     <p className="text-sm text-gray-500">
-                      {new Date(note.created_at).toLocaleTimeString([], {
+                      {note.created_at ? new Date(note.created_at).toLocaleTimeString([], {
                         hour: '2-digit',
                         minute: '2-digit',
-                      })}
+                      }) : ''}
                     </p>
                   </div>
                 </div>
@@ -160,7 +160,7 @@ export function Notifications({ onBack }: { onBack?: () => void } = {}) {
                   </h3>
                   <p className="text-gray-700 mb-2">{notification.message}</p>
                   <p className="text-xs text-gray-500">
-                    {new Date(notification.created_at).toLocaleString()}
+                    {notification.created_at ? new Date(notification.created_at).toLocaleString : ""()}
                   </p>
                 </div>
                 {!notification.is_read && (

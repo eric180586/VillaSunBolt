@@ -64,7 +64,7 @@ export function TodayTasksOverview({ onBack }: TodayTasksOverviewProps) {
     };
   }, []);
 
-  const todayTasks = tasks.filter((task) => {
+  const todayTasks = tasks.filter((task: any) => {
     // Include daily recurring tasks (they don't have due_date)
     if (task.recurrence === 'daily') {
       return true;
@@ -91,13 +91,13 @@ export function TodayTasksOverview({ onBack }: TodayTasksOverviewProps) {
   const allTodayTasks = [...todayTasks, ...checklistsAsTasks];
 
   const pendingTasks = allTodayTasks.filter(
-    (task) => task.status === 'pending' || task.status === 'in_progress'
+    (task: any) => task.status === 'pending' || task.status === 'in_progress'
   );
   const completedTasks = allTodayTasks.filter(
-    (task) => task.status === 'completed'
+    (task: any) => task.status === 'completed'
   );
   const reviewTasks = allTodayTasks.filter(
-    (task) => task.status === 'review'
+    (task: any) => task.status === 'review'
   );
 
   const getStatusColor = (status: string) => {
@@ -191,7 +191,7 @@ export function TodayTasksOverview({ onBack }: TodayTasksOverviewProps) {
           </div>
         ) : (
           <div className="space-y-3">
-            {allTodayTasks.map((task) => (
+            {allTodayTasks.map((task: any) => (
               <div
                 key={task.id}
                 className={`bg-white rounded-lg shadow-md p-5 border-l-4 ${

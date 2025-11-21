@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState } from 'react';
 import { Trophy, Users, X, Clock, Zap } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useTranslation } from 'react-i18next';
@@ -35,8 +35,8 @@ const BOARD_SIZE = 30;
 const MAX_RESPONSE_TIME = 5000;
 
 export default function QuizGame({ onClose }: QuizGameProps) {
-  const { t } = useTranslation();
-  const { profile } = useAuth();
+  const { t: _t } = useTranslation();
+  const { profile: _profile } = useAuth();
   const [gameState, setGameState] = useState<'setup' | 'playing' | 'question' | 'winner'>('setup');
   const [playerCount, setPlayerCount] = useState(2);
   const [players, setPlayers] = useState<Player[]>([]);
@@ -450,7 +450,7 @@ export default function QuizGame({ onClose }: QuizGameProps) {
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {['a', 'b', 'c', 'd'].map(option => (
+                  {['a', 'b', 'c', 'd'].map((option: string) => (
                     <button
                       key={option}
                       onClick={() => handleAnswer(option)}

@@ -94,7 +94,7 @@ export function AdminDashboard({ onNavigate, onBack }: AdminDashboardProps = {})
   const todayTasks = getTodayTasks(tasks);
   const completedTasks = todayTasks.filter((t) => t.status === 'completed');
   const pendingReview = tasks.filter((t) => t.status === 'pending_review');
-  const pendingDepartures = requests.filter((r) => r.status === 'pending');
+  const pendingDepartures = requests.filter((r: any) => r.status === 'pending');
 
   const [pendingCheckIns, setPendingCheckIns] = useState(0);
   const [teamAchievable, setTeamAchievable] = useState(0);
@@ -312,7 +312,7 @@ export function AdminDashboard({ onNavigate, onBack }: AdminDashboardProps = {})
                   {completedTasks.length}/{todayTasks.length} {t('dashboard.completed')}
                 </div>
                 <div className="space-y-2 max-h-64 overflow-y-auto">
-                  {todayTasks.map((task) => (
+                  {todayTasks.map((task: any) => (
                     <div
                       key={task.id}
                       className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"

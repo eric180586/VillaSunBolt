@@ -18,7 +18,7 @@ interface MonthlyPoints {
 }
 
 export function PointsManager({ onBack }: { onBack?: () => void } = {}) {
-  const { t } = useTranslation();
+  const { t: _t } = useTranslation();
   const { profile } = useAuth();
   const { profiles, addPoints } = useProfiles();
   const [templates, setTemplates] = useState<PointTemplate[]>([]);
@@ -94,7 +94,7 @@ export function PointsManager({ onBack }: { onBack?: () => void } = {}) {
     }
 
     const pointsMap: MonthlyPoints = {};
-    data?.forEach((day) => {
+    data?.forEach((day: any) => {
       if (!pointsMap[day.user_id]) {
         pointsMap[day.user_id] = 0;
       }
@@ -116,7 +116,7 @@ export function PointsManager({ onBack }: { onBack?: () => void } = {}) {
   const handleStaffToggle = (staffId: string) => {
     setSelectedStaffIds((prev) =>
       prev.includes(staffId)
-        ? prev.filter((id) => id !== staffId)
+        ? prev.filter((id: string) => id !== staffId)
         : [...prev, staffId]
     );
   };
@@ -426,7 +426,7 @@ export function PointsManager({ onBack }: { onBack?: () => void } = {}) {
           className="w-full flex items-center justify-center space-x-2 bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
         >
           <Award className="w-5 h-5" />
-          <span>{uploading ? 'Awarding Points...' : `Award Points to ${selectedStaffIds.length} Staff Member(s)`}</span>
+          <span>{uploading ? 'Awarding Points...' : `Award Points to ${selectedStaffIds.length} Staff Member(s: any)`}</span>
         </button>
       </form>
 

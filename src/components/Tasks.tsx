@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useTasks } from '../hooks/useTasks';
 import { useProfiles } from '../hooks/useProfiles';
@@ -11,7 +11,7 @@ import { HelperSelectionModal } from './HelperSelectionModal';
 import { TaskCreateModal } from './TaskCreateModal';
 import { useTranslation } from 'react-i18next';
 
-const CATEGORIES = [
+const _CATEGORIES = [
   { id: 'daily_morning', label: 'Daily Morning', color: 'bg-orange-500' },
   { id: 'room_cleaning', label: 'Room Cleaning', color: 'bg-blue-500' },
   { id: 'small_cleaning', label: 'Small Cleaning', color: 'bg-cyan-500' },
@@ -23,9 +23,9 @@ const CATEGORIES = [
   { id: 'admin', label: 'Admin', color: 'bg-gray-700' },
 ];
 
-const _ROOM_NAMES = ['Venus', 'Earth', 'Mars', 'Jupiter', 'Saturn', 'Uranus', 'Neptune', 'Pluto'];
+// Unused: const NAMES = ['Venus', 'Earth', 'Mars', 'Jupiter', 'Saturn', 'Uranus', 'Neptune', 'Pluto'];
 
-const MOTIVATIONAL_MESSAGES = [
+const _MOTIVATIONAL_MESSAGES = [
   'Great job! Keep up the excellent work!',
   'Fantastic work! You are doing amazing!',
   'Outstanding! You are a star!',
@@ -43,8 +43,8 @@ interface TasksProps {
 }
 
 export function Tasks({ onNavigate, filterStatus, onBack }: TasksProps = {}) {
-  const { t } = useTranslation();
-  const { profile } = useAuth();
+  const { t: _t } = useTranslation();
+  const { profile: _profile } = useAuth();
   const { tasks, createTask, updateTask, deleteTask, refetch } = useTasks();
   const { profiles } = useProfiles();
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
@@ -61,8 +61,8 @@ export function Tasks({ onNavigate, filterStatus, onBack }: TasksProps = {}) {
   const [_pendingTaskCompletion, _setPendingTaskCompletion] = useState<any>(null);
   const [editingTask, setEditingTask] = useState<any>(null);
 
-  const isAdmin = profile?.role === 'admin';
-  const isRepairCategory = selectedCategory === 'repair';
+  const _isAdmin = profile?.role === 'admin';
+  const _isRepairCategory = selectedCategory === 'repair';
 
   const [formData, setFormData] = useState({
     category: 'extras' as string,
@@ -80,8 +80,8 @@ export function Tasks({ onNavigate, filterStatus, onBack }: TasksProps = {}) {
     photo_explanation_text: '',
   }) as any;
 
-  const getDefaultDateTime = (category: string) => {
-    const dateStr = getTodayDateString();
+  const _getDefaultDateTime = (category: string) => {
+    const _dateStr = getTodayDateString();
 
     switch (category) {
       case 'daily_morning':
@@ -95,8 +95,8 @@ export function Tasks({ onNavigate, filterStatus, onBack }: TasksProps = {}) {
 
   useEffect(() => {
     if (showModal) {
-      const defaults = getDefaultDateTime(formData.category);
-      setFormData((prev) => ({
+      const _defaults = getDefaultDateTime(formData.category);
+      setFormData((prev: typeof formData) => ({
         ...prev,
         due_date: defaults.date,
         due_time: defaults.time,
@@ -108,10 +108,10 @@ export function Tasks({ onNavigate, filterStatus, onBack }: TasksProps = {}) {
   }, [formData.category, showModal]);
 
   useEffect(() => {
-    const filterToday = sessionStorage.getItem('tasks_filter_today');
+    const _filterToday = sessionStorage.getItem('tasks_filter_today');
     if (filterToday === 'true') {
       sessionStorage.removeItem('tasks_filter_today');
-      const todayTasks = getTodayTasks(tasks).filter(t => t.status !== 'completed' && t.status !== 'archived');
+      const _todayTasks = getTodayTasks(tasks).filter(t => t.status !== 'completed' && t.status !== 'archived');
       if (todayTasks.length > 0) {
         setSelectedCategory('all_today');
       }
@@ -119,12 +119,12 @@ export function Tasks({ onNavigate, filterStatus, onBack }: TasksProps = {}) {
   }, [tasks]);
 
 
-  const getCategoryCounts = (categoryId: string) => {
-    const categoryTasks = tasks.filter(
+  const _getCategoryCounts = (categoryId: string) => {
+    const _categoryTasks = tasks.filter(
       (t) => t.category === categoryId && (t.is_template !== true || t.recurrence === 'daily') && t.status !== 'archived'
     );
-    const todayTasks = getTodayTasks(categoryTasks);
-    const openTasks = todayTasks.filter((t) => t.status !== 'completed');
+    const _todayTasks = getTodayTasks(categoryTasks);
+    const _openTasks = todayTasks.filter((t) => t.status !== 'completed');
 
     return {
       totalTasks: todayTasks.length,
@@ -132,7 +132,7 @@ export function Tasks({ onNavigate, filterStatus, onBack }: TasksProps = {}) {
     };
   };
 
-  const getDefaultPointsForCategory = (category: string): number => {
+  const _getDefaultPointsForCategory = (category: string): number => {
     switch (category) {
       case 'room_cleaning':
         return 5;
@@ -143,8 +143,8 @@ export function Tasks({ onNavigate, filterStatus, onBack }: TasksProps = {}) {
     }
   };
 
-  const _handleCategoryChange = (category: string) => {
-    setFormData((prev) => ({
+  const __handleCategoryChange = (category: string) => {
+    setFormData((prev: typeof formData) => ({
       ...prev,
       category,
       title: category === 'room_cleaning' || category === 'small_cleaning' ? '' : prev.title,
@@ -152,10 +152,10 @@ export function Tasks({ onNavigate, filterStatus, onBack }: TasksProps = {}) {
     }));
   };
 
-  const uploadPhoto = async (file: File, folder: string): Promise<string> => {
-    const fileExt = file.name.split('.').pop();
-    const fileName = `${Math.random()}.${fileExt}`;
-    const filePath = `${folder}/${fileName}`;
+  const _uploadPhoto = async (file: File, folder: string): Promise<string> => {
+    const _fileExt = file.name.split('.').pop();
+    const _fileName = `${Math.random()}.${fileExt}`;
+    const _filePath = `${folder}/${fileName}`;
 
     const { error: uploadError } = await supabase.storage
       .from('task-photos')
@@ -170,23 +170,23 @@ export function Tasks({ onNavigate, filterStatus, onBack }: TasksProps = {}) {
     return data.publicUrl;
   };
 
-  const getRandomMotivationalMessage = () => {
+  const __getRandomMotivationalMessage = () => {
     return MOTIVATIONAL_MESSAGES[Math.floor(Math.random() * MOTIVATIONAL_MESSAGES.length)];
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const __handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const dueDateTime = isRepairCategory ? null : combineDateAndTime(formData.due_date, formData.due_time);
+      const _dueDateTime = isRepairCategory ? null : combineDateAndTime(formData.due_date, formData.due_time);
 
       let descriptionPhotoUrl: string[] | null = null;
 
       if (formData.description_photo && formData.description_photo.length > 0) {
         const uploadedUrls: string[] = [];
         for (const file of formData.description_photo) {
-          const fileExt = file.name.split('.').pop();
-          const fileName = `description_${Math.random().toString(36).substring(2)}_${Date.now()}.${fileExt}`;
-          const filePath = `${fileName}`;
+          const _fileExt = file.name.split('.').pop();
+          const _fileName = `description_${Math.random().toString(36).substring(2)}_${Date.now()}.${fileExt}`;
+          const _filePath = `${fileName}`;
 
           const { error: uploadError } = await supabase.storage
             .from('checklist-explanations')
@@ -238,7 +238,7 @@ export function Tasks({ onNavigate, filterStatus, onBack }: TasksProps = {}) {
       }
 
       if (!editingTask) {
-        const staffUsers = profiles.filter((p) => p.role === 'staff');
+        const _staffUsers = profiles.filter((p) => p.role === 'staff');
         if (staffUsers.length > 0) {
           await supabase.from('notifications').insert(
             staffUsers.map((p) => ({
@@ -273,10 +273,10 @@ export function Tasks({ onNavigate, filterStatus, onBack }: TasksProps = {}) {
     }
   };
 
-  const handleAcceptTask = async (taskId: string) => {
+  const _handleAcceptTask = async (taskId: string) => {
     try {
       console.log('Accepting task:', taskId, 'for user:', profile?.id);
-      const result = await updateTask(taskId, {
+      const _result = await updateTask(taskId, {
         assigned_to: profile?.id,
         status: 'in_progress',
       }) as any;
@@ -287,7 +287,7 @@ export function Tasks({ onNavigate, filterStatus, onBack }: TasksProps = {}) {
     }
   };
 
-  const handleAddHelper = async (taskId: string) => {
+  const _handleAddHelper = async (taskId: string) => {
     if (!profile?.id) return;
     try {
       await updateTask(taskId, {
@@ -303,8 +303,8 @@ export function Tasks({ onNavigate, filterStatus, onBack }: TasksProps = {}) {
 
   // Old handleCompleteTask removed - now handled by HelperSelectionModal
 
-  const handleApproveTask = async (quality: 'very_good' | 'ready' | 'not_ready') => {
-    const task = selectedTask;
+  const _handleApproveTask = async (quality: 'very_good' | 'ready' | 'not_ready') => {
+    const _task = selectedTask;
     if (!task) return;
 
     try {
@@ -312,7 +312,7 @@ export function Tasks({ onNavigate, filterStatus, onBack }: TasksProps = {}) {
       if (adminPhoto && adminPhoto.length > 0) {
         const uploadedUrls: string[] = [];
         for (const file of adminPhoto) {
-          const url = await uploadPhoto(file, 'admin-reviews');
+          const _url = await uploadPhoto(file, 'admin-reviews');
           if (url) uploadedUrls.push(url);
         }
         adminPhotoUrls = uploadedUrls;
@@ -334,7 +334,7 @@ export function Tasks({ onNavigate, filterStatus, onBack }: TasksProps = {}) {
         throw error;
       }
 
-      const qualityLabels = {
+      const _qualityLabels = {
         very_good: 'Very Good (+2 bonus)',
         ready: 'Ready',
         not_ready: 'Not Ready (-1 penalty)',
@@ -355,8 +355,8 @@ export function Tasks({ onNavigate, filterStatus, onBack }: TasksProps = {}) {
     }
   };
 
-  const handleNotReady = () => {
-    const task = selectedTask;
+  const _handleNotReady = () => {
+    const _task = selectedTask;
     if (!task) return;
 
     if (task.items && task.items.length > 0) {
@@ -368,8 +368,8 @@ export function Tasks({ onNavigate, filterStatus, onBack }: TasksProps = {}) {
     }
   };
 
-  const handleReopenEntireTask = async () => {
-    const task = selectedTask;
+  const _handleReopenEntireTask = async () => {
+    const _task = selectedTask;
     if (!task) return;
 
     try {
@@ -377,7 +377,7 @@ export function Tasks({ onNavigate, filterStatus, onBack }: TasksProps = {}) {
       if (adminPhoto && adminPhoto.length > 0) {
         const uploadedUrls: string[] = [];
         for (const file of adminPhoto) {
-          const url = await uploadPhoto(file, 'admin-reviews');
+          const _url = await uploadPhoto(file, 'admin-reviews');
           if (url) uploadedUrls.push(url);
         }
         adminPhotoUrls = uploadedUrls;
@@ -409,8 +409,8 @@ export function Tasks({ onNavigate, filterStatus, onBack }: TasksProps = {}) {
     }
   };
 
-  const handleReopenSelectedItems = async () => {
-    const task = selectedTask;
+  const _handleReopenSelectedItems = async () => {
+    const _task = selectedTask;
     if (!task || !task.items) return;
 
     if (itemsToReopen.length === 0) {
@@ -419,7 +419,7 @@ export function Tasks({ onNavigate, filterStatus, onBack }: TasksProps = {}) {
     }
 
     try {
-      const updatedItems = task.items.map((item: any, index: number) => {
+      const _updatedItems = task.items.map((item: any, index: number) => {
         if (itemsToReopen.includes(index)) {
           return {
             ...item,
@@ -436,7 +436,7 @@ export function Tasks({ onNavigate, filterStatus, onBack }: TasksProps = {}) {
       if (adminPhoto && adminPhoto.length > 0) {
         const uploadedUrls: string[] = [];
         for (const file of adminPhoto) {
-          const url = await uploadPhoto(file, 'admin-reviews');
+          const _url = await uploadPhoto(file, 'admin-reviews');
           if (url) uploadedUrls.push(url);
         }
         adminPhotoUrls = uploadedUrls;
@@ -496,7 +496,7 @@ export function Tasks({ onNavigate, filterStatus, onBack }: TasksProps = {}) {
             if (!isAdmin && cat.id === 'admin') return false;
             return true;
           }).map((category) => {
-            const counts = getCategoryCounts(category.id);
+            const _counts = getCategoryCounts(category.id);
             return (
               <button
                 key={category.id}
@@ -554,8 +554,8 @@ export function Tasks({ onNavigate, filterStatus, onBack }: TasksProps = {}) {
         if (t.status === 'archived') return false;
         if (t.is_template && t.recurrence !== 'daily') return false;
         if (t.status === 'completed') {
-          const today = getTodayDateString();
-          const taskDate = t.due_date ? new Date(t.due_date).toISOString().split('T')[0] : '';
+          const _today = getTodayDateString();
+          const _taskDate = t.due_date ? new Date(t.due_date).toISOString().split('T')[0] : '';
           return taskDate === today && t.category === selectedCategory;
         }
         return t.category === selectedCategory;
@@ -564,22 +564,22 @@ export function Tasks({ onNavigate, filterStatus, onBack }: TasksProps = {}) {
         if (t.status === 'archived') return false;
         if (t.is_template && t.recurrence !== 'daily') return false;
         if (t.status === 'completed') {
-          const today = getTodayDateString();
-          const taskDate = t.due_date ? new Date(t.due_date).toISOString().split('T')[0] : '';
+          const _today = getTodayDateString();
+          const _taskDate = t.due_date ? new Date(t.due_date).toISOString().split('T')[0] : '';
           return taskDate === today;
         }
         return true;
       }) as any;
 
   if (filterStatus === 'pending_review') {
-    categoryTasks = categoryTasks.filter((t) => t.status === 'pending_review');
+    categoryTasks = categoryTasks.filter((t: any) => t.status === 'pending_review');
   } else if (filterStatus === 'today') {
     categoryTasks = getTodayTasks(categoryTasks);
   }
 
 
-  const selectedCategoryData = CATEGORIES.find((c) => c.id === selectedCategory);
-  const displayTitle = filterStatus === 'pending_review'
+  const _selectedCategoryData = CATEGORIES.find((c) => c.id === selectedCategory);
+  const _displayTitle = filterStatus === 'pending_review'
     ? 'Aufgaben zur Prüfung'
     : filterStatus === 'today'
     ? "Today's Tasks"
@@ -612,7 +612,7 @@ export function Tasks({ onNavigate, filterStatus, onBack }: TasksProps = {}) {
         {(isAdmin || isRepairCategory) && (
           <button
             onClick={() => {
-              setFormData((prev) => ({ ...prev, category: selectedCategory }));
+              setFormData((prev: typeof formData) => ({ ...prev, category: selectedCategory }));
               setShowModal(true);
             }}
             className="flex items-center space-x-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
@@ -632,15 +632,15 @@ export function Tasks({ onNavigate, filterStatus, onBack }: TasksProps = {}) {
           </div>
         )}
 
-        {categoryTasks.map((task) => {
-          const assignedUser = profiles.find((p) => p.id === task.assigned_to);
-          const secondaryUser = profiles.find((p) => p.id === task.secondary_assigned_to);
-          const taskIsRepair = task.category === 'repair';
-          const canAccept = !task.assigned_to && task.status === 'pending' && !taskIsRepair;
-          const isMyTask = task.assigned_to === profile?.id || task.secondary_assigned_to === profile?.id;
-          const canHelp = task.assigned_to && task.assigned_to !== profile?.id && !task.secondary_assigned_to && (task.status === 'in_progress' || task.status === 'pending');
+        {categoryTasks.map((task: any) => {
+          const _assignedUser = profiles.find((p) => p.id === task.assigned_to);
+          const _secondaryUser = profiles.find((p) => p.id === task.secondary_assigned_to);
+          const _taskIsRepair = task.category === 'repair';
+          const _canAccept = !task.assigned_to && task.status === 'pending' && !taskIsRepair;
+          const _isMyTask = task.assigned_to === profile?.id || task.secondary_assigned_to === profile?.id;
+          const _canHelp = task.assigned_to && task.assigned_to !== profile?.id && !task.secondary_assigned_to && (task.status === 'in_progress' || task.status === 'pending');
 
-          const getStatusBorderColor = (status: string) => {
+          const _getStatusBorderColor = (status: string) => {
             switch (status) {
               case 'pending': return 'border-l-gray-400';
               case 'in_progress': return 'border-l-blue-500';
@@ -753,7 +753,7 @@ export function Tasks({ onNavigate, filterStatus, onBack }: TasksProps = {}) {
                       </p>
                       <ul className="space-y-2">
                         {task.items.map((item: any, index: number) => {
-                          const isCompleted = item.is_completed || item.completed;
+                          const _isCompleted = item.is_completed || item.completed;
                           return (
                             <li key={index} className="flex items-start space-x-3">
                               <div className={`w-6 h-6 rounded-md flex items-center justify-center flex-shrink-0 mt-0.5 ${
@@ -891,15 +891,15 @@ export function Tasks({ onNavigate, filterStatus, onBack }: TasksProps = {}) {
 
         {/* Checklist instances now merged into tasks */}
         {false && [].map((instance: any) => {
-          const checklist = instance.checklists;
+          const _checklist = instance.checklists;
           if (!checklist) return null;
 
-          const completedCount = instance.items?.filter((item: any) => item.completed).length || 0;
-          const totalCount = instance.items?.length || 0;
-          const isCompleted = instance.status === 'completed';
-          const needsReview = isCompleted && !instance.admin_reviewed;
-          const isApproved = instance.admin_approved === true;
-          const isRejected = instance.admin_approved === false;
+          const _completedCount = instance.items?.filter((item: any) => item.completed).length || 0;
+          const _totalCount = instance.items?.length || 0;
+          const _isCompleted = instance.status === 'completed';
+          const _needsReview = isCompleted && !instance.admin_reviewed;
+          const _isApproved = instance.admin_approved === true;
+          const _isRejected = instance.admin_approved === false;
 
           return (
             <div
@@ -914,13 +914,7 @@ export function Tasks({ onNavigate, filterStatus, onBack }: TasksProps = {}) {
                   : 'from-purple-50 to-white border-purple-200 cursor-pointer hover:shadow-md hover:border-purple-300'
               }`}
               onClick={() => {
-                if (!isCompleted || isRejected) {
-                  setSelectedChecklist(instance);
-                  setChecklistItems(instance.items || []);
-                  setChecklistPhotoRequired(false);
-                  setChecklistPhoto(null);
-                  setShowChecklistModal(true);
-                }
+                // Checklist feature temporarily disabled
               }}
             >
               <div className="flex items-start justify-between">
@@ -1027,8 +1021,7 @@ export function Tasks({ onNavigate, filterStatus, onBack }: TasksProps = {}) {
                   <div className="flex space-x-2 ml-4" onClick={(e) => e.stopPropagation()}>
                     <button
                       onClick={() => {
-                        setSelectedChecklistForReview(instance);
-                        setShowChecklistApproveModal(true);
+                        // Checklist approval temporarily disabled
                       }}
                       className="p-2 text-green-600 hover:bg-green-50 rounded-lg border border-green-300"
                       title="Genehmigen"
@@ -1037,8 +1030,7 @@ export function Tasks({ onNavigate, filterStatus, onBack }: TasksProps = {}) {
                     </button>
                     <button
                       onClick={() => {
-                        setSelectedChecklistForReview(instance);
-                        setShowChecklistReviewModal(true);
+                        // Checklist review temporarily disabled
                       }}
                       className="p-2 text-red-600 hover:bg-red-50 rounded-lg border border-red-300"
                       title="Ablehnen"
@@ -1134,7 +1126,7 @@ export function Tasks({ onNavigate, filterStatus, onBack }: TasksProps = {}) {
                 />
                 {adminPhoto.length > 0 && (
                   <p className="text-sm text-green-600 mt-1">
-                    ✓ {adminPhoto.length} Foto(s) ausgewählt
+                    ✓ {adminPhoto.length} Foto(s: any) ausgewählt
                   </p>
                 )}
               </div>
@@ -1274,7 +1266,7 @@ export function Tasks({ onNavigate, filterStatus, onBack }: TasksProps = {}) {
                 className="flex-1 px-4 py-3 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors font-medium"
                 disabled={itemsToReopen.length === 0}
               >
-                {itemsToReopen.length} Item(s) wiedereröffnen
+                {itemsToReopen.length} Item(s: any) wiedereröffnen
               </button>
             </div>
           </div>

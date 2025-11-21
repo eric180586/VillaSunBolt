@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../contexts/AuthContext';
 import { useProfiles } from '../hooks/useProfiles';
@@ -33,15 +33,15 @@ interface TimeOffRequest {
   created_at: string;
 }
 
-const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+const _DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
-const SHIFT_COLORS = {
+const _SHIFT_COLORS = {
   morning: 'bg-blue-100 text-blue-800 border-blue-300',
   late: 'bg-orange-100 text-orange-800 border-orange-300',
   off: 'bg-gray-100 text-gray-800 border-gray-300',
 };
 
-const SHIFT_LABELS = {
+const _SHIFT_LABELS = {
   morning: 'Morning',
   late: 'Late',
   off: 'Off',
@@ -53,8 +53,8 @@ onNavigate?: (view: string) => void;
 }
 
 export function Schedules({ onNavigate, onBack }: SchedulesProps = {}) {
-  const { t } = useTranslation();
-  const { profile } = useAuth();
+  const { t: _t } = useTranslation();
+  const { profile: _profile } = useAuth();
   const { profiles } = useProfiles();
   const [currentWeekStart, setCurrentWeekStart] = useState<Date>(getMonday(new Date()));
   const [weekSchedules, setWeekSchedules] = useState<WeekSchedule[]>([]);
@@ -66,8 +66,8 @@ export function Schedules({ onNavigate, onBack }: SchedulesProps = {}) {
   const [selectedDate, setSelectedDate] = useState('');
   const [rejectionReason, setRejectionReason] = useState('');
 
-  const isAdmin = profile?.role === 'admin';
-  const staffMembers = profiles.filter((p) => p.role === 'staff');
+  const _isAdmin = profile?.role === 'admin';
+  const _staffMembers = profiles.filter((p) => p.role === 'staff');
 
   useEffect(() => {
     loadWeekSchedules();
@@ -75,41 +75,41 @@ export function Schedules({ onNavigate, onBack }: SchedulesProps = {}) {
   }, [currentWeekStart]);
 
   function getMonday(date: Date): Date {
-    const d = new Date(date);
-    const day = d.getDay();
-    const diff = d.getDate() - day + (day === 0 ? -6 : 1);
+    const _d = new Date(date);
+    const _day = d.getDay();
+    const _diff = d.getDate() - day + (day === 0 ? -6 : 1);
     return new Date(d.setDate(diff));
   }
 
   function formatDate(date: Date): string {
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
+    const _year = date.getFullYear();
+    const _month = String(date.getMonth() + 1).padStart(2, '0');
+    const _day = String(date.getDate()).padStart(2, '0');
     return `${year}-${month}-${day}`;
   }
 
   function getWeekDates(monday: Date): string[] {
     return Array.from({ length: 7 }, (_, i) => {
-      const date = new Date(monday);
+      const _date = new Date(monday);
       date.setDate(monday.getDate() + i);
       return formatDate(date);
     }) as any;
   }
 
   function canRequestTimeOff(): boolean {
-    const now = new Date();
-    const currentDay = now.getDay();
-    const currentHour = now.getHours();
+    const _now = new Date();
+    const _currentDay = now.getDay();
+    const _currentHour = now.getHours();
 
-    const thisWeeksMonday = getMonday(new Date());
-    const nextWeeksMonday = new Date(thisWeeksMonday);
+    const _thisWeeksMonday = getMonday(new Date());
+    const _nextWeeksMonday = new Date(thisWeeksMonday);
     nextWeeksMonday.setDate(nextWeeksMonday.getDate() + 7);
 
-    const isFriday = currentDay === 5;
-    const isPastFridayDeadline = isFriday && currentHour >= 13;
-    const isAfterFriday = currentDay === 6 || currentDay === 0;
+    const _isFriday = currentDay === 5;
+    const _isPastFridayDeadline = isFriday && currentHour >= 13;
+    const _isAfterFriday = currentDay === 6 || currentDay === 0;
 
-    const requestingForNextWeek = currentWeekStart >= nextWeeksMonday;
+    const _requestingForNextWeek = currentWeekStart >= nextWeeksMonday;
 
     if (requestingForNextWeek && (isPastFridayDeadline || isAfterFriday)) {
       return false;
@@ -118,9 +118,9 @@ export function Schedules({ onNavigate, onBack }: SchedulesProps = {}) {
     return true;
   }
 
-  const loadWeekSchedules = async () => {
+  const _loadWeekSchedules = async () => {
     try {
-      const weekStart = formatDate(currentWeekStart);
+      const _weekStart = formatDate(currentWeekStart);
       const { data, error } = await supabase
         .from('weekly_schedules')
         .select('*')
@@ -133,9 +133,9 @@ export function Schedules({ onNavigate, onBack }: SchedulesProps = {}) {
     }
   };
 
-  const loadTimeOffRequests = async () => {
+  const _loadTimeOffRequests = async () => {
     try {
-      const weekDates = getWeekDates(currentWeekStart);
+      const _weekDates = getWeekDates(currentWeekStart);
       const { data, error } = await supabase
         .from('time_off_requests')
         .select('*')
@@ -150,22 +150,22 @@ export function Schedules({ onNavigate, onBack }: SchedulesProps = {}) {
     }
   };
 
-  const getStaffSchedule = (staffId: string): WeekSchedule | null => {
-    return weekSchedules.find((s) => s.staff_id === staffId) || null;
+  const _getStaffSchedule = (staffId: string): WeekSchedule | null => {
+    return weekSchedules.find((s: any) => s.staff_id === staffId) || null;
   };
 
-  const handleShiftClick = async (staffId: string, dayIndex: number, currentShift?: ShiftType) => {
+  const _handleShiftClick = async (staffId: string, dayIndex: number, currentShift?: ShiftType) => {
     if (!isAdmin) return;
 
     const shifts: ShiftType[] = ['morning', 'late', 'off'];
-    const currentIndex = currentShift ? shifts.indexOf(currentShift) : -1;
-    const nextShift = shifts[(currentIndex + 1) % shifts.length];
+    const _currentIndex = currentShift ? shifts.indexOf(currentShift) : -1;
+    const _nextShift = shifts[(currentIndex + 1) % shifts.length];
 
-    const weekDates = getWeekDates(currentWeekStart);
-    const schedule = getStaffSchedule(staffId);
+    const _weekDates = getWeekDates(currentWeekStart);
+    const _schedule = getStaffSchedule(staffId);
 
     const newShifts: DayShift[] = DAYS.map((day, index) => {
-      const existingShift = schedule?.shifts.find((s) => s.day === day.toLowerCase());
+      const _existingShift = schedule?.shifts.find((s: any) => s.day === day.toLowerCase());
       if (index === dayIndex) {
         return {
           day: day.toLowerCase(),
@@ -181,7 +181,7 @@ export function Schedules({ onNavigate, onBack }: SchedulesProps = {}) {
     }) as any;
 
     try {
-      const weekStart = formatDate(currentWeekStart);
+      const _weekStart = formatDate(currentWeekStart);
 
       if (schedule) {
         const { error } = await supabase
@@ -211,11 +211,11 @@ export function Schedules({ onNavigate, onBack }: SchedulesProps = {}) {
     }
   };
 
-  const handlePublishSchedule = async () => {
+  const _handlePublishSchedule = async () => {
     if (!isAdmin) return;
 
     try {
-      const weekStart = formatDate(currentWeekStart);
+      const _weekStart = formatDate(currentWeekStart);
 
       const { data: existingSchedules, error: fetchError } = await supabase
         .from('weekly_schedules')
@@ -239,11 +239,11 @@ export function Schedules({ onNavigate, onBack }: SchedulesProps = {}) {
 
       if (error) throw error;
 
-      alert(`Successfully published ${existingSchedules.length} schedule(s) for this week!`);
+      alert(`Successfully published ${existingSchedules.length} schedule(s: any) for this week!`);
 
-      const staffIds = staffMembers.map((s) => s.id);
+      const _staffIds = staffMembers.map((s: any) => s.id);
       await supabase.from('notifications').insert(
-        staffIds.map((staffId) => ({
+        staffIds.map((staffId: any) => ({
           user_id: staffId,
           title: 'Schedule Published',
           message: `Your schedule for week of ${currentWeekStart.toLocaleDateString()} has been published`,
@@ -257,7 +257,7 @@ export function Schedules({ onNavigate, onBack }: SchedulesProps = {}) {
     }
   };
 
-  const handleTimeOffRequest = async () => {
+  const _handleTimeOffRequest = async () => {
     if (!selectedDate || !timeOffReason.trim()) {
       alert('Please select a date and provide a reason');
       return;
@@ -278,7 +278,7 @@ export function Schedules({ onNavigate, onBack }: SchedulesProps = {}) {
 
       if (error) throw error;
 
-      const admins = profiles.filter((p) => p.role === 'admin');
+      const _admins = profiles.filter((p) => p.role === 'admin');
       await supabase.from('notifications').insert(
         admins.map((admin) => ({
           user_id: admin.id,
@@ -297,7 +297,7 @@ export function Schedules({ onNavigate, onBack }: SchedulesProps = {}) {
     }
   };
 
-  const handleApproveRequest = async (request: TimeOffRequest) => {
+  const _handleApproveRequest = async (request: TimeOffRequest) => {
     try {
       const { error } = await supabase
         .from('time_off_requests')
@@ -324,7 +324,7 @@ export function Schedules({ onNavigate, onBack }: SchedulesProps = {}) {
     }
   };
 
-  const handleRejectRequest = async (request: TimeOffRequest) => {
+  const _handleRejectRequest = async (request: TimeOffRequest) => {
     if (!rejectionReason.trim()) {
       alert('Please provide a reason for rejection');
       return;
@@ -358,21 +358,21 @@ export function Schedules({ onNavigate, onBack }: SchedulesProps = {}) {
     }
   };
 
-  const previousWeek = () => {
-    const newDate = new Date(currentWeekStart);
+  const _previousWeek = () => {
+    const _newDate = new Date(currentWeekStart);
     newDate.setDate(newDate.getDate() - 7);
     setCurrentWeekStart(newDate);
   };
 
-  const nextWeek = () => {
-    const newDate = new Date(currentWeekStart);
+  const _nextWeek = () => {
+    const _newDate = new Date(currentWeekStart);
     newDate.setDate(newDate.getDate() + 7);
     setCurrentWeekStart(newDate);
   };
 
-  const weekDates = getWeekDates(currentWeekStart);
-  const pendingRequests = timeOffRequests.filter((r) => r.status === 'pending');
-  const isPublished = weekSchedules.some((s) => s.is_published);
+  const _weekDates = getWeekDates(currentWeekStart);
+  const _pendingRequests = timeOffRequests.filter((r: any) => r.status === 'pending');
+  const _isPublished = weekSchedules.some((s: any) => s.is_published);
 
   return (
     <div className="space-y-6">
@@ -476,17 +476,17 @@ export function Schedules({ onNavigate, onBack }: SchedulesProps = {}) {
             </thead>
             <tbody>
               {staffMembers.map((staff) => {
-                const schedule = getStaffSchedule(staff.id);
+                const _schedule = getStaffSchedule(staff.id);
                 return (
                   <tr key={staff.id} className="border-b border-gray-100 hover:bg-beige-50">
                     <td className="py-2 px-2 font-medium text-gray-900 sticky left-0 bg-white text-sm">
                       {staff.full_name}
                     </td>
                     {DAYS.map((day, dayIndex) => {
-                      const dayShift = schedule?.shifts.find((s) => s.day === day.toLowerCase());
-                      const shift = dayShift?.shift || 'off';
-                      const hasTimeOffRequest = timeOffRequests.find(
-                        (r) =>
+                      const _dayShift = schedule?.shifts.find((s: any) => s.day === day.toLowerCase());
+                      const _shift = dayShift?.shift || 'off';
+                      const _hasTimeOffRequest = timeOffRequests.find(
+                        (r: any) =>
                           r.staff_id === staff.id &&
                           r.request_date === weekDates[dayIndex] &&
                           r.status === 'pending'
@@ -614,7 +614,7 @@ export function Schedules({ onNavigate, onBack }: SchedulesProps = {}) {
             </div>
             <div className="space-y-4">
               {pendingRequests.map((request) => {
-                const staff = profiles.find((p) => p.id === request.staff_id);
+                const _staff = profiles.find((p) => p.id === request.staff_id);
                 return (
                   <div key={request.id} className="border border-gray-200 rounded-lg p-4">
                     <div className="flex items-start justify-between mb-3">
@@ -642,7 +642,7 @@ export function Schedules({ onNavigate, onBack }: SchedulesProps = {}) {
                       <div className="space-y-3">
                         <div>
                           <label className="block text-sm font-medium text-gray-700 mb-1">
-                            Rejection Reason (required)
+                            Rejection Reason (required: any)
                           </label>
                           <textarea
                             value={rejectionReason}

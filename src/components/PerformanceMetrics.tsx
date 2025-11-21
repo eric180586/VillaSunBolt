@@ -133,7 +133,7 @@ interface PerformanceMetricsProps {
 }
 
 export function PerformanceMetrics({ onNavigate }: PerformanceMetricsProps = {}) {
-  const { t } = useTranslation();
+  const { t: _t } = useTranslation();
   const { profile } = useAuth();
   const { tasks } = useTasks();
   const { schedules } = useSchedules();
@@ -259,9 +259,9 @@ export function PerformanceMetrics({ onNavigate }: PerformanceMetricsProps = {})
 
         // Count scheduled staff for today
         let scheduledCount = 0;
-        weeklySchedules?.forEach((schedule) => {
+        weeklySchedules?.forEach((schedule: any) => {
           const shiftsArray = schedule.shifts as Array<{ date: string; shift: string }>;
-          const todayShift = shiftsArray.find((s) => s.date === today);
+          const todayShift = shiftsArray.find((s: any) => s.date === today);
 
           if (todayShift && (todayShift.shift === 'morning' || todayShift.shift === 'late')) {
             scheduledCount++;
@@ -306,18 +306,18 @@ export function PerformanceMetrics({ onNavigate }: PerformanceMetricsProps = {})
     return () => clearInterval(interval);
   }, []);
 
-  const staffProfiles = profiles.filter((p) => p.role !== 'admin');
+  const staffProfiles = profiles.filter((p: any) => p.role !== 'admin');
 
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
-  const todaySchedules = schedules.filter((s) => {
+  const todaySchedules = schedules.filter((s: any) => {
     const scheduleDate = new Date(s.start_time);
     scheduleDate.setHours(0, 0, 0, 0);
     return scheduleDate.getTime() === today.getTime();
   }) as any;
 
-  const currentUserSchedule = todaySchedules.find((s) => s.staff_id === profile?.id);
+  const currentUserSchedule = todaySchedules.find((s: any) => s.staff_id === profile?.id);
 
   const myTasks = getTodayMyTasks(tasks, profile?.id);
   const completedMyTasks = myTasks.filter((t) => t.status === 'completed' || t.status === 'archived');

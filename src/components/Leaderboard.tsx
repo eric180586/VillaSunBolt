@@ -68,7 +68,7 @@ export function Leaderboard({ onBack, onNavigate }: { onBack?: () => void; onNav
 
       // Aggregate monthly stats per user
       const statsMap: Record<string, MonthlyStats> = {};
-      monthlyData?.forEach((day) => {
+      monthlyData?.forEach((day: any) => {
         if (!statsMap[day.user_id]) {
           statsMap[day.user_id] = {
             totalAchievable: 0,
@@ -535,7 +535,7 @@ export function Leaderboard({ onBack, onNavigate }: { onBack?: () => void; onNav
               </button>
             </div>
             <div className="space-y-3">
-              {history.map((entry) => (
+              {history.map((entry: any) => (
                 <div
                   key={entry.id}
                   className="flex items-center justify-between p-4 bg-gray-50 rounded-lg"
@@ -544,13 +544,13 @@ export function Leaderboard({ onBack, onNavigate }: { onBack?: () => void; onNav
                     <p className="font-medium text-gray-900">{entry.reason}</p>
                     <div className="flex items-center space-x-2 mt-1">
                       <p className="text-sm text-gray-600">
-                        {new Date(entry.created_at).toLocaleString()}
+                        {entry.created_at ? new Date(entry.created_at) : new Date().toLocaleString()}
                       </p>
-                      {entry.daily_achievable > 0 && (
+                      {(entry.daily_achievable || 0) > 0 && (
                         <>
                           <span className="text-sm text-gray-400">•</span>
                           <span className="text-sm text-blue-600 font-medium">
-                            Tag: {entry.daily_achieved}/{entry.daily_achievable}
+                            Tag: {entry.daily_achieved}/{(entry.daily_achievable || 0)}
                           </span>
                         </>
                       )}

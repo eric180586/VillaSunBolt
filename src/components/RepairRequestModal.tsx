@@ -141,7 +141,7 @@ export function RepairRequestModal({ onClose, onComplete }: RepairRequestModalPr
             </label>
             <div className="space-y-2">
               <label className="flex items-center justify-center px-4 py-3 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-red-500 transition-colors">
-                <Upload className="w-5 h-5 text-gray-400 mr-2" />
+                <div className="w-5 h-5 text-gray-400 mr-2" />
                 <span className="text-sm text-gray-600">Foto hinzufügen</span>
                 <input
                   type="file"

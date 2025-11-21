@@ -8,7 +8,7 @@ interface PhotoRequirementDiceProps {
 }
 
 export function PhotoRequirementDice({ onResult, onCancel }: PhotoRequirementDiceProps) {
-  const { t } = useTranslation();
+  const { t: _t } = useTranslation();
   const [isRolling, setIsRolling] = useState(true);
   const [currentValue, setCurrentValue] = useState('🎲');
   const [finalResult, setFinalResult] = useState<boolean | null>(null);

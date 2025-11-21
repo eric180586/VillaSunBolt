@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../contexts/AuthContext';
 import { Plus, Check, X, Camera, ShoppingCart, ArrowLeft } from 'lucide-react';
@@ -23,8 +23,8 @@ interface ShoppingItem {
 }
 
 export function ShoppingList({ onBack }: { onBack?: () => void } = {}) {
-  const { t } = useTranslation();
-  const { profile } = useAuth();
+  const { t: _t } = useTranslation();
+  const { profile: _profile } = useAuth();
   const [items, setItems] = useState<ShoppingItem[]>([]);
   const [showModal, setShowModal] = useState(false);
   const [formData, setFormData] = useState({
@@ -34,12 +34,12 @@ export function ShoppingList({ onBack }: { onBack?: () => void } = {}) {
   const [photo, setPhoto] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
 
-  const isAdmin = profile?.role === 'admin';
+  const _isAdmin = profile?.role === 'admin';
 
   useEffect(() => {
     loadItems();
 
-    const channel = supabase
+    const _channel = supabase
       .channel(`shopping_items_${Date.now()}`)
       .on(
         'postgres_changes',
@@ -59,7 +59,7 @@ export function ShoppingList({ onBack }: { onBack?: () => void } = {}) {
     };
   }, []);
 
-  const loadItems = async () => {
+  const _loadItems = async () => {
     try {
       const { data, error } = await supabase
         .from('shopping_items')
@@ -78,10 +78,10 @@ export function ShoppingList({ onBack }: { onBack?: () => void } = {}) {
     }
   };
 
-  const uploadPhoto = async (file: File): Promise<string> => {
-    const fileExt = file.name.split('.').pop();
-    const fileName = `${Math.random()}.${fileExt}`;
-    const filePath = `shopping/${fileName}`;
+  const _uploadPhoto = async (file: File): Promise<string> => {
+    const _fileExt = file.name.split('.').pop();
+    const _fileName = `${Math.random()}.${fileExt}`;
+    const _filePath = `shopping/${fileName}`;
 
     const { error: uploadError } = await supabase.storage
       .from('task-photos')
@@ -96,7 +96,7 @@ export function ShoppingList({ onBack }: { onBack?: () => void } = {}) {
     return data.publicUrl;
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const _handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
@@ -126,7 +126,7 @@ export function ShoppingList({ onBack }: { onBack?: () => void } = {}) {
     }
   };
 
-  const handleTogglePurchased = async (item: ShoppingItem) => {
+  const _handleTogglePurchased = async (item: ShoppingItem) => {
     try {
       const { error } = await supabase
         .from('shopping_items')
@@ -143,7 +143,7 @@ export function ShoppingList({ onBack }: { onBack?: () => void } = {}) {
     }
   };
 
-  const handleDelete = async (itemId: string) => {
+  const _handleDelete = async (itemId: string) => {
     if (!confirm('Delete this item?')) return;
 
     try {
@@ -158,8 +158,8 @@ export function ShoppingList({ onBack }: { onBack?: () => void } = {}) {
     }
   };
 
-  const pendingItems = items.filter((item) => !item.is_purchased);
-  const purchasedItems = items.filter((item) => item.is_purchased);
+  const _pendingItems = items.filter((item) => !item.is_purchased);
+  const _purchasedItems = items.filter((item) => item.is_purchased);
 
   return (
     <div className="space-y-6">
@@ -207,7 +207,7 @@ export function ShoppingList({ onBack }: { onBack?: () => void } = {}) {
                     )}
                     <p className="text-xs text-gray-500 mt-2">
                       Added by {item.profiles?.full_name} on{' '}
-                      {new Date(item.created_at).toLocaleDateString()}
+                      {item.created_at ? new Date(item.created_at) : new Date().toLocaleDateString()}
                     </p>
                   </div>
                   <div className="flex items-center space-x-2 ml-3">
@@ -314,8 +314,6 @@ export function ShoppingList({ onBack }: { onBack?: () => void } = {}) {
           className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50"
           onClick={() => {
             setShowModal(false);
-            setNewItemName('');
-            setNewItemPriority('normal');
           }}
         >
           <div

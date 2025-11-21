@@ -46,7 +46,7 @@ export function Notes({ onBack }: { onBack?: () => void } = {}) {
   };
 
   const handleEdit = (noteId: string) => {
-    const note = notes.find((n) => n.id === noteId);
+    const note = notes.find((n: any) => n.id === noteId);
     if (note) {
       setFormData({
         title: note.title,
@@ -115,7 +115,7 @@ export function Notes({ onBack }: { onBack?: () => void } = {}) {
           </div>
         )}
 
-        {notes.map((note) => (
+        {notes.map((note: any) => (
           <div
             key={note.id}
             className={`bg-white rounded-xl p-5 shadow-sm border-2 ${
@@ -154,7 +154,7 @@ export function Notes({ onBack }: { onBack?: () => void } = {}) {
                 {note.category}
               </span>
               <span className="text-xs text-gray-500">
-                {new Date(note.created_at).toLocaleDateString()}
+                {note.created_at ? new Date(note.created_at) : new Date().toLocaleDateString()}
               </span>
             </div>
           </div>

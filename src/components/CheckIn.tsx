@@ -145,7 +145,7 @@ export function CheckIn({ onBack }: { onBack?: () => void } = {}) {
       for (const schedule of data) {
         console.log('Checking schedule:', schedule);
         const shift = (schedule.shifts as ScheduleShift[])?.find(
-          (s) => {
+          (s: any) => {
             console.log('Comparing shift date:', s.date, 'with today:', today);
             return s.date === today;
           }

@@ -4,7 +4,7 @@ import { useProfiles } from '../hooks/useProfiles';
 import { User, Mail, Award, Shield, Calendar, Globe } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
-export function Profile({ onBack }: { onBack?: () => void } = {}) {
+export function Profile({ onBack: _onBack }: { onBack?: () => void } = {}) {
   const { profile, updateLanguage } = useAuth();
   const { getPointsHistory } = useProfiles();
   const { t } = useTranslation();
@@ -17,7 +17,7 @@ export function Profile({ onBack }: { onBack?: () => void } = {}) {
       const data = await getPointsHistory(profile.id);
       // Sort by date to group entries per day
       const sorted = data.sort((a, b) =>
-        new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+        (b.created_at ? new Date(b.created_at).getTime() : new Date().getTime()) - (a.created_at ? new Date(a.created_at).getTime() : new Date().getTime())
       );
       setHistory(sorted);
       setShowHistory(true);
@@ -59,13 +59,13 @@ export function Profile({ onBack }: { onBack?: () => void } = {}) {
               </div>
               <div className="flex items-center space-x-2 text-gray-600">
                 <Calendar className="w-5 h-5" />
-                <span>{t('profile.memberSince')} {new Date(profile.created_at).toLocaleDateString()}</span>
+                <span>{t('profile.memberSince')} {profile.created_at ? new Date(profile.created_at) : new Date().toLocaleDateString()}</span>
               </div>
               <div className="flex items-center space-x-2 text-gray-600">
                 <Globe className="w-5 h-5" />
                 <select
-                  value={profile.preferred_language}
-                  onChange={(e) => handleLanguageChange(e.target.value as 'de' | 'en' | 'km')}
+                  value={profile.preferred_language || ''}
+                  onChange={(e: any) => handleLanguageChange(e.target.value as 'de' | 'en' | 'km')}
                   className="px-3 py-1 border border-gray-300 rounded-lg bg-white text-gray-900 font-medium"
                 >
                   <option value="de">{t('languages.de')}</option>
@@ -118,7 +118,7 @@ export function Profile({ onBack }: { onBack?: () => void } = {}) {
             <Calendar className="w-12 h-12 text-green-500 mx-auto mb-3" />
             <h4 className="text-lg font-semibold text-gray-900 mb-1">{t('profile.memberSince')}</h4>
             <p className="text-sm font-medium text-green-600">
-              {new Date(profile.created_at).toLocaleDateString()}
+              {profile.created_at ? new Date(profile.created_at) : new Date().toLocaleDateString()}
             </p>
           </div>
         </div>
@@ -131,7 +131,7 @@ export function Profile({ onBack }: { onBack?: () => void } = {}) {
         >
           <div
             className="bg-white rounded-xl p-6 w-full max-w-2xl max-h-[80vh] overflow-y-auto"
-            onClick={(e) => e.stopPropagation()}
+            onClick={(e: any) => e.stopPropagation()}
           >
             <div className="flex items-center justify-between mb-6">
               <h3 className="text-2xl font-bold text-gray-900">{t('profile.pointsHistory')}</h3>
@@ -149,7 +149,7 @@ export function Profile({ onBack }: { onBack?: () => void } = {}) {
                 {/* Group by date */}
                 {Object.entries(
                   history.reduce((acc, entry) => {
-                    const dateKey = new Date(entry.created_at).toLocaleDateString();
+                    const dateKey = entry.created_at ? new Date(entry.created_at).toLocaleDateString() : new Date().toLocaleDateString();
                     if (!acc[dateKey]) acc[dateKey] = [];
                     acc[dateKey].push(entry);
                     return acc;
@@ -165,7 +165,7 @@ export function Profile({ onBack }: { onBack?: () => void } = {}) {
                       <div className="bg-gradient-to-r from-blue-50 to-purple-50 p-3 border-b-2 border-gray-200">
                         <div className="flex items-center justify-between">
                           <div>
-                            <p className="font-bold text-gray-900">{date}</p>
+                            <p className="font-bold text-gray-900">{typeof date === "string" ? date : (date instanceof Date ? date.toLocaleDateString() : String(date))}</p>
                             {dayAchievable > 0 && (
                               <p className="text-sm text-gray-600">
                                 Daily: {dayAchieved}/{dayAchievable} pts ({((dayAchieved/dayAchievable)*100).toFixed(0)}%)
@@ -181,7 +181,7 @@ export function Profile({ onBack }: { onBack?: () => void } = {}) {
                       </div>
                       {/* Day Entries */}
                       <div className="divide-y divide-gray-200">
-                        {entries.map((entry) => (
+                        {entries.map((entry: any) => (
                           <div
                             key={entry.id}
                             className="flex items-center justify-between p-3 bg-white hover:bg-gray-50"

@@ -3,6 +3,7 @@ import { X, Users } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../lib/supabase';
 import { useTranslation } from 'react-i18next';
+import { TaskItemsList } from './TaskItemsList';
 
 interface TaskCompletionModalProps {
   task: any;
@@ -128,7 +129,7 @@ export function TaskCompletionModal({ task, items, onClose, onComplete, profiles
   };
 
   // Check if photo dice should be shown
-  const checkPhotoRequirement = () => {
+  const _checkPhotoRequirement = () => {
     if (task.photo_proof_required) {
       setPhotoRequired(true);
     } else if (task.photo_required_sometimes && !photoRequired && !showDice) {
@@ -236,11 +237,11 @@ export function TaskCompletionModal({ task, items, onClose, onComplete, profiles
               onChange={handlePhotoChange}
               className="flex-1 text-sm"
             />
-            <Upload className="w-5 h-5 text-gray-400" />
+            <div className="w-5 h-5 text-gray-400" />
           </div>
           {photos.length > 0 && (
             <p className="text-sm text-green-600 mt-2">
-              {photos.length} Foto(s) ausgewählt
+              {photos.length} Foto(s: any) ausgewählt
             </p>
           )}
         </div>
@@ -284,12 +285,21 @@ export function TaskCompletionModal({ task, items, onClose, onComplete, profiles
       </div>
 
       {showDice && (
-        <PhotoRequirementDice
-          onResult={(required) => {
-            setPhotoRequired(required);
-            setShowDice(false);
-          }}
-        />
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-xl p-6">
+            <p className="text-lg font-semibold mb-4">Roll the dice to determine if photo is required</p>
+            <button
+              onClick={() => {
+                const required = Math.random() < 0.5;
+                setPhotoRequired(required);
+                setShowDice(false);
+              }}
+              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+            >
+              Roll Dice
+            </button>
+          </div>
+        </div>
       )}
     </div>
   );

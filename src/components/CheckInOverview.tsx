@@ -155,7 +155,7 @@ export function CheckInOverview({ onBack, onNavigate }: CheckInOverviewProps = {
         const userDepartureRequests = allDepartureRequests?.filter((d: any) => d.user_id === staffProfile.id) || [];
         const departureRequest = userDepartureRequests.length > 0
           ? userDepartureRequests.sort((a: any, b: any) =>
-              new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+              new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime()
             )[0]
           : null;
 
