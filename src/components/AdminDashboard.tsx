@@ -151,7 +151,7 @@ export function AdminDashboard({ onNavigate, onBack }: AdminDashboardProps = {})
           .select('team_achievable_points, team_points_earned')
           .eq('goal_date', today)
           .limit(1)
-          .maybeSingle();
+          .maybeSingle() as { data: { team_achievable_points: number; team_points_earned: number } | null; error: any };
 
         if (goalsError) throw goalsError;
 
@@ -160,7 +160,7 @@ export function AdminDashboard({ onNavigate, onBack }: AdminDashboardProps = {})
 
         // Fetch team task counts using new RPC function (uses Cambodia date automatically)
         const { data: totalsData, error: totalsError } = await supabase
-          .rpc('get_team_daily_task_counts');
+          .rpc('get_team_daily_task_counts') as { data: Array<{ total_tasks: number; completed_tasks: number }> | null; error: any };
 
         if (!totalsError && totalsData && totalsData.length > 0) {
           setTotalTasksToday(totalsData[0].total_tasks || 0);
@@ -172,7 +172,7 @@ export function AdminDashboard({ onNavigate, onBack }: AdminDashboardProps = {})
 
         // Fetch team checklist counts
         const { data: checklistData, error: checklistError } = await supabase
-          .rpc('get_team_daily_checklist_counts');
+          .rpc('get_team_daily_checklist_counts') as { data: Array<{ total_checklists: number; completed_checklists: number }> | null; error: any };
 
         if (!checklistError && checklistData && checklistData.length > 0) {
           setTotalChecklistsToday(checklistData[0].total_checklists || 0);
