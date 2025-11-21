@@ -26,7 +26,7 @@ export function useNotifications() {
 
       if (error) throw error;
       setNotifications(data || []);
-      setUnreadCount((data || []).filter((n) => !n.is_read).length);
+      setUnreadCount((data || []).filter((n: Notification) => !n.is_read).length);
     } catch (error) {
       console.error('Error fetching notifications:', error);
     } finally {
@@ -41,14 +41,15 @@ export function useNotifications() {
   useRealtimeSubscription<Notification>(
     'notifications',
     async (payload) => {
-      if (payload.new.user_id === user?.id) {
+      const newNotif = payload.new as Notification;
+      if (newNotif.user_id === user?.id) {
         const { data: translatedNotification } = await supabase
           .from('notifications_translated')
           .select('*')
-          .eq('id', payload.new.id)
+          .eq('id', newNotif.id)
           .single() as any;
 
-        const notificationToAdd = translatedNotification || payload.new;
+        const notificationToAdd = translatedNotification || newNotif;
         setNotifications((current) => [notificationToAdd as Notification, ...current]);
         setUnreadCount((count) => count + 1);
 
@@ -61,12 +62,14 @@ export function useNotifications() {
       }
     },
     (payload) => {
-      if (payload.new.user_id === user?.id) {
+      const updated = payload.new as Notification;
+      if (updated.user_id === user?.id) {
         fetchNotifications();
       }
     },
     (payload) => {
-      setNotifications((current) => current.filter((n) => n.id !== payload.old.id));
+      const deleted = payload.old as Notification;
+      setNotifications((current) => current.filter((n) => n.id !== deleted.id));
     }
   );
 

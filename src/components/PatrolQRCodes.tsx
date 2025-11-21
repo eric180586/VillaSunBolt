@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useTranslation } from 'react-i18next';
+
 import { Shield, Download } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import QRCode from 'qrcode';

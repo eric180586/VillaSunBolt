@@ -37,12 +37,14 @@ export function useDepartureRequests() {
       setRequests((current) => [payload.new as DepartureRequest, ...current]);
     },
     (payload) => {
+      const updated = payload.new as DepartureRequest;
       setRequests((current) =>
-        current.map((req) => (req.id === payload.new.id ? (payload.new as DepartureRequest) : req))
+        current.map((req) => (req.id === updated.id ? updated : req))
       );
     },
     (payload) => {
-      setRequests((current) => current.filter((req) => req.id !== payload.old.id));
+      const deleted = payload.old as DepartureRequest;
+      setRequests((current) => current.filter((req) => req.id !== deleted.id));
     }
   );
 

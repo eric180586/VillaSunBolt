@@ -38,12 +38,14 @@ export function useNotes() {
       setNotes((current) => [payload.new as Note, ...current]);
     },
     (payload) => {
+      const updated = payload.new as Note;
       setNotes((current) =>
-        current.map((note) => (note.id === payload.new.id ? (payload.new as Note) : note))
+        current.map((note) => (note.id === updated.id ? updated : note))
       );
     },
     (payload) => {
-      setNotes((current) => current.filter((note) => note.id !== payload.old.id));
+      const deleted = payload.old as Note;
+      setNotes((current) => current.filter((note) => note.id !== deleted.id));
     }
   );
 

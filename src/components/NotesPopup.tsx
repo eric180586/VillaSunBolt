@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useTranslation } from 'react-i18next';
+
 import { useNotes } from '../hooks/useNotes';
 import { X, AlertCircle } from 'lucide-react';
 

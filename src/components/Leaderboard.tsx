@@ -28,11 +28,11 @@ export function Leaderboard({ onBack, onNavigate }: { onBack?: () => void; onNav
   const { t } = useTranslation();
   const { profiles, getPointsHistory } = useProfiles();
 
-  const staffProfiles = profiles.filter((p: any) => p.role !== 'admin');
+  const staffProfiles = profiles.filter((p) => p.role !== 'admin');
   const [historyUserId, setHistoryUserId] = useState<string | null>(null);
-  const [history, setHistory] = useState<any[]>([]);
+  const [history, setHistory] = useState<Array<{id: string; category: string; reason: string; points_awarded: number; points_change: number; created_at: string; daily_achieved?: number; daily_achievable?: number}>>([]);
   const [dailyGoals, setDailyGoals] = useState<DailyGoal[]>([]);
-  const [monthlyStats, setMonthlyStats] = useState<Record<string, MonthlyStats>>({}) as any;
+  const [monthlyStats, setMonthlyStats] = useState<Record<string, MonthlyStats>>({});
   const [loading, setLoading] = useState(true);
 
   const isManager = profile?.role === 'admin' || profile?.role === 'manager';
@@ -68,7 +68,7 @@ export function Leaderboard({ onBack, onNavigate }: { onBack?: () => void; onNav
 
       // Aggregate monthly stats per user
       const statsMap: Record<string, MonthlyStats> = {};
-      monthlyData?.forEach((day: any) => {
+      monthlyData?.forEach((day) => {
         if (!statsMap[day.user_id]) {
           statsMap[day.user_id] = {
             totalAchievable: 0,
@@ -80,7 +80,7 @@ export function Leaderboard({ onBack, onNavigate }: { onBack?: () => void; onNav
         statsMap[day.user_id].totalAchievable += day.theoretically_achievable_points;
         statsMap[day.user_id].totalAchieved += day.achieved_points;
         statsMap[day.user_id].daysCount += 1;
-      }) as any;
+      });
 
       // Calculate percentages
       Object.keys(statsMap).forEach((userId) => {
@@ -88,7 +88,7 @@ export function Leaderboard({ onBack, onNavigate }: { onBack?: () => void; onNav
         stats.percentage = stats.totalAchievable > 0
           ? (stats.totalAchieved / stats.totalAchievable) * 100
           : 0;
-      }) as any;
+      });
 
       setMonthlyStats(statsMap);
     } catch (error) {
@@ -245,10 +245,10 @@ export function Leaderboard({ onBack, onNavigate }: { onBack?: () => void; onNav
     const aPercent = aMonthly?.percentage || 0;
     const bPercent = bMonthly?.percentage || 0;
     return bPercent - aPercent;
-  }) as any;
+  });
 
   const myMonthlyStats = profile ? monthlyStats[profile.id] : null;
-  const myRank = sortedStaff.findIndex((p: any) => p.id === profile?.id) + 1;
+  const myRank = sortedStaff.findIndex((p) => p.id === profile?.id) + 1;
   const teamDailyGoal = dailyGoals[0];
 
   if (loading) {
@@ -345,14 +345,14 @@ export function Leaderboard({ onBack, onNavigate }: { onBack?: () => void; onNav
             </div>
             <div className="text-right">
               <p className={`text-4xl font-bold ${
-                Object.values(monthlyStats).reduce((sum, s) => sum + s.totalAchieved, 0) /
-                Object.values(monthlyStats).reduce((sum, s) => sum + s.totalAchievable, 0) * 100 >= 90
+                Object.values(monthlyStats).reduce((sum: number, s: MonthlyStats) => sum + s.totalAchieved, 0) /
+                Object.values(monthlyStats).reduce((sum: number, s: MonthlyStats) => sum + s.totalAchievable, 0) * 100 >= 90
                   ? 'text-green-600'
                   : 'text-gray-900'
               }`}>
                 {(
-                  (Object.values(monthlyStats).reduce((sum, s) => sum + s.totalAchieved, 0) /
-                  Object.values(monthlyStats).reduce((sum, s) => sum + s.totalAchievable, 0)) * 100
+                  (Object.values(monthlyStats).reduce((sum: number, s: MonthlyStats) => sum + s.totalAchieved, 0) /
+                  Object.values(monthlyStats).reduce((sum: number, s: MonthlyStats) => sum + s.totalAchievable, 0)) * 100
                 ).toFixed(1)}%
               </p>
             </div>
@@ -360,41 +360,41 @@ export function Leaderboard({ onBack, onNavigate }: { onBack?: () => void; onNav
           <div className="w-full bg-white bg-opacity-60 rounded-full h-6 mb-3">
             <div
               className={`h-6 rounded-full transition-all duration-500 flex items-center justify-center ${
-                Object.values(monthlyStats).reduce((sum, s) => sum + s.totalAchieved, 0) /
-                Object.values(monthlyStats).reduce((sum, s) => sum + s.totalAchievable, 0) * 100 >= 90
+                Object.values(monthlyStats).reduce((sum: number, s: MonthlyStats) => sum + s.totalAchieved, 0) /
+                Object.values(monthlyStats).reduce((sum: number, s: MonthlyStats) => sum + s.totalAchievable, 0) * 100 >= 90
                   ? 'bg-green-500'
                   : 'bg-blue-500'
               }`}
               style={{
                 width: `${Math.min(
-                  (Object.values(monthlyStats).reduce((sum, s) => sum + s.totalAchieved, 0) /
-                  Object.values(monthlyStats).reduce((sum, s) => sum + s.totalAchievable, 0)) * 100,
+                  (Object.values(monthlyStats).reduce((sum: number, s: MonthlyStats) => sum + s.totalAchieved, 0) /
+                  Object.values(monthlyStats).reduce((sum: number, s: MonthlyStats) => sum + s.totalAchievable, 0)) * 100,
                   100
                 )}%`
               }}
             >
               <span className="text-xs font-bold text-white drop-shadow">
                 {(
-                  (Object.values(monthlyStats).reduce((sum, s) => sum + s.totalAchieved, 0) /
-                  Object.values(monthlyStats).reduce((sum, s) => sum + s.totalAchievable, 0)) * 100
+                  (Object.values(monthlyStats).reduce((sum: number, s: MonthlyStats) => sum + s.totalAchieved, 0) /
+                  Object.values(monthlyStats).reduce((sum: number, s: MonthlyStats) => sum + s.totalAchievable, 0)) * 100
                 ).toFixed(1)}%
               </span>
             </div>
           </div>
           <div className="flex items-center justify-between text-sm">
             <span className="font-semibold text-gray-700">
-              {Object.values(monthlyStats).reduce((sum, s) => sum + s.totalAchieved, 0)} /{' '}
-              {Object.values(monthlyStats).reduce((sum, s) => sum + s.totalAchievable, 0)} Punkte
+              {Object.values(monthlyStats).reduce((sum: number, s: MonthlyStats) => sum + s.totalAchieved, 0)} /{' '}
+              {Object.values(monthlyStats).reduce((sum: number, s: MonthlyStats) => sum + s.totalAchievable, 0)} Punkte
             </span>
-            {Object.values(monthlyStats).reduce((sum, s) => sum + s.totalAchieved, 0) /
-            Object.values(monthlyStats).reduce((sum, s) => sum + s.totalAchievable, 0) * 100 >= 90 ? (
+            {Object.values(monthlyStats).reduce((sum: number, s: MonthlyStats) => sum + s.totalAchieved, 0) /
+            Object.values(monthlyStats).reduce((sum: number, s: MonthlyStats) => sum + s.totalAchievable, 0) * 100 >= 90 ? (
               <span className="font-bold text-green-600">Team-Event erreicht!</span>
             ) : (
               <span className="text-gray-600">
                 Noch{' '}
                 {(
-                  Object.values(monthlyStats).reduce((sum, s) => sum + s.totalAchievable, 0) * 0.9 -
-                  Object.values(monthlyStats).reduce((sum, s) => sum + s.totalAchieved, 0)
+                  Object.values(monthlyStats).reduce((sum: number, s: MonthlyStats) => sum + s.totalAchievable, 0) * 0.9 -
+                  Object.values(monthlyStats).reduce((sum: number, s: MonthlyStats) => sum + s.totalAchieved, 0)
                 ).toFixed(0)}{' '}
                 Punkte bis zum Ziel
               </span>
@@ -448,7 +448,7 @@ export function Leaderboard({ onBack, onNavigate }: { onBack?: () => void; onNav
       <div>
         <h3 className="text-xl font-bold text-gray-900 mb-4">📋 STAFF RANKING (Monatlich)</h3>
         <div className="space-y-3">
-          {sortedStaff.map((user, index) => {
+          {sortedStaff.map((user: any, index: number) => {
             const userMonthly = monthlyStats[user.id];
             const userDaily = dailyGoals.find((g) => g.user_id === user.id);
             const isCurrentUser = user.id === profile?.id;

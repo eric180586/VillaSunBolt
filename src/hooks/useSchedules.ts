@@ -39,12 +39,14 @@ export function useSchedules() {
       ));
     },
     (payload) => {
+      const updated = payload.new as Schedule;
       setSchedules((current) =>
-        current.map((schedule) => (schedule.id === payload.new.id ? (payload.new as Schedule) : schedule))
+        current.map((schedule) => (schedule.id === updated.id ? updated : schedule))
       );
     },
     (payload) => {
-      setSchedules((current) => current.filter((schedule) => schedule.id !== payload.old.id));
+      const deleted = payload.old as Schedule;
+      setSchedules((current) => current.filter((schedule) => schedule.id !== deleted.id));
     }
   );
 

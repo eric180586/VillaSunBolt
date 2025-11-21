@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useTranslation } from 'react-i18next';
+
 import { supabase } from '../lib/supabase';
 import { useProfiles } from '../hooks/useProfiles';
 import { Calendar, TrendingUp, Users, Target } from 'lucide-react';

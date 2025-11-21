@@ -4,9 +4,8 @@ import { useTasks } from '../hooks/useTasks';
 import { useProfiles } from '../hooks/useProfiles';
 import { Plus, CheckCircle, Clock, Users, X, RefreshCw, ArrowLeft, Edit2 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
-import { formatDateTimeForDisplay, formatDateForInput, getTodayDateString, isSameDay, combineDateAndTime } from '../lib/dateUtils';
+import { formatDateTimeForDisplay, formatDateForInput, getTodayDateString, combineDateAndTime } from '../lib/dateUtils';
 import { getTodayTasks } from '../lib/taskFilters';
-import { PhotoRequirementDice } from './PhotoRequirementDice';
 import { TaskWithItemsModal } from './TaskWithItemsModal';
 import { HelperSelectionModal } from './HelperSelectionModal';
 import { TaskCreateModal } from './TaskCreateModal';
@@ -24,7 +23,7 @@ const CATEGORIES = [
   { id: 'admin', label: 'Admin', color: 'bg-gray-700' },
 ];
 
-const ROOM_NAMES = ['Venus', 'Earth', 'Mars', 'Jupiter', 'Saturn', 'Uranus', 'Neptune', 'Pluto'];
+const _ROOM_NAMES = ['Venus', 'Earth', 'Mars', 'Jupiter', 'Saturn', 'Uranus', 'Neptune', 'Pluto'];
 
 const MOTIVATIONAL_MESSAGES = [
   'Great job! Keep up the excellent work!',
@@ -58,8 +57,8 @@ export function Tasks({ onNavigate, filterStatus, onBack }: TasksProps = {}) {
   const [adminNotes, setAdminNotes] = useState('');
   const [adminPhoto, setAdminPhoto] = useState<File[]>([]);
   const [itemsToReopen, setItemsToReopen] = useState<number[]>([]);
-  const [showDiceModal, setShowDiceModal] = useState(false);
-  const [pendingTaskCompletion, setPendingTaskCompletion] = useState<any>(null);
+  const [_showDiceModal, _setShowDiceModal] = useState(false);
+  const [_pendingTaskCompletion, _setPendingTaskCompletion] = useState<any>(null);
   const [editingTask, setEditingTask] = useState<any>(null);
 
   const isAdmin = profile?.role === 'admin';
@@ -144,7 +143,7 @@ export function Tasks({ onNavigate, filterStatus, onBack }: TasksProps = {}) {
     }
   };
 
-  const handleCategoryChange = (category: string) => {
+  const _handleCategoryChange = (category: string) => {
     setFormData((prev) => ({
       ...prev,
       category,

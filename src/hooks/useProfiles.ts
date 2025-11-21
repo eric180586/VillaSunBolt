@@ -4,7 +4,6 @@ import { useRealtimeSubscription } from './useRealtimeSubscription';
 import type { Database } from '../lib/database.types';
 
 type Profile = Database['public']['Tables']['profiles']['Row'];
-type PointsHistory = Database['public']['Tables']['points_history']['Row'];
 
 export function useProfiles() {
   const [profiles, setProfiles] = useState<Profile[]>([]);
@@ -32,13 +31,13 @@ export function useProfiles() {
 
   useRealtimeSubscription<Profile>(
     'profiles',
-    (payload) => {
+    () => {
       fetchProfiles();
     },
-    (payload) => {
+    () => {
       fetchProfiles();
     },
-    (payload) => {
+    () => {
       fetchProfiles();
     }
   );
@@ -71,7 +70,7 @@ export function useProfiles() {
 
     if (error) throw error;
 
-    const historyWithContext = await Promise.all((data || []).map(async (entry) => {
+    const historyWithContext = await Promise.all((data || []).map(async (entry: any) => {
       const entryDate = new Date(entry.created_at).toISOString().split('T')[0];
 
       const { data: dailyGoal } = await supabase

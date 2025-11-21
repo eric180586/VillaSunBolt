@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useTranslation } from 'react-i18next';
+
 import { useAuth } from '../contexts/AuthContext';
 import { Shield, Camera, CheckCircle, AlertCircle, Clock, QrCode, ArrowLeft } from 'lucide-react';
 import { supabase } from '../lib/supabase';

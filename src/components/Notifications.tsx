@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useTranslation } from 'react-i18next';
+
 import { useNotifications } from '../hooks/useNotifications';
 import { useNotes } from '../hooks/useNotes';
 import { Bell, CheckCheck, ChevronDown, ChevronUp, Eye, ArrowLeft } from 'lucide-react';
