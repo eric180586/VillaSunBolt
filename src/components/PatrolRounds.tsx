@@ -37,6 +37,9 @@ interface PatrolScan {
 
 const TIME_SLOTS = ['11:00', '12:15', '13:30', '14:45', '16:00', '17:15', '18:30', '19:45', '21:00'];
 
+// TEST MODE: Set to true to enable test mode (no time restrictions, creates rounds for current user)
+const TEST_MODE = true;
+
 export function PatrolRounds({ onBack }: { onBack?: () => void } = {}) {
   const { profile } = useAuth();
   const [locations, setLocations] = useState<PatrolLocation[]>([]);
@@ -47,6 +50,7 @@ export function PatrolRounds({ onBack }: { onBack?: () => void } = {}) {
   const [showPhotoRequest, setShowPhotoRequest] = useState(false);
   const [pendingLocation, setPendingLocation] = useState<PatrolLocation | null>(null);
   const [photo, setPhoto] = useState<File | null>(null);
+  const [testMode] = useState(TEST_MODE);
 
   useEffect(() => {
     loadLocations();
@@ -139,7 +143,39 @@ export function PatrolRounds({ onBack }: { onBack?: () => void } = {}) {
 
   const checkAndCreateRounds = async () => {
     const today = getTodayDateString();
+    const { data: { user } } = await supabase.auth.getUser();
 
+    if (!user) return;
+
+    if (testMode) {
+      // TEST MODE: Create all time slots for current user
+      console.log('TEST MODE: Creating patrol rounds for current user');
+
+      for (const timeSlot of TIME_SLOTS) {
+        const { data: existing } = await supabase
+          .from('patrol_rounds')
+          .select('id')
+          .eq('date', today)
+          .eq('time_slot', timeSlot)
+          .eq('assigned_to', user.id)
+          .maybeSingle() as any;
+
+        if (!existing) {
+          const scheduledTime = `${today}T${timeSlot}:00+07:00`;
+          await supabase.from('patrol_rounds').insert({
+            date: today,
+            time_slot: timeSlot,
+            assigned_to: user.id,
+            scheduled_time: scheduledTime,
+          }) as any;
+        }
+      }
+
+      loadTodayData();
+      return;
+    }
+
+    // NORMAL MODE: Use schedule
     const { data: schedule } = await supabase
       .from('patrol_schedules')
       .select('*')
@@ -167,7 +203,6 @@ export function PatrolRounds({ onBack }: { onBack?: () => void } = {}) {
         .maybeSingle() as any;
 
       if (!existing) {
-        // Set scheduled_time for push notifications (Cambodia timezone +07:00)
         const scheduledTime = `${today}T${timeSlot}:00+07:00`;
         await supabase.from('patrol_rounds').insert({
           date: today,
@@ -182,6 +217,11 @@ export function PatrolRounds({ onBack }: { onBack?: () => void } = {}) {
   };
 
   const findActiveRound = (rounds: PatrolRound[]): PatrolRound | null => {
+    if (testMode) {
+      // TEST MODE: First incomplete round is always active
+      return rounds.find(r => !r.completed_at) || null;
+    }
+
     const now = new Date();
     const currentTime = now.getHours() * 60 + now.getMinutes();
 
@@ -202,6 +242,11 @@ export function PatrolRounds({ onBack }: { onBack?: () => void } = {}) {
   };
 
   const canStartRound = (round: PatrolRound): boolean => {
+    if (testMode) {
+      // TEST MODE: Any incomplete round can be started
+      return !round.completed_at;
+    }
+
     const now = new Date();
     const currentTime = now.getHours() * 60 + now.getMinutes();
     const [hours, minutes] = round.time_slot.split(':').map(Number);
@@ -435,11 +480,20 @@ export function PatrolRounds({ onBack }: { onBack?: () => void } = {}) {
             </button>
           )}
           <div>
-            <h2 className="text-3xl font-bold text-gray-900">Patrol Rounds</h2>
+            <div className="flex items-center space-x-3">
+              <h2 className="text-3xl font-bold text-gray-900">Patrol Rounds</h2>
+              {testMode && (
+                <span className="bg-yellow-400 text-yellow-900 px-3 py-1 rounded-full text-sm font-bold">
+                  TEST MODE
+                </span>
+              )}
+            </div>
             <p className="text-gray-600 mt-1">
               {profile?.role === 'admin'
                 ? 'Übersicht aller Patrouillengänge'
-                : 'Scanne QR Codes an den Kontrollpunkten'}
+                : testMode
+                  ? 'Test Mode: All rounds available, no time restrictions'
+                  : 'Scanne QR Codes an den Kontrollpunkten'}
             </p>
           </div>
         </div>
