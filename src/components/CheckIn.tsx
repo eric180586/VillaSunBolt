@@ -194,7 +194,14 @@ export function CheckIn({ onBack }: { onBack?: () => void } = {}) {
   };
 
   const handleCheckIn = async (shiftType: 'früh' | 'spät') => {
-    if (!profile?.id) return;
+    console.log('[CHECK-IN] handleCheckIn called with shift:', shiftType);
+    console.log('[CHECK-IN] Profile:', profile);
+
+    if (!profile?.id) {
+      console.error('[CHECK-IN] BLOCKED: No profile ID!', profile);
+      alert('Error: Profile not loaded. Please refresh the page.');
+      return;
+    }
 
     const now = new Date();
     const cambodiaTime = new Intl.DateTimeFormat('en-US', {
