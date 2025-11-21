@@ -22,7 +22,7 @@ export function getTodayTasks(tasks: Task[]): Task[] {
     if (!task.due_date) return false;
 
     return isSameDay(task.due_date, today);
-  });
+  }) as any;
 }
 
 export function getMyTasks(tasks: Task[], userId: string | undefined): Task[] {

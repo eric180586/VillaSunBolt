@@ -88,7 +88,7 @@ export function HelperSelectionModal({
         .from('profiles')
         .select('id')
         .eq('role', 'admin')
-        .maybeSingle();
+        .maybeSingle() as any;
 
       if (adminQuery.data) {
         const helperName = helperChoice === 'helper' && selectedHelper
@@ -104,7 +104,7 @@ export function HelperSelectionModal({
             : `${profile?.full_name} hat "${task.title}" abgeschlossen`,
           reference_id: task.id,
           priority: 'high'
-        });
+        }) as any;
       }
 
       onComplete();

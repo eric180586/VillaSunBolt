@@ -48,7 +48,7 @@ export function useDepartureRequests() {
 
   const createRequest = async (request: DepartureRequestInsert) => {
     console.log('[useDepartureRequests] Creating request:', request);
-    const { data, error } = await supabase.from('departure_requests').insert(request).select();
+    const { data, error } = await supabase.from('departure_requests').insert(request).select() as any;
     if (error) {
       console.error('[useDepartureRequests] Error creating request:', error);
       console.error('[useDepartureRequests] Error details:', JSON.stringify(error, null, 2));

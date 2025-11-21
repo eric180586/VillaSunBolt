@@ -50,7 +50,7 @@ export function HowTo({ onBack }: { onBack?: () => void } = {}) {
     description: '',
     category: 'general',
     file: null as File | null,
-  });
+  }) as any;
 
   useEffect(() => {
     fetchDocuments();
@@ -62,7 +62,7 @@ export function HowTo({ onBack }: { onBack?: () => void } = {}) {
         .from('how_to_documents')
         .select('*')
         .order('sort_order', { ascending: true })
-        .order('created_at', { ascending: false });
+        .order('created_at', { ascending: false }) as any;
 
       if (error) throw error;
       setDocuments(data || []);
@@ -114,12 +114,12 @@ export function HowTo({ onBack }: { onBack?: () => void } = {}) {
         file_name: formData.file.name,
         file_size: formData.file.size,
         created_by: profile.id,
-      });
+      }) as any;
 
       if (error) throw error;
 
       setShowUploadModal(false);
-      setFormData({ title: '', description: '', category: 'general', file: null });
+      setFormData({ title: '', description: '', category: 'general', file: null }) as any;
       await fetchDocuments();
     } catch (error) {
       console.error('Error uploading document:', error);
@@ -149,7 +149,7 @@ export function HowTo({ onBack }: { onBack?: () => void } = {}) {
 
       setShowEditModal(false);
       setEditingDocument(null);
-      setFormData({ title: '', description: '', category: 'general', file: null });
+      setFormData({ title: '', description: '', category: 'general', file: null }) as any;
       await fetchDocuments();
     } catch (error) {
       console.error('Error updating document:', error);
@@ -426,7 +426,7 @@ export function HowTo({ onBack }: { onBack?: () => void } = {}) {
                         description: doc.description,
                         category: doc.category,
                         file: null,
-                      });
+                      }) as any;
                       setShowEditModal(true);
                     }}
                     className="flex-1 flex items-center justify-center space-x-1 text-blue-600 px-3 py-2 rounded-lg hover:bg-blue-50 transition-colors"
@@ -453,7 +453,7 @@ export function HowTo({ onBack }: { onBack?: () => void } = {}) {
           className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50"
           onClick={() => {
             setShowUploadModal(false);
-            setFormData({ title: '', description: '', category: 'general', file: null });
+            setFormData({ title: '', description: '', category: 'general', file: null }) as any;
           }}
         >
           <div

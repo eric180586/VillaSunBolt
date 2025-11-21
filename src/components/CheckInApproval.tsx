@@ -40,11 +40,11 @@ export function CheckInApproval({ onNavigate }: CheckInApprovalProps = {}) {
   const [pendingCheckIns, setPendingCheckIns] = useState<CheckInWithProfile[]>([]);
   const [pendingDepartures, setPendingDepartures] = useState<DepartureRequest[]>([]);
   const [loading, setLoading] = useState(false);
-  const [rejectReason, setRejectReason] = useState<{ [key: string]: string }>({});
+  const [rejectReason, setRejectReason] = useState<{ [key: string]: string }>({}) as any;
   const [showRejectModal, setShowRejectModal] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<'checkin' | 'departure'>('checkin');
   const [showApproveModal, setShowApproveModal] = useState<string | null>(null);
-  const [customPoints, setCustomPoints] = useState<{ [key: string]: number }>({});
+  const [customPoints, setCustomPoints] = useState<{ [key: string]: number }>({}) as any;
 
   useEffect(() => {
     if (profile?.role === 'admin') {
@@ -96,7 +96,7 @@ export function CheckInApproval({ onNavigate }: CheckInApprovalProps = {}) {
         profiles:user_id (full_name)
       `)
       .eq('status', 'pending')
-      .order('check_in_time', { ascending: false });
+      .order('check_in_time', { ascending: false }) as any;
 
     if (error) {
       console.error('Error fetching check-ins:', error);
@@ -114,7 +114,7 @@ export function CheckInApproval({ onNavigate }: CheckInApprovalProps = {}) {
         profiles:staff_id (full_name)
       `)
       .eq('status', 'pending')
-      .order('requested_at', { ascending: false });
+      .order('requested_at', { ascending: false }) as any;
 
     if (error) {
       console.error('Error fetching departure requests:', error);
@@ -136,7 +136,7 @@ export function CheckInApproval({ onNavigate }: CheckInApprovalProps = {}) {
           status: 'approved',
           reviewed_by: profile.id,
           reviewed_at: new Date().toISOString(),
-        })
+        } as any)
         .eq('id', requestId);
 
       if (error) throw error;
@@ -163,17 +163,17 @@ export function CheckInApproval({ onNavigate }: CheckInApprovalProps = {}) {
           reviewed_by: profile.id,
           reviewed_at: new Date().toISOString(),
           admin_response: rejectReason[requestId] || 'Keine Angabe',
-        })
+        } as any)
         .eq('id', requestId);
 
       if (error) throw error;
 
       setShowRejectModal(null);
-      setRejectReason((prev) => {
+      setRejectReason((prev: any) => {
         const newReasons = { ...prev };
         delete newReasons[requestId];
         return newReasons;
-      });
+      }) as any;
       fetchPendingDepartures();
     } catch (error) {
       console.error('Error rejecting departure:', error);
@@ -203,11 +203,11 @@ export function CheckInApproval({ onNavigate }: CheckInApprovalProps = {}) {
       if (error) throw error;
 
       setShowApproveModal(null);
-      setCustomPoints((prev) => {
+      setCustomPoints((prev: any) => {
         const newPoints = { ...prev };
         delete newPoints[checkInId];
         return newPoints;
-      });
+      }) as any;
       fetchPendingCheckIns();
     } catch (error) {
       console.error('Error approving check-in:', error);
@@ -231,16 +231,16 @@ export function CheckInApproval({ onNavigate }: CheckInApprovalProps = {}) {
         p_check_in_id: checkInId,
         p_admin_id: profile.id,
         p_reason: rejectReason[checkInId] || 'Keine Angabe',
-      });
+      }) as any;
 
       if (error) throw error;
 
       setShowRejectModal(null);
-      setRejectReason((prev) => {
+      setRejectReason((prev: any) => {
         const newReasons = { ...prev };
         delete newReasons[checkInId];
         return newReasons;
-      });
+      }) as any;
       fetchPendingCheckIns();
     } catch (error) {
       console.error('Error rejecting check-in:', error);
@@ -517,11 +517,11 @@ export function CheckInApproval({ onNavigate }: CheckInApprovalProps = {}) {
                     <button
                       onClick={() => {
                         setShowApproveModal(null);
-                        setCustomPoints((prev) => {
+                        setCustomPoints((prev: any) => {
                           const newPoints = { ...prev };
                           delete newPoints[showApproveModal];
                           return newPoints;
-                        });
+                        }) as any;
                       }}
                       className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
                     >

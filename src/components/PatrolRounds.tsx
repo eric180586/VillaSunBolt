@@ -164,7 +164,7 @@ export function PatrolRounds({ onBack }: { onBack?: () => void } = {}) {
         .eq('date', today)
         .eq('time_slot', timeSlot)
         .eq('assigned_to', assignedSchedule.assigned_to)
-        .maybeSingle();
+        .maybeSingle() as any;
 
       if (!existing) {
         // Set scheduled_time for push notifications (Cambodia timezone +07:00)
@@ -174,7 +174,7 @@ export function PatrolRounds({ onBack }: { onBack?: () => void } = {}) {
           time_slot: timeSlot,
           assigned_to: assignedSchedule.assigned_to,
           scheduled_time: scheduledTime,
-        });
+        }) as any;
       }
     }
 
@@ -262,7 +262,7 @@ export function PatrolRounds({ onBack }: { onBack?: () => void } = {}) {
         user_id: user.id,
         photo_url: photoUrl,
         photo_requested: photoRequested,
-      });
+      }) as any;
 
       if (scanError) {
         console.error('Scan insert error:', scanError);
@@ -285,7 +285,7 @@ export function PatrolRounds({ onBack }: { onBack?: () => void } = {}) {
         reason: `Patrol scan completed: ${locationName}`,
         category: 'patrol',
         created_by: user.id,
-      });
+      }) as any;
 
       // Update daily_point_goals
       const today = getTodayDateString();
@@ -294,7 +294,7 @@ export function PatrolRounds({ onBack }: { onBack?: () => void } = {}) {
         .select('*')
         .eq('user_id', user.id)
         .eq('date', today)
-        .maybeSingle();
+        .maybeSingle() as any;
 
       if (existing) {
         await supabase
@@ -312,7 +312,7 @@ export function PatrolRounds({ onBack }: { onBack?: () => void } = {}) {
             user_id: user.id,
             date: today,
             points_earned: 1
-          });
+          }) as any;
       }
 
       // Check if round is complete (all UNIQUE locations scanned)

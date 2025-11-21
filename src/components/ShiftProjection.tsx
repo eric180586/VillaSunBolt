@@ -49,7 +49,7 @@ export function ShiftProjection() {
             userShiftType = todayShift.shift as 'morning' | 'late';
           }
         }
-      });
+      }) as any;
 
       if (!userIsScheduled) {
         setMessage('You are not scheduled today');
@@ -67,7 +67,7 @@ export function ShiftProjection() {
         // Compare due_date (YYYY-MM-DD)
         const taskDueDate = new Date(t.due_date).toISOString().split('T')[0];
         return taskDueDate === todayDateString;
-      });
+      }) as any;
 
       // Berechne estimated time für aktuellen User
       let minutesForCurrentUser = 0;
@@ -100,7 +100,7 @@ export function ShiftProjection() {
           minutesForCurrentUser += scheduledCount > 0 ? duration / scheduledCount : duration;
         }
         // Else: Task ist jemand anderem zugewiesen, zählt nicht für mich
-      });
+      }) as any;
 
       // Add 2 hours base time for regular work
       const BASE_WORK_MINUTES = 120;

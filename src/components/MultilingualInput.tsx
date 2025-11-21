@@ -29,14 +29,14 @@ export function MultilingualInput({
     de: value_de,
     en: value_en,
     km: value_km
-  });
+  }) as any;
 
   useEffect(() => {
     setValues({
       de: value_de,
       en: value_en,
       km: value_km
-    });
+    }) as any;
   }, [value_de, value_en, value_km]);
 
   const currentLang = i18n.language;

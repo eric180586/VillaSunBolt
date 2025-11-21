@@ -104,7 +104,7 @@ export function CheckInHistory({ onBack }: { onBack?: () => void } = {}) {
       day: '2-digit',
       hour: '2-digit',
       minute: '2-digit',
-    });
+    }) as any;
   };
 
   const totalPages = Math.ceil(totalCount / itemsPerPage);

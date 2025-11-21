@@ -15,7 +15,7 @@ export function Notes({ onBack }: { onBack?: () => void } = {}) {
     content: '',
     category: 'general',
     is_important: false,
-  });
+  }) as any;
 
   const getReceptionTemplate = () => {
     return `Rooms Check in:\n\n\nRooms Check out:\n\n\nImportant infos:\n\n\nLaundry:\n\n`;
@@ -31,7 +31,7 @@ export function Notes({ onBack }: { onBack?: () => void } = {}) {
         await createNote({
           ...formData,
           created_by: profile?.id || '',
-        });
+        }) as any;
       }
       setShowModal(false);
       setFormData({
@@ -39,7 +39,7 @@ export function Notes({ onBack }: { onBack?: () => void } = {}) {
         content: '',
         category: 'general',
         is_important: false,
-      });
+      }) as any;
     } catch (error) {
       console.error('Error saving note:', error);
     }
@@ -53,7 +53,7 @@ export function Notes({ onBack }: { onBack?: () => void } = {}) {
         content: note.content,
         category: note.category,
         is_important: note.is_important,
-      });
+      }) as any;
       setEditingNote(noteId);
       setShowModal(true);
     }
@@ -96,7 +96,7 @@ export function Notes({ onBack }: { onBack?: () => void } = {}) {
               content: '',
               category: 'general',
               is_important: false,
-            });
+            }) as any;
             setShowModal(true);
           }}
           className="flex items-center space-x-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
@@ -214,7 +214,7 @@ export function Notes({ onBack }: { onBack?: () => void } = {}) {
                       category: newCategory,
                       content: newCategory === 'reception' && !editingNote ? getReceptionTemplate() : formData.content,
                       title: newCategory === 'reception' && !editingNote && !formData.title ? 'Rezeption Info - ' + new Date().toLocaleDateString('de-DE') : formData.title
-                    });
+                    }) as any;
                   }}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg"
                 >

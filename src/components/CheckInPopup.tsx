@@ -83,15 +83,15 @@ export function CheckInPopup({ onClose }: CheckInPopupProps) {
       console.log('[CHECK-IN POPUP] Calling process_check_in with:', {
         p_user_id: profile.id,
         p_shift_type: mappedShiftType
-      });
+      }) as any;
 
       const { data, error } = await supabase.rpc('process_check_in', {
         p_user_id: profile.id,
         p_shift_type: mappedShiftType,
         p_late_reason: null,
-      });
+      }) as any;
 
-      console.log('[CHECK-IN POPUP] Response:', { data, error });
+      console.log('[CHECK-IN POPUP] Response:', { data, error }) as any;
 
       if (error) throw error;
 

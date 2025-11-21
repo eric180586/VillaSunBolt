@@ -75,7 +75,7 @@ export function TodayTasksOverview({ onBack }: TodayTasksOverviewProps) {
     const taskDate = new Date(task.due_date);
     taskDate.setHours(0, 0, 0, 0);
     return taskDate.getTime() === today.getTime();
-  });
+  }) as any;
 
   // Merge checklist instances as tasks
   const checklistsAsTasks = checklistInstances.map((ci) => ({

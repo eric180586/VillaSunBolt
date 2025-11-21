@@ -30,7 +30,7 @@ export function ShoppingList({ onBack }: { onBack?: () => void } = {}) {
   const [formData, setFormData] = useState({
     item_name: '',
     description: '',
-  });
+  }) as any;
   const [photo, setPhoto] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -69,7 +69,7 @@ export function ShoppingList({ onBack }: { onBack?: () => void } = {}) {
           purchaser:purchased_by(full_name)
         `)
         .order('is_purchased', { ascending: true })
-        .order('created_at', { ascending: false });
+        .order('created_at', { ascending: false }) as any;
 
       if (error) throw error;
       setItems(data || []);
@@ -111,12 +111,12 @@ export function ShoppingList({ onBack }: { onBack?: () => void } = {}) {
         description: formData.description || null,
         photo_url: photoUrl,
         created_by: profile?.id,
-      });
+      }) as any;
 
       if (error) throw error;
 
       setShowModal(false);
-      setFormData({ item_name: '', description: '' });
+      setFormData({ item_name: '', description: '' }) as any;
       setPhoto(null);
     } catch (error) {
       console.error('Error adding item:', error);
@@ -371,7 +371,7 @@ export function ShoppingList({ onBack }: { onBack?: () => void } = {}) {
                   type="button"
                   onClick={() => {
                     setShowModal(false);
-                    setFormData({ item_name: '', description: '' });
+                    setFormData({ item_name: '', description: '' }) as any;
                     setPhoto(null);
                   }}
                   className="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"

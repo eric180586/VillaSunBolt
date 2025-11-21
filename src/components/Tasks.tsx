@@ -79,7 +79,7 @@ export function Tasks({ onNavigate, filterStatus, onBack }: TasksProps = {}) {
     photo_proof_required: false,
     photo_required_sometimes: false,
     photo_explanation_text: '',
-  });
+  }) as any;
 
   const getDefaultDateTime = (category: string) => {
     const dateStr = getTodayDateString();
@@ -218,7 +218,7 @@ export function Tasks({ onNavigate, filterStatus, onBack }: TasksProps = {}) {
           photo_proof_required: formData.photo_proof_required,
           photo_required_sometimes: formData.photo_required_sometimes,
           photo_explanation_text: formData.photo_explanation_text || null,
-        });
+        }) as any;
       } else {
         await createTask({
           category: formData.category,
@@ -235,7 +235,7 @@ export function Tasks({ onNavigate, filterStatus, onBack }: TasksProps = {}) {
           photo_explanation_text: formData.photo_explanation_text || null,
           created_by: profile?.id || '',
           status: 'pending',
-        });
+        }) as any;
       }
 
       if (!editingTask) {
@@ -268,7 +268,7 @@ export function Tasks({ onNavigate, filterStatus, onBack }: TasksProps = {}) {
         photo_proof_required: false,
         photo_required_sometimes: false,
         photo_explanation_text: '',
-      });
+      }) as any;
     } catch (error) {
       console.error('Error creating task:', error);
     }
@@ -280,7 +280,7 @@ export function Tasks({ onNavigate, filterStatus, onBack }: TasksProps = {}) {
       const result = await updateTask(taskId, {
         assigned_to: profile?.id,
         status: 'in_progress',
-      });
+      }) as any;
       console.log('Task accepted successfully:', result);
     } catch (error) {
       console.error('Error accepting task:', error);
@@ -294,7 +294,7 @@ export function Tasks({ onNavigate, filterStatus, onBack }: TasksProps = {}) {
       await updateTask(taskId, {
         secondary_assigned_to: profile.id,
         status: 'in_progress',
-      });
+      }) as any;
       await refetch();
     } catch (error) {
       console.error('Error adding helper:', error);
@@ -322,13 +322,13 @@ export function Tasks({ onNavigate, filterStatus, onBack }: TasksProps = {}) {
       await updateTask(task.id, {
         admin_notes: adminNotes,
         admin_photos: adminPhotoUrls,
-      });
+      }) as any;
 
       const { data, error } = await supabase.rpc('approve_task_with_quality', {
         p_task_id: task.id,
         p_admin_id: profile?.id,
         p_review_quality: quality,
-      });
+      }) as any;
 
       if (error) {
         console.error('Error approving task:', error);
@@ -388,14 +388,14 @@ export function Tasks({ onNavigate, filterStatus, onBack }: TasksProps = {}) {
         p_task_id: task.id,
         p_admin_id: profile?.id,
         p_admin_notes: adminNotes,
-      });
+      }) as any;
 
       if (error) throw error;
 
       if (adminPhotoUrls && adminPhotoUrls.length > 0) {
         await updateTask(task.id, {
           admin_photos: adminPhotoUrls,
-        });
+        }) as any;
       }
 
       setShowReviewModal(false);
@@ -431,7 +431,7 @@ export function Tasks({ onNavigate, filterStatus, onBack }: TasksProps = {}) {
           };
         }
         return item;
-      });
+      }) as any;
 
       let adminPhotoUrls: string[] | null = null;
       if (adminPhoto && adminPhoto.length > 0) {
@@ -448,7 +448,7 @@ export function Tasks({ onNavigate, filterStatus, onBack }: TasksProps = {}) {
         status: 'in_progress',
         admin_notes: adminNotes,
         admin_photos: adminPhotoUrls,
-      });
+      }) as any;
 
       setShowReopenItemsModal(false);
       setShowReviewModal(false);
@@ -570,7 +570,7 @@ export function Tasks({ onNavigate, filterStatus, onBack }: TasksProps = {}) {
           return taskDate === today;
         }
         return true;
-      });
+      }) as any;
 
   if (filterStatus === 'pending_review') {
     categoryTasks = categoryTasks.filter((t) => t.status === 'pending_review');
@@ -868,7 +868,7 @@ export function Tasks({ onNavigate, filterStatus, onBack }: TasksProps = {}) {
                           photo_proof_required: task.photo_proof_required || false,
                           photo_required_sometimes: task.photo_required_sometimes || false,
                           photo_explanation_text: task.photo_explanation_text || '',
-                        });
+                        }) as any;
                         setShowModal(true);
                       }}
                       className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg"

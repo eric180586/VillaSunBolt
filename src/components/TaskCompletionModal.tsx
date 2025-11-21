@@ -103,7 +103,7 @@ export function TaskCompletionModal({ task, items, onClose, onComplete, profiles
       if (error) throw error;
 
       // Create notification for admin
-      const adminResult = await supabase.from('profiles').select('id').eq('role', 'admin').maybeSingle();
+      const adminResult = await supabase.from('profiles').select('id').eq('role', 'admin').maybeSingle() as any;
       if (adminResult.data) {
         await supabase.from('notifications').insert({
         user_id: adminResult.data.id,
@@ -112,7 +112,7 @@ export function TaskCompletionModal({ task, items, onClose, onComplete, profiles
         message: `${profile?.full_name} hat "${task.title}" abgeschlossen`,
         reference_id: task.id,
         priority: 'high'
-      });
+      }) as any;
       }
 
       if (error) throw error;

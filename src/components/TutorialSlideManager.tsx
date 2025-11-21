@@ -25,7 +25,7 @@ export default function TutorialSlideManager({ onClose }: { onClose: () => void 
     title: '',
     description: '',
     image: null as File | null,
-  });
+  }) as any;
 
   const isAdmin = profile?.role === 'admin';
 
@@ -85,12 +85,12 @@ export default function TutorialSlideManager({ onClose }: { onClose: () => void 
         category: 'cleaning',
         tips: [],
         created_by: profile.id,
-      });
+      }) as any;
 
       if (error) throw error;
 
       setShowAddModal(false);
-      setFormData({ title: '', description: '', image: null });
+      setFormData({ title: '', description: '', image: null }) as any;
       await loadSlides();
       alert('Slide erfolgreich hinzugefügt!');
     } catch (error: any) {

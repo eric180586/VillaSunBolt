@@ -13,7 +13,7 @@ export async function checkAndRunDailyReset(): Promise<boolean> {
 
     const { data, error } = await supabase.functions.invoke('daily-reset', {
       body: {},
-    });
+    }) as any;
 
     if (error) {
       throw error;

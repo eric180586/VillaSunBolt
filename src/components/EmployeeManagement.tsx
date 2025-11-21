@@ -24,7 +24,7 @@ export function EmployeeManagement({ onBack }: { onBack?: () => void } = {}) {
     password: '',
     full_name: '',
     role: 'staff' as 'admin' | 'staff',
-  });
+  }) as any;
 
   const isAdmin = profile?.role === 'admin';
 
@@ -39,7 +39,7 @@ export function EmployeeManagement({ onBack }: { onBack?: () => void } = {}) {
       const { data, error } = await supabase
         .from('profiles')
         .select('*')
-        .order('created_at', { ascending: false });
+        .order('created_at', { ascending: false }) as any;
 
       if (error) throw error;
       setEmployees(data || []);
@@ -70,7 +70,7 @@ export function EmployeeManagement({ onBack }: { onBack?: () => void } = {}) {
             role: formData.role,
           },
         },
-      });
+      }) as any;
 
       if (authError) throw authError;
 
@@ -99,7 +99,7 @@ export function EmployeeManagement({ onBack }: { onBack?: () => void } = {}) {
       }
 
       setShowModal(false);
-      setFormData({ email: '', password: '', full_name: '', role: 'staff' });
+      setFormData({ email: '', password: '', full_name: '', role: 'staff' }) as any;
       await loadEmployees();
     } catch (error: any) {
       console.error('Error creating employee:', error);
@@ -130,7 +130,7 @@ export function EmployeeManagement({ onBack }: { onBack?: () => void } = {}) {
 
       setShowModal(false);
       setEditingEmployee(null);
-      setFormData({ email: '', password: '', full_name: '', role: 'staff' });
+      setFormData({ email: '', password: '', full_name: '', role: 'staff' }) as any;
       await loadEmployees();
     } catch (error) {
       console.error('Error updating employee:', error);
@@ -145,7 +145,7 @@ export function EmployeeManagement({ onBack }: { onBack?: () => void } = {}) {
       password: '',
       full_name: employee.full_name,
       role: employee.role,
-    });
+    }) as any;
     setShowModal(true);
   };
 
@@ -221,7 +221,7 @@ export function EmployeeManagement({ onBack }: { onBack?: () => void } = {}) {
         <button
           onClick={() => {
             setEditingEmployee(null);
-            setFormData({ email: '', password: '', full_name: '', role: 'staff' });
+            setFormData({ email: '', password: '', full_name: '', role: 'staff' }) as any;
             setShowModal(true);
           }}
           className="flex items-center space-x-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
@@ -347,7 +347,7 @@ export function EmployeeManagement({ onBack }: { onBack?: () => void } = {}) {
           onClick={() => {
             setShowModal(false);
             setEditingEmployee(null);
-            setFormData({ email: '', password: '', full_name: '', role: 'staff' });
+            setFormData({ email: '', password: '', full_name: '', role: 'staff' }) as any;
           }}
         >
           <div
@@ -362,7 +362,7 @@ export function EmployeeManagement({ onBack }: { onBack?: () => void } = {}) {
                 onClick={() => {
                   setShowModal(false);
                   setEditingEmployee(null);
-                  setFormData({ email: '', password: '', full_name: '', role: 'staff' });
+                  setFormData({ email: '', password: '', full_name: '', role: 'staff' }) as any;
                 }}
                 className="p-2 hover:bg-gray-100 rounded-lg"
               >
@@ -428,7 +428,7 @@ export function EmployeeManagement({ onBack }: { onBack?: () => void } = {}) {
                   onClick={() => {
                     setShowModal(false);
                     setEditingEmployee(null);
-                    setFormData({ email: '', password: '', full_name: '', role: 'staff' });
+                    setFormData({ email: '', password: '', full_name: '', role: 'staff' }) as any;
                   }}
                   className="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
                 >

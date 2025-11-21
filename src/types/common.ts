@@ -40,9 +40,9 @@ export interface Schedule {
 export interface FortuneWheelSegment {
   id: string;
   label: string;
-  points: number;
+  points?: number;
   color: string;
-  actualPoints?: number;
+  actualPoints: number;
   rewardType?: string;
   rewardValue?: number;
 }

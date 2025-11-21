@@ -41,7 +41,7 @@ export function Chat({ onBack }: { onBack?: () => void } = {}) {
   }, [messages]);
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' }) as any;
   };
 
   const fetchMessages = async () => {
@@ -50,7 +50,7 @@ export function Chat({ onBack }: { onBack?: () => void } = {}) {
         .from('chat_messages')
         .select('*')
         .order('created_at', { ascending: true })
-        .limit(100);
+        .limit(100) as { data: Array<{ id: string; user_id: string; message: string; photo_url: string | null; created_at: string }> | null; error: any };
 
       if (error) throw error;
 
@@ -60,7 +60,7 @@ export function Chat({ onBack }: { onBack?: () => void } = {}) {
             .from('profiles')
             .select('full_name, avatar_url')
             .eq('id', msg.user_id)
-            .maybeSingle();
+            .maybeSingle() as { data: { full_name: string; avatar_url: string | null } | null; error: any };
 
           return {
             ...msg,
@@ -85,16 +85,16 @@ export function Chat({ onBack }: { onBack?: () => void } = {}) {
           schema: 'public',
           table: 'chat_messages',
         },
-        async (payload) => {
+        async (payload: any) => {
           if (payload.eventType === 'INSERT') {
             const { data: profileData } = await supabase
               .from('profiles')
               .select('full_name, avatar_url')
-              .eq('id', payload.new.user_id)
-              .maybeSingle();
+              .eq('id', (payload.new as any).user_id)
+              .maybeSingle() as { data: { full_name: string; avatar_url: string | null } | null; error: any };
 
             const newMessage = {
-              ...payload.new,
+              ...(payload.new as any),
               profiles: profileData
             };
 
@@ -145,7 +145,7 @@ export function Chat({ onBack }: { onBack?: () => void } = {}) {
         user_id: profile.id,
         message: messageContent || '[Photo]',
         photo_url: photoUrl,
-      }]);
+      }] as any);
 
       if (error) throw error;
 
@@ -198,10 +198,10 @@ export function Chat({ onBack }: { onBack?: () => void } = {}) {
     const isToday = date.toDateString() === now.toDateString();
 
     if (isToday) {
-      return toLocaleTimeStringCambodia(date, 'de-DE', { hour: '2-digit', minute: '2-digit' });
+      return toLocaleTimeStringCambodia(date, 'de-DE', { hour: '2-digit', minute: '2-digit' }) as any;
     } else {
       return toLocaleDateStringCambodia(date, 'de-DE', { day: '2-digit', month: '2-digit' }) + ' ' +
-             toLocaleTimeStringCambodia(date, 'de-DE', { hour: '2-digit', minute: '2-digit' });
+             toLocaleTimeStringCambodia(date, 'de-DE', { hour: '2-digit', minute: '2-digit' }) as any;
     }
   };
 

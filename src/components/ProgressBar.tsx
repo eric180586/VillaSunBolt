@@ -91,7 +91,7 @@ export function ProgressBar() {
             userShiftType = todayShift.shift as 'morning' | 'late';
           }
         }
-      });
+      }) as any;
 
       if (!userIsScheduled) {
         setDisplayTime('--:--');
@@ -108,7 +108,7 @@ export function ProgressBar() {
         // Compare just the date part (YYYY-MM-DD)
         const taskDueDate = new Date(t.due_date).toISOString().split('T')[0];
         return taskDueDate === todayStr;
-      });
+      }) as any;
 
       // Calculate minutes for current user based on their shift
       let minutesForCurrentUser = 0;
@@ -135,7 +135,7 @@ export function ProgressBar() {
         } else if (!task.assigned_to && !task.helper_id) {
           minutesForCurrentUser += scheduledCount > 0 ? duration / scheduledCount : duration;
         }
-      });
+      }) as any;
 
       const totalWithBuffer = minutesForCurrentUser + 120;
 

@@ -8,6 +8,7 @@ interface WheelSegment {
   rewardType: 'bonus_points';
   rewardValue: number;
   actualPoints: number;
+  points?: number;
   color: string;
   icon: React.ElementType;
 }
@@ -151,7 +152,7 @@ export function FortuneWheel({ onClose, onSpinComplete }: FortuneWheelProps) {
         const newRotation = (prev + 15) % 360;
         setRotation(prev + 15);
         return newRotation;
-      });
+      }) as any;
     }, 50);
 
     setSpinInterval(interval);
@@ -159,7 +160,7 @@ export function FortuneWheel({ onClose, onSpinComplete }: FortuneWheelProps) {
 
   const getRewardDescription = (segment: WheelSegment) => {
     const plural = segment.rewardValue !== 1 ? 's' : '';
-    return t('fortuneWheel.rewardDescription', { points: segment.rewardValue, plural });
+    return t('fortuneWheel.rewardDescription', { points: segment.rewardValue, plural }) as any;
   };
 
   return (

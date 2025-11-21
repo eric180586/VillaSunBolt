@@ -46,7 +46,7 @@ export function useNotifications() {
           .from('notifications_translated')
           .select('*')
           .eq('id', payload.new.id)
-          .single();
+          .single() as any;
 
         const notificationToAdd = translatedNotification || payload.new;
         setNotifications((current) => [notificationToAdd as Notification, ...current]);

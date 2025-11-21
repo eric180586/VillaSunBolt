@@ -77,7 +77,7 @@ export default function QuizGame({ onClose }: QuizGameProps) {
             return 0;
           }
           return prev - 100;
-        });
+        }) as any;
       }, 100);
 
       return () => clearInterval(timer);
@@ -107,7 +107,7 @@ export default function QuizGame({ onClose }: QuizGameProps) {
         position: 0,
         points: 0,
         color: PLAYER_COLORS[i],
-      });
+      }) as any;
     }
     setPlayers(newPlayers);
     setGameState('playing');
@@ -156,12 +156,12 @@ export default function QuizGame({ onClose }: QuizGameProps) {
         updated[activePlayer].position = Math.min(BOARD_SIZE, updated[activePlayer].position + fieldsToMove);
         updated[activePlayer].points += currentQuestion.points_value;
         return updated;
-      });
+      }) as any;
 
       setShowFeedback({
         correct: true,
         message: `Correct! +${fieldsToMove} fields, +${currentQuestion.points_value} points!`,
-      });
+      }) as any;
 
       setTimeout(() => {
         if (players[activePlayer].position + fieldsToMove >= BOARD_SIZE) {
@@ -174,7 +174,7 @@ export default function QuizGame({ onClose }: QuizGameProps) {
       setShowFeedback({
         correct: false,
         message: 'Wrong answer! Next question...',
-      });
+      }) as any;
 
       setTimeout(() => {
         loadNextQuestion();
@@ -186,7 +186,7 @@ export default function QuizGame({ onClose }: QuizGameProps) {
     setShowFeedback({
       correct: false,
       message: 'Time\'s up! Next question...',
-    });
+    }) as any;
 
     setTimeout(() => {
       loadNextQuestion();
@@ -220,7 +220,7 @@ export default function QuizGame({ onClose }: QuizGameProps) {
           winner_id: winner.id === profile?.id ? winner.id : null,
           points_awarded: players.reduce((acc, p) => ({ ...acc, [p.id]: p.points }), {}),
           completed_at: new Date().toISOString(),
-        });
+        }) as any;
 
       if (sessionError) throw sessionError;
 
@@ -228,7 +228,7 @@ export default function QuizGame({ onClose }: QuizGameProps) {
         .from('quiz_highscores')
         .select('*')
         .eq('profile_id', profile?.id)
-        .maybeSingle();
+        .maybeSingle() as any;
 
       const isWinner = winner.id === profile?.id;
       const currentPlayer = players.find(p => p.id === profile?.id);
@@ -254,7 +254,7 @@ export default function QuizGame({ onClose }: QuizGameProps) {
             total_points: currentPlayer?.points || 0,
             best_score: currentPlayer?.points || 0,
             updated_at: new Date().toISOString(),
-          });
+          }) as any;
       }
 
       if (isWinner && currentPlayer) {
@@ -262,7 +262,7 @@ export default function QuizGame({ onClose }: QuizGameProps) {
           p_profile_id: profile?.id,
           p_points: Math.floor(currentPlayer.points / 2),
           p_reason: `Quiz Game Champion - ${currentPlayer.points} points!`,
-        });
+        }) as any;
       }
     } catch (error) {
       console.error('Error saving game results:', error);

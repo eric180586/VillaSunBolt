@@ -31,7 +31,7 @@ export function EndOfDayRequest() {
         .in('status', ['approved', 'pending'])
         .order('check_in_time', { ascending: false })
         .limit(1)
-        .maybeSingle();
+        .maybeSingle() as any;
 
       if (error) {
         console.error('[EndOfDayRequest] Error fetching check-in:', error);
@@ -84,7 +84,7 @@ export function EndOfDayRequest() {
         user_id: profile.id,
         shift_date: today.toISOString().split('T')[0],
         shift_type: shiftType as 'früh' | 'spät',
-      });
+      }) as any;
       console.log('[EndOfDayRequest] Request created successfully');
       setShowSuccess(true);
       setTimeout(() => setShowSuccess(false), 3000);

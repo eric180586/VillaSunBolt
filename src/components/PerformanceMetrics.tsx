@@ -211,7 +211,7 @@ export function PerformanceMetrics({ onNavigate }: PerformanceMetricsProps = {})
           .select('team_achievable_points, team_points_earned')
           .eq('goal_date', today)
           .limit(1)
-          .maybeSingle();
+          .maybeSingle() as any;
 
         if (goalsError) throw goalsError;
 
@@ -266,7 +266,7 @@ export function PerformanceMetrics({ onNavigate }: PerformanceMetricsProps = {})
           if (todayShift && (todayShift.shift === 'morning' || todayShift.shift === 'late')) {
             scheduledCount++;
           }
-        });
+        }) as any;
 
         if (scheduledCount === 0) {
           setTeamEstimatedTime(120);
@@ -315,7 +315,7 @@ export function PerformanceMetrics({ onNavigate }: PerformanceMetricsProps = {})
     const scheduleDate = new Date(s.start_time);
     scheduleDate.setHours(0, 0, 0, 0);
     return scheduleDate.getTime() === today.getTime();
-  });
+  }) as any;
 
   const currentUserSchedule = todaySchedules.find((s) => s.staff_id === profile?.id);
 

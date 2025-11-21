@@ -63,7 +63,7 @@ export function CheckIn({ onBack }: { onBack?: () => void } = {}) {
       .select('id')
       .eq('user_id', profile.id)
       .eq('spin_date', today)
-      .maybeSingle();
+      .maybeSingle() as any;
 
     const hasSpun = !error && !!data;
     setAlreadySpunToday(hasSpun);
@@ -95,7 +95,7 @@ export function CheckIn({ onBack }: { onBack?: () => void } = {}) {
         .select('id, status, check_in_date')
         .eq('user_id', profile.id)
         .eq('check_in_date', today)
-        .maybeSingle();
+        .maybeSingle() as { data: { id: string; status: string; check_in_date: string } | null; error: any };
 
       console.log('checkForMissedFortuneWheel: Check-in data:', checkInData, 'Error:', checkInError);
 
@@ -123,9 +123,9 @@ export function CheckIn({ onBack }: { onBack?: () => void } = {}) {
         .from('weekly_schedules')
         .select('shifts')
         .eq('staff_id', profile.id)
-        .eq('is_published', true);
+        .eq('is_published', true) as { data: Array<{ shifts: any }> | null; error: any };
 
-      console.log('Schedule query result:', { data, error });
+      console.log('Schedule query result:', { data, error }) as any;
 
       if (error) {
         console.error('Schedule query error:', error);
@@ -183,7 +183,7 @@ export function CheckIn({ onBack }: { onBack?: () => void } = {}) {
       .select('*')
       .eq('user_id', profile.id)
       .eq('check_in_date', today)
-      .order('check_in_time', { ascending: false});
+      .order('check_in_time', { ascending: false}) as any;
 
     if (error) {
       console.error('Error fetching check-ins:', error);
@@ -247,15 +247,15 @@ export function CheckIn({ onBack }: { onBack?: () => void } = {}) {
         user_id: profile.id,
         shift_type: mappedShiftType,
         late_reason: reason
-      });
+      }) as any;
 
       const { data, error } = await supabase.rpc('process_check_in', {
         p_user_id: profile.id,
         p_shift_type: mappedShiftType,
         p_late_reason: reason,
-      });
+      }) as any;
 
-      console.log('[CHECK-IN] RPC Response:', { data, error });
+      console.log('[CHECK-IN] RPC Response:', { data, error }) as any;
 
       if (error) {
         console.error('[CHECK-IN] RPC ERROR:', error);
@@ -336,7 +336,7 @@ export function CheckIn({ onBack }: { onBack?: () => void } = {}) {
         check_in_id: currentCheckInId,
         segment: segment,
         actualPoints: segment.actualPoints
-      });
+      }) as any;
 
       const hasSpun = await checkIfAlreadySpunToday();
       if (hasSpun) {
@@ -346,7 +346,7 @@ export function CheckIn({ onBack }: { onBack?: () => void } = {}) {
 
       const { error } = await supabase
         .from('fortune_wheel_spins')
-        .insert({
+        .insert([{
           user_id: profile.id,
           check_in_id: currentCheckInId,
           spin_date: today,
@@ -354,7 +354,7 @@ export function CheckIn({ onBack }: { onBack?: () => void } = {}) {
           reward_type: segment.rewardType,
           reward_value: segment.rewardValue,
           reward_label: segment.label,
-        });
+        }] as any);
 
       if (error) {
         console.error('Error inserting spin:', error);
@@ -369,7 +369,7 @@ export function CheckIn({ onBack }: { onBack?: () => void } = {}) {
           p_user_id: profile.id,
           p_points: segment.actualPoints,
           p_reason: `${t('fortuneWheel.title')}: ${segment.label}`,
-        });
+        }) as any;
 
         if (pointsError) {
           console.error('Error adding bonus points:', pointsError);
@@ -457,7 +457,7 @@ export function CheckIn({ onBack }: { onBack?: () => void } = {}) {
               <div className="flex items-center space-x-2">
                 <Award className="w-5 h-5 text-blue-600" />
                 <span className="font-semibold text-gray-900">
-                  {t('checkin.possiblePoints', { points: (checkInResult.points_awarded > 0 ? '+' : '') + checkInResult.points_awarded })}
+                  {t('checkin.possiblePoints', { points: (checkInResult.points_awarded && checkInResult.points_awarded > 0 ? '+' : '') + (checkInResult.points_awarded || 0) })}
                 </span>
               </div>
             </div>
@@ -575,9 +575,9 @@ export function CheckIn({ onBack }: { onBack?: () => void } = {}) {
                   {checkIn.status === 'approved' && (
                     <>
                       <span className={`text-lg font-bold ${
-                        checkIn.points_awarded > 0 ? 'text-green-600' : 'text-red-600'
+                        (checkIn.points_awarded || 0) > 0 ? 'text-green-600' : 'text-red-600'
                       }`}>
-                        {checkIn.points_awarded > 0 ? '+' : ''}{checkIn.points_awarded}
+                        {(checkIn.points_awarded || 0) > 0 ? '+' : ''}{checkIn.points_awarded || 0}
                       </span>
                       <p className="text-xs text-gray-600">{t('common.points')}</p>
                     </>
@@ -585,7 +585,7 @@ export function CheckIn({ onBack }: { onBack?: () => void } = {}) {
                   {checkIn.status === 'pending' && (
                     <>
                       <span className="text-lg font-bold text-gray-400">
-                        {checkIn.points_awarded > 0 ? '+' : ''}{checkIn.points_awarded}
+                        {(checkIn.points_awarded || 0) > 0 ? '+' : ''}{checkIn.points_awarded || 0}
                       </span>
                       <p className="text-xs text-gray-600">{t('checkin.possible')}</p>
                     </>

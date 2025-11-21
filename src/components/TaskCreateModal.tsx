@@ -52,7 +52,7 @@ export function TaskCreateModal({ onClose, onComplete, profiles, editingTask }: 
     is_template: false,
     recurrence: 'one_time',
     has_items: false,
-  });
+  }) as any;
 
   const [items, setItems] = useState<string[]>(['']);
   const [photoSettings, setPhotoSettings] = useState({
@@ -60,7 +60,7 @@ export function TaskCreateModal({ onClose, onComplete, profiles, editingTask }: 
     photo_required_sometimes: false,
     photo_optional: false,
     photo_explanation_text: '',
-  });
+  }) as any;
   const [descriptionPhotos, setDescriptionPhotos] = useState<File[]>([]);
   const [loading, setLoading] = useState(false);
 
@@ -84,7 +84,7 @@ export function TaskCreateModal({ onClose, onComplete, profiles, editingTask }: 
         is_template: editingTask.is_template || false,
         recurrence: editingTask.recurrence || 'one_time',
         has_items: editingTask.items && editingTask.items.length > 0,
-      });
+      }) as any;
 
       if (editingTask.items && editingTask.items.length > 0) {
         setItems(editingTask.items.map((item: any) => item.text));
@@ -95,7 +95,7 @@ export function TaskCreateModal({ onClose, onComplete, profiles, editingTask }: 
         photo_required_sometimes: editingTask.photo_required_sometimes || false,
         photo_optional: editingTask.photo_optional || false,
         photo_explanation_text: editingTask.photo_explanation_text || '',
-      });
+      }) as any;
     }
   }, [editingTask]);
 
@@ -362,9 +362,9 @@ export function TaskCreateModal({ onClose, onComplete, profiles, editingTask }: 
                     checked={formData.assigned_to.includes(p.id)}
                     onChange={(e) => {
                       if (e.target.checked) {
-                        setFormData({ ...formData, assigned_to: [...formData.assigned_to, p.id] });
+                        setFormData({ ...formData, assigned_to: [...formData.assigned_to, p.id] }) as any;
                       } else {
-                        setFormData({ ...formData, assigned_to: formData.assigned_to.filter(id => id !== p.id) });
+                        setFormData({ ...formData, assigned_to: formData.assigned_to.filter(id => id !== p.id) }) as any;
                       }
                     }}
                     className="w-4 h-4 text-purple-600"

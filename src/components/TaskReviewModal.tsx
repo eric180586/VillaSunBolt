@@ -63,7 +63,7 @@ export function TaskReviewModal({ task, onClose, onComplete }: TaskReviewModalPr
         p_admin_photos: photoUrls,
         p_admin_notes: adminNotes,
         p_bonus_points: bonusPoints
-      });
+      }) as any;
 
       if (error) throw error;
       onComplete();
@@ -94,7 +94,7 @@ export function TaskReviewModal({ task, onClose, onComplete }: TaskReviewModalPr
         p_admin_photos: photoUrls,
         p_admin_notes: adminNotes,
         p_bonus_points: 0
-      });
+      }) as any;
 
       if (error) throw error;
       onComplete();

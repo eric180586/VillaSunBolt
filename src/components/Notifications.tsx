@@ -18,14 +18,14 @@ export function Notifications({ onBack }: { onBack?: () => void } = {}) {
         newSet.add(noteId);
       }
       return newSet;
-    });
+    }) as any;
   };
 
   const todayNotes = notes.filter((note) => {
     const noteDate = new Date(note.created_at);
     const today = new Date();
     return noteDate.toDateString() === today.toDateString();
-  });
+  }) as any;
 
   const getTypeColor = (type: string) => {
     switch (type) {

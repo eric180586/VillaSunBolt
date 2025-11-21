@@ -21,7 +21,7 @@ export function NotesPopup({ onClose }: NotesPopupProps) {
       noteDate.getTime() === today.getTime() &&
       (note.is_important || note.category === 'important' || note.category === 'announcement')
     );
-  });
+  }) as any;
 
   useEffect(() => {
     if (importantNotes.length === 0) {

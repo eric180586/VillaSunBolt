@@ -51,7 +51,7 @@ export function useDailyPointGoals(userId?: string, date?: string) {
         .select('*')
         .eq('user_id', userId)
         .eq('goal_date', targetDate)
-        .maybeSingle();
+        .maybeSingle() as any;
 
       if (fetchError) throw fetchError;
 

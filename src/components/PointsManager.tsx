@@ -35,8 +35,8 @@ export function PointsManager({ onBack }: { onBack?: () => void } = {}) {
     points: 0,
     reason: '',
     category: 'general',
-  });
-  const [monthlyPoints, setMonthlyPoints] = useState<MonthlyPoints>({});
+  }) as any;
+  const [monthlyPoints, setMonthlyPoints] = useState<MonthlyPoints>({}) as any;
 
   const staffProfiles = profiles.filter((p) => p.role !== 'admin');
 
@@ -99,7 +99,7 @@ export function PointsManager({ onBack }: { onBack?: () => void } = {}) {
         pointsMap[day.user_id] = 0;
       }
       pointsMap[day.user_id] += day.achieved_points;
-    });
+    }) as any;
 
     setMonthlyPoints(pointsMap);
   };
@@ -133,7 +133,7 @@ export function PointsManager({ onBack }: { onBack?: () => void } = {}) {
         setPhotoPreviews((prev) => [...prev, reader.result as string]);
       };
       reader.readAsDataURL(file);
-    });
+    }) as any;
   };
 
   const uploadPhotos = async (): Promise<string[]> => {
@@ -207,7 +207,7 @@ export function PointsManager({ onBack }: { onBack?: () => void } = {}) {
       reason: newTemplate.reason,
       category: newTemplate.category,
       created_by: profile?.id,
-    });
+    }) as any;
 
     if (error) {
       console.error('Error saving template:', error);
@@ -215,7 +215,7 @@ export function PointsManager({ onBack }: { onBack?: () => void } = {}) {
     }
 
     setShowNewTemplate(false);
-    setNewTemplate({ name: '', points: 0, reason: '', category: 'general' });
+    setNewTemplate({ name: '', points: 0, reason: '', category: 'general' }) as any;
     fetchTemplates();
   };
 
@@ -466,7 +466,7 @@ export function PointsManager({ onBack }: { onBack?: () => void } = {}) {
           className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50"
           onClick={() => {
             setShowNewTemplate(false);
-            setNewTemplate({ name: '', action_type: 'task_completion', base_points: 0, multiplier: 1, time_bonus_enabled: false, deadline_bonus_points: 0, penalty_enabled: false, late_penalty_multiplier: 0 });
+            setNewTemplate({ name: '', action_type: 'task_completion', base_points: 0, multiplier: 1, time_bonus_enabled: false, deadline_bonus_points: 0, penalty_enabled: false, late_penalty_multiplier: 0 }) as any;
           }}
         >
           <div

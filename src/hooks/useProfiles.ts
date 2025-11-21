@@ -79,7 +79,7 @@ export function useProfiles() {
         .select('achieved_points, theoretically_achievable_points')
         .eq('user_id', userId)
         .eq('goal_date', entryDate)
-        .maybeSingle();
+        .maybeSingle() as any;
 
       return {
         ...entry,

@@ -16,7 +16,7 @@ export function RepairRequestModal({ onClose, onComplete }: RepairRequestModalPr
   const [formData, setFormData] = useState({
     title: '',
     description: '',
-  });
+  }) as any;
   const [descriptionPhotos, setDescriptionPhotos] = useState<File[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -60,7 +60,7 @@ export function RepairRequestModal({ onClose, onComplete }: RepairRequestModalPr
             .getPublicUrl(filePath);
 
           return publicUrl;
-        });
+        }) as any;
 
         photoUrls = await Promise.all(uploadPromises);
       }
@@ -80,7 +80,7 @@ export function RepairRequestModal({ onClose, onComplete }: RepairRequestModalPr
         photo_proof_required: false,
         is_template: false,
         recurrence: 'one_time',
-      });
+      }) as any;
 
       if (error) throw error;
 

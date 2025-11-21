@@ -28,7 +28,7 @@ export function DepartureRequestAdmin({ onBack }: { onBack?: () => void } = {}) 
         .eq('user_id', userId)
         .eq('check_in_date', request.shift_date)
         .in('status', ['approved', 'pending'])
-        .maybeSingle();
+        .maybeSingle() as any;
 
       if (checkInError) throw checkInError;
 
@@ -70,7 +70,7 @@ export function DepartureRequestAdmin({ onBack }: { onBack?: () => void } = {}) 
           title: t('departure.departureApprovedTitle'),
           message: t('departure.departureApprovedMessage'),
           type: 'success',
-        });
+        }) as any;
 
       if (notifError) {
         console.error('Notification error:', notifError);
@@ -103,7 +103,7 @@ export function DepartureRequestAdmin({ onBack }: { onBack?: () => void } = {}) 
           title: t('departure.departureRejectedTitle'),
           message: t('departure.departureRejectedMessage'),
           type: 'error',
-        });
+        }) as any;
 
       if (notifError) {
         console.error('Notification error:', notifError);

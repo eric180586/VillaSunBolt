@@ -93,7 +93,7 @@ export function Schedules({ onNavigate, onBack }: SchedulesProps = {}) {
       const date = new Date(monday);
       date.setDate(monday.getDate() + i);
       return formatDate(date);
-    });
+    }) as any;
   }
 
   function canRequestTimeOff(): boolean {
@@ -141,7 +141,7 @@ export function Schedules({ onNavigate, onBack }: SchedulesProps = {}) {
         .select('*')
         .gte('request_date', weekDates[0])
         .lte('request_date', weekDates[6])
-        .order('created_at', { ascending: false });
+        .order('created_at', { ascending: false }) as any;
 
       if (error) throw error;
       setTimeOffRequests(data || []);
@@ -178,7 +178,7 @@ export function Schedules({ onNavigate, onBack }: SchedulesProps = {}) {
         date: weekDates[index],
         shift: 'off' as ShiftType,
       };
-    });
+    }) as any;
 
     try {
       const weekStart = formatDate(currentWeekStart);
@@ -200,7 +200,7 @@ export function Schedules({ onNavigate, onBack }: SchedulesProps = {}) {
           shifts: newShifts,
           is_published: false,
           created_by: profile?.id,
-        });
+        }) as any;
 
         if (error) throw error;
       }
@@ -274,7 +274,7 @@ export function Schedules({ onNavigate, onBack }: SchedulesProps = {}) {
         request_date: selectedDate,
         reason: timeOffReason,
         status: 'pending',
-      });
+      }) as any;
 
       if (error) throw error;
 
@@ -315,7 +315,7 @@ export function Schedules({ onNavigate, onBack }: SchedulesProps = {}) {
         title: 'Time-Off Approved',
         message: `Your time-off request for ${new Date(request.request_date).toLocaleDateString()} has been approved`,
         type: 'schedule',
-      });
+      }) as any;
 
       await loadTimeOffRequests();
       setSelectedRequest(null);
@@ -348,7 +348,7 @@ export function Schedules({ onNavigate, onBack }: SchedulesProps = {}) {
         title: 'Time-Off Rejected',
         message: `Your time-off request for ${new Date(request.request_date).toLocaleDateString()} was not approved. Reason: ${rejectionReason}`,
         type: 'schedule',
-      });
+      }) as any;
 
       await loadTimeOffRequests();
       setSelectedRequest(null);

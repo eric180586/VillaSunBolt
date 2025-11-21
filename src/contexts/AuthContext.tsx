@@ -38,7 +38,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       } else {
         setLoading(false);
       }
-    });
+    }) as any;
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       (async () => {
@@ -53,7 +53,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           setLoading(false);
         }
       })();
-    });
+    }) as any;
 
     return () => {
       mounted = false;
@@ -67,7 +67,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         .from('profiles')
         .select('*')
         .eq('id', userId)
-        .maybeSingle();
+        .maybeSingle() as any;
 
       if (error) throw error;
 
@@ -98,7 +98,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
               })
               .catch((error) => {
                 console.log('Push notification check skipped:', error.message || error);
-              });
+              }) as any;
           } else {
             console.log('Push notifications not supported on this browser');
           }
@@ -119,7 +119,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const { error } = await supabase.auth.signInWithPassword({
       email,
       password,
-    });
+    }) as any;
     if (error) throw error;
   };
 
@@ -127,7 +127,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
-    });
+    }) as any;
     if (error) throw error;
 
     if (data.user) {
@@ -138,7 +138,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           email: data.user.email!,
           full_name: fullName,
           role: 'staff',
-        });
+        }) as any;
       if (profileError) throw profileError;
     }
   };
@@ -178,7 +178,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       i18n.changeLanguage(language);
 
       if (profile) {
-        setProfile({ ...profile, preferred_language: language });
+        setProfile({ ...profile, preferred_language: language }) as any;
       }
     } catch (error) {
       console.error('Error updating language:', error);

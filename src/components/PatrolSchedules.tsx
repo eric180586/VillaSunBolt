@@ -77,9 +77,9 @@ export function PatrolSchedules({ onNavigate, onBack }: PatrolSchedulesProps = {
             shift: shift as 'early' | 'late',
             assigned_to: existing?.assigned_to || null,
             staff_name: existing?.profiles?.full_name || null,
-          });
-        });
-      });
+          }) as any;
+        }) as any;
+      }) as any;
 
       setSchedules(scheduleMap);
     } catch (error) {
@@ -117,7 +117,7 @@ export function PatrolSchedules({ onNavigate, onBack }: PatrolSchedulesProps = {
             shift,
             assigned_to: nextStaff.id,
             created_by: profile?.id,
-          });
+          }) as any;
 
         if (insertError) throw insertError;
       }

@@ -21,7 +21,7 @@ export async function registerServiceWorker(): Promise<ServiceWorkerRegistration
 
     const registration = await navigator.serviceWorker.register('/service-worker.js', {
       scope: '/',
-    });
+    }) as any;
     await navigator.serviceWorker.ready;
     return registration;
   } catch (error) {
@@ -83,7 +83,7 @@ export async function subscribeToPushNotifications(
     const subscription = await registration.pushManager.subscribe({
       userVisibleOnly: true,
       applicationServerKey: urlBase64ToUint8Array(vapidKey),
-    });
+    }) as any;
 
     await savePushSubscription(userId, subscription);
     return subscription;
@@ -110,7 +110,7 @@ export async function savePushSubscription(
     p256dh: keys.p256dh,
     auth: keys.auth,
     user_agent: navigator.userAgent,
-  });
+  }) as any;
 
   if (error && error.code !== '23505') {
     console.error('Error saving push subscription:', error);
@@ -178,7 +178,7 @@ export async function sendPushNotification(params: {
 }): Promise<void> {
   const { error } = await supabase.functions.invoke('send-push-notification', {
     body: params,
-  });
+  }) as any;
 
   if (error) {
     console.error('Error sending push notification:', error);

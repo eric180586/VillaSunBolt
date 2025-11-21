@@ -19,7 +19,7 @@ export function formatDateForDisplay(date: Date | string): string {
   const formatter = new Intl.DateTimeFormat('en-US', options);
   const parts = formatter.formatToParts(d);
 
-  const getPart = (type: string) => parts.find(p => p.type === type)?.value || '';
+  const getPart = (type: string) => parts.find((p: any) => p.type === type)?.value || '';
 
   const month = getPart('month');
   const day = getPart('day');
@@ -45,7 +45,7 @@ export function formatDateTimeForDisplay(date: Date | string): string {
   const formatter = new Intl.DateTimeFormat('en-US', options);
   const parts = formatter.formatToParts(d);
 
-  const getPart = (type: string) => parts.find(p => p.type === type)?.value || '';
+  const getPart = (type: string) => parts.find((p: any) => p.type === type)?.value || '';
 
   const month = getPart('month');
   const day = getPart('day');
@@ -63,7 +63,7 @@ export function formatDateForInput(date: Date | string): string {
     year: 'numeric',
     month: '2-digit',
     day: '2-digit'
-  });
+  }) as any;
   return formatter.format(d);
 }
 
@@ -74,10 +74,10 @@ export function formatTimeForInput(date: Date | string): string {
     hour: '2-digit',
     minute: '2-digit',
     hour12: false
-  });
+  }) as any;
   const parts = formatter.formatToParts(d);
-  const hours = parts.find(p => p.type === 'hour')?.value || '00';
-  const minutes = parts.find(p => p.type === 'minute')?.value || '00';
+  const hours = parts.find((p: any) => p.type === 'hour')?.value || '00';
+  const minutes = parts.find((p: any) => p.type === 'minute')?.value || '00';
   return `${hours}:${minutes}`;
 }
 
@@ -88,7 +88,7 @@ export function getTodayDateString(): string {
     year: 'numeric',
     month: '2-digit',
     day: '2-digit'
-  });
+  }) as any;
   return formatter.format(now);
 }
 
@@ -98,7 +98,7 @@ export function isSameDay(date1: Date | string, date2: Date | string): boolean {
     year: 'numeric',
     month: '2-digit',
     day: '2-digit'
-  });
+  }) as any;
   const dateStr1 = formatter.format(new Date(date1));
   const dateStr2 = formatter.format(new Date(date2));
   return dateStr1 === dateStr2;
@@ -127,10 +127,10 @@ export function formatTimeForInputFromUTC(date: Date | string): string {
     hour: '2-digit',
     minute: '2-digit',
     hour12: false
-  });
+  }) as any;
   const parts = formatter.formatToParts(d);
-  const hours = parts.find(p => p.type === 'hour')?.value || '00';
-  const minutes = parts.find(p => p.type === 'minute')?.value || '00';
+  const hours = parts.find((p: any) => p.type === 'hour')?.value || '00';
+  const minutes = parts.find((p: any) => p.type === 'minute')?.value || '00';
   return `${hours}:${minutes}`;
 }
 
@@ -141,7 +141,7 @@ export function formatDateForInputFromUTC(date: Date | string): string {
     year: 'numeric',
     month: '2-digit',
     day: '2-digit'
-  });
+  }) as any;
   return formatter.format(d);
 }
 
@@ -156,9 +156,9 @@ export function getCurrentCambodiaTime(): Date {
     minute: '2-digit',
     second: '2-digit',
     hour12: false
-  });
+  }) as any;
   const parts = formatter.formatToParts(now);
-  const getPart = (type: string) => parts.find(p => p.type === type)?.value || '0';
+  const getPart = (type: string) => parts.find((p: any) => p.type === type)?.value || '0';
 
   const year = parseInt(getPart('year'));
   const month = parseInt(getPart('month')) - 1;
@@ -180,7 +180,7 @@ export function formatCambodiaDateTime(date: Date | string): string {
     hour: '2-digit',
     minute: '2-digit',
     hour12: false
-  });
+  }) as any;
   return formatter.format(d);
 }
 
@@ -191,7 +191,7 @@ export function formatCambodiaDate(date: Date | string): string {
     year: 'numeric',
     month: '2-digit',
     day: '2-digit'
-  });
+  }) as any;
   return formatter.format(d);
 }
 
@@ -202,7 +202,7 @@ export function formatCambodiaTime(date: Date | string): string {
     hour: '2-digit',
     minute: '2-digit',
     hour12: false
-  });
+  }) as any;
   return formatter.format(d);
 }
 

@@ -28,11 +28,11 @@ export function Leaderboard({ onBack, onNavigate }: { onBack?: () => void; onNav
   const { t } = useTranslation();
   const { profiles, getPointsHistory } = useProfiles();
 
-  const staffProfiles = profiles.filter((p) => p.role !== 'admin');
+  const staffProfiles = profiles.filter((p: any) => p.role !== 'admin');
   const [historyUserId, setHistoryUserId] = useState<string | null>(null);
   const [history, setHistory] = useState<any[]>([]);
   const [dailyGoals, setDailyGoals] = useState<DailyGoal[]>([]);
-  const [monthlyStats, setMonthlyStats] = useState<Record<string, MonthlyStats>>({});
+  const [monthlyStats, setMonthlyStats] = useState<Record<string, MonthlyStats>>({}) as any;
   const [loading, setLoading] = useState(true);
 
   const isManager = profile?.role === 'admin' || profile?.role === 'manager';
@@ -68,7 +68,7 @@ export function Leaderboard({ onBack, onNavigate }: { onBack?: () => void; onNav
 
       // Aggregate monthly stats per user
       const statsMap: Record<string, MonthlyStats> = {};
-      monthlyData?.forEach((day) => {
+      monthlyData?.forEach((day: any) => {
         if (!statsMap[day.user_id]) {
           statsMap[day.user_id] = {
             totalAchievable: 0,
@@ -80,7 +80,7 @@ export function Leaderboard({ onBack, onNavigate }: { onBack?: () => void; onNav
         statsMap[day.user_id].totalAchievable += day.theoretically_achievable_points;
         statsMap[day.user_id].totalAchieved += day.achieved_points;
         statsMap[day.user_id].daysCount += 1;
-      });
+      }) as any;
 
       // Calculate percentages
       Object.keys(statsMap).forEach((userId) => {
@@ -88,7 +88,7 @@ export function Leaderboard({ onBack, onNavigate }: { onBack?: () => void; onNav
         stats.percentage = stats.totalAchievable > 0
           ? (stats.totalAchieved / stats.totalAchievable) * 100
           : 0;
-      });
+      }) as any;
 
       setMonthlyStats(statsMap);
     } catch (error) {
@@ -245,10 +245,10 @@ export function Leaderboard({ onBack, onNavigate }: { onBack?: () => void; onNav
     const aPercent = aMonthly?.percentage || 0;
     const bPercent = bMonthly?.percentage || 0;
     return bPercent - aPercent;
-  });
+  }) as any;
 
   const myMonthlyStats = profile ? monthlyStats[profile.id] : null;
-  const myRank = sortedStaff.findIndex((p) => p.id === profile?.id) + 1;
+  const myRank = sortedStaff.findIndex((p: any) => p.id === profile?.id) + 1;
   const teamDailyGoal = dailyGoals[0];
 
   if (loading) {

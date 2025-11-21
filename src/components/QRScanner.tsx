@@ -31,7 +31,7 @@ export function QRScanner({ onScan, onClose }: QRScannerProps) {
         (decodedText) => {
           scanner.stop().then(() => {
             onScan(decodedText);
-          });
+          }) as any;
         },
         () => {
         }
@@ -43,7 +43,7 @@ export function QRScanner({ onScan, onClose }: QRScannerProps) {
       .catch((err) => {
         console.error('Scanner error:', err);
         setError('Kamera-Zugriff verweigert oder nicht verfügbar');
-      });
+      }) as any;
 
     return () => {
       if (scanner.isScanning) {
@@ -56,7 +56,7 @@ export function QRScanner({ onScan, onClose }: QRScannerProps) {
     if (scannerRef.current && scannerRef.current.isScanning) {
       scannerRef.current.stop().then(() => {
         onClose();
-      });
+      }) as any;
     } else {
       onClose();
     }

@@ -72,7 +72,7 @@ export function useTasks() {
   };
 
   const updateTask = async (id: string, updates: TaskUpdate) => {
-    const { data, error } = await supabase.from('tasks').update(updates).eq('id', id).select();
+    const { data, error } = await supabase.from('tasks').update(updates).eq('id', id).select() as any;
     if (error) {
       console.error('Error updating task:', error);
       throw error;
@@ -85,7 +85,7 @@ export function useTasks() {
     if (error) throw error;
   };
 
-  const completeTask = async (taskId: string, userId: string) => {
+  const completeTask = async (taskId: string, _userId: string) => {
     const task = tasks.find((t) => t.id === taskId);
     if (!task) return;
 

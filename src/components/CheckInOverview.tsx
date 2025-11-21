@@ -96,7 +96,7 @@ export function CheckInOverview({ onBack, onNavigate }: CheckInOverviewProps = {
       const { data: allSchedules, error: schedError } = await supabase
         .from('weekly_schedules')
         .select('staff_id, shifts')
-        .eq('is_published', true);
+        .eq('is_published', true) as any;
 
       if (schedError) {
         console.error('[CheckInOverview] Schedule error:', schedError);
@@ -108,7 +108,7 @@ export function CheckInOverview({ onBack, onNavigate }: CheckInOverviewProps = {
       const { data: allCheckIns, error: checkError } = await supabase
         .from('check_ins')
         .select('*')
-        .eq('check_in_date', today);
+        .eq('check_in_date', today) as any;
 
       if (checkError) {
         console.error('[CheckInOverview] Check-in error:', checkError);
@@ -124,7 +124,7 @@ export function CheckInOverview({ onBack, onNavigate }: CheckInOverviewProps = {
         .from('departure_requests')
         .select('*')
         .gte('request_time', todayStartTs)
-        .lte('request_time', todayEndTs);
+        .lte('request_time', todayEndTs) as any;
 
       if (depError) {
         console.error('[CheckInOverview] Departure error:', depError);
@@ -138,7 +138,7 @@ export function CheckInOverview({ onBack, onNavigate }: CheckInOverviewProps = {
       for (const staffProfile of staffProfiles) {
         console.log('[CheckInOverview] Processing:', staffProfile.full_name);
 
-        const staffSchedules = allSchedules?.filter(s => s.staff_id === staffProfile.id) || [];
+        const staffSchedules = allSchedules?.filter((s: any) => s.staff_id === staffProfile.id) || [];
 
         let todayShift = null;
         for (const schedule of staffSchedules) {
@@ -150,9 +150,9 @@ export function CheckInOverview({ onBack, onNavigate }: CheckInOverviewProps = {
         }
 
         const hasSchedule = todayShift && todayShift.shift !== 'off';
-        const checkIn = allCheckIns?.find(c => c.user_id === staffProfile.id);
+        const checkIn = allCheckIns?.find((c: any) => c.user_id === staffProfile.id);
 
-        const userDepartureRequests = allDepartureRequests?.filter(d => d.user_id === staffProfile.id) || [];
+        const userDepartureRequests = allDepartureRequests?.filter((d: any) => d.user_id === staffProfile.id) || [];
         const departureRequest = userDepartureRequests.length > 0
           ? userDepartureRequests.sort((a: any, b: any) =>
               new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
@@ -175,7 +175,7 @@ export function CheckInOverview({ onBack, onNavigate }: CheckInOverviewProps = {
           has_departure_request: !!departureRequest,
           departure_status: departureRequest?.status || null,
           departure_request_id: departureRequest?.id || null,
-        });
+        }) as any;
       }
 
       console.log('[CheckInOverview] Statuses built successfully:', statuses.length);
@@ -192,11 +192,11 @@ export function CheckInOverview({ onBack, onNavigate }: CheckInOverviewProps = {
     return null;
   }
 
-  const scheduledStaff = checkInStatuses.filter(s => s.has_schedule);
-  const checkedInCount = scheduledStaff.filter(s => s.checked_in).length;
-  const missingCount = scheduledStaff.filter(s => !s.checked_in).length;
-  const lateCount = scheduledStaff.filter(s => s.checked_in && s.is_late).length;
-  const pendingCount = scheduledStaff.filter(s => s.checked_in && s.status === 'pending').length;
+  const scheduledStaff = checkInStatuses.filter((s: any) => s.has_schedule);
+  const checkedInCount = scheduledStaff.filter((s: any) => s.checked_in).length;
+  const missingCount = scheduledStaff.filter((s: any) => !s.checked_in).length;
+  const lateCount = scheduledStaff.filter((s: any) => s.checked_in && s.is_late).length;
+  const pendingCount = scheduledStaff.filter((s: any) => s.checked_in && s.status === 'pending').length;
 
   const getStatusIcon = (status: CheckInStatus) => {
     if (!status.has_schedule) {
@@ -232,7 +232,7 @@ export function CheckInOverview({ onBack, onNavigate }: CheckInOverviewProps = {
           status: 'approved',
           admin_id: profile?.id,
           processed_at: now,
-        })
+        } as any)
         .eq('id', requestId);
 
       if (updateError) {
@@ -251,7 +251,7 @@ export function CheckInOverview({ onBack, onNavigate }: CheckInOverviewProps = {
         .eq('user_id', userId)
         .gte('check_in_time', todayStart)
         .lte('check_in_time', todayEnd)
-        .maybeSingle();
+        .maybeSingle() as any;
 
       if (checkInFetchError || !checkIn) {
         console.error('Could not find check-in:', checkInFetchError);
@@ -265,7 +265,7 @@ export function CheckInOverview({ onBack, onNavigate }: CheckInOverviewProps = {
           .update({
             checkout_time: now,
             work_hours: Math.round(workHours * 100) / 100,
-          })
+          } as any)
           .eq('id', checkIn.id);
 
         if (checkInUpdateError) {
@@ -275,12 +275,12 @@ export function CheckInOverview({ onBack, onNavigate }: CheckInOverviewProps = {
 
       const { error: notifError } = await supabase
         .from('notifications')
-        .insert({
+        .insert([{
           user_id: userId,
           title: t('departure.departureApprovedTitle'),
           message: t('departure.departureApprovedMessage'),
           type: 'success',
-        });
+        }] as any);
 
       if (notifError) {
         console.error('Notification error:', notifError);
@@ -293,7 +293,7 @@ export function CheckInOverview({ onBack, onNavigate }: CheckInOverviewProps = {
     }
   };
 
-  const handleApproveCheckIn = async (checkInId: string, userId: string) => {
+  const handleApproveCheckIn = async (checkInId: string) => {
     if (!profile?.id) return;
 
     try {
@@ -301,7 +301,7 @@ export function CheckInOverview({ onBack, onNavigate }: CheckInOverviewProps = {
         p_check_in_id: checkInId,
         p_admin_id: profile.id,
         p_custom_points: null,
-      });
+      }) as any;
 
       if (error) throw error;
 
@@ -312,7 +312,7 @@ export function CheckInOverview({ onBack, onNavigate }: CheckInOverviewProps = {
     }
   };
 
-  const handleRejectCheckIn = async (checkInId: string, userId: string) => {
+  const handleRejectCheckIn = async (checkInId: string) => {
     if (!profile?.id) return;
 
     const reason = prompt('Grund für Ablehnung:');
@@ -323,7 +323,7 @@ export function CheckInOverview({ onBack, onNavigate }: CheckInOverviewProps = {
         p_check_in_id: checkInId,
         p_admin_id: profile.id,
         p_reason: reason,
-      });
+      }) as any;
 
       if (error) throw error;
 
@@ -342,7 +342,7 @@ export function CheckInOverview({ onBack, onNavigate }: CheckInOverviewProps = {
           status: 'rejected',
           admin_id: profile?.id,
           processed_at: new Date().toISOString(),
-        })
+        } as any)
         .eq('id', requestId);
 
       if (updateError) {
@@ -353,12 +353,12 @@ export function CheckInOverview({ onBack, onNavigate }: CheckInOverviewProps = {
 
       const { error: notifError } = await supabase
         .from('notifications')
-        .insert({
+        .insert([{
           user_id: userId,
           title: t('departure.departureRejectedTitle'),
           message: t('departure.departureRejectedMessage'),
           type: 'error',
-        });
+        }] as any);
 
       if (notifError) {
         console.error('Notification error:', notifError);

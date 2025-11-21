@@ -21,7 +21,7 @@ export function MonthlyPointsOverview() {
   const [selectedMonth, setSelectedMonth] = useState(() => {
     const now = new Date();
     return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
-  });
+  }) as any;
 
   useEffect(() => {
     fetchMonthlyGoals();
@@ -54,7 +54,7 @@ export function MonthlyPointsOverview() {
         .from('monthly_point_goals')
         .select('*')
         .eq('month', selectedMonth)
-        .order('percentage', { ascending: false });
+        .order('percentage', { ascending: false }) as any;
 
       if (error) throw error;
 
@@ -68,7 +68,7 @@ export function MonthlyPointsOverview() {
 
   const refreshMonthlyGoals = async () => {
     try {
-      await supabase.rpc('update_all_monthly_point_goals', { p_month: selectedMonth });
+      await supabase.rpc('update_all_monthly_point_goals', { p_month: selectedMonth }) as any;
       await fetchMonthlyGoals();
     } catch (error) {
       console.error('Error refreshing monthly goals:', error);
@@ -117,7 +117,7 @@ export function MonthlyPointsOverview() {
   };
 
   const teamColor = getTeamColor();
-  const monthName = new Date(selectedMonth + '-01').toLocaleDateString('de-DE', { month: 'long', year: 'numeric' });
+  const monthName = new Date(selectedMonth + '-01').toLocaleDateString('de-DE', { month: 'long', year: 'numeric' }) as any;
 
   return (
     <div className="space-y-6">

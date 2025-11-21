@@ -14,7 +14,7 @@ interface PatrolLocation {
 
 export function PatrolQRCodes({}: { onBack?: () => void } = {}) {
   const [locations, setLocations] = useState<PatrolLocation[]>([]);
-  const [qrCodeURLs, setQrCodeURLs] = useState<{ [key: string]: string }>({});
+  const [qrCodeURLs, setQrCodeURLs] = useState<{ [key: string]: string }>({}) as any;
 
   useEffect(() => {
     loadLocations();
@@ -23,7 +23,7 @@ export function PatrolQRCodes({}: { onBack?: () => void } = {}) {
   useEffect(() => {
     locations.forEach((location) => {
       generateQRCode(location.qr_code, location.id);
-    });
+    }) as any;
   }, [locations]);
 
   const loadLocations = async () => {
@@ -49,7 +49,7 @@ export function PatrolQRCodes({}: { onBack?: () => void } = {}) {
           dark: '#000000',
           light: '#FFFFFF',
         },
-      });
+      }) as any;
       setQrCodeURLs((prev) => ({ ...prev, [locationId]: url }));
     } catch (error) {
       console.error('Error generating QR code:', error);
@@ -73,7 +73,7 @@ export function PatrolQRCodes({}: { onBack?: () => void } = {}) {
       setTimeout(() => {
         downloadQRCode(location.id, location.name);
       }, location.order_index * 500);
-    });
+    }) as any;
   };
 
   return (
