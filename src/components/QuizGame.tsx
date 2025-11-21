@@ -35,7 +35,7 @@ const BOARD_SIZE = 30;
 const MAX_RESPONSE_TIME = 5000;
 
 export default function QuizGame({ onClose }: QuizGameProps) {
-  const { t } = useTranslation();
+  const { t: _t } = useTranslation();
   const { profile } = useAuth();
   const [gameState, setGameState] = useState<'setup' | 'playing' | 'question' | 'winner'>('setup');
   const [playerCount, setPlayerCount] = useState(2);

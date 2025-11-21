@@ -111,10 +111,6 @@ export function CheckInPopup({ onClose }: CheckInPopupProps) {
     onClose();
   };
 
-  const _handleFortuneWheelComplete = () => {
-    setShowFortuneWheel(false);
-    onClose();
-  };
 
 
   return (

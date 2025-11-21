@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { X, Upload, CheckCircle, XCircle } from 'lucide-react';
-import { TaskItemsList } from './TaskItemsList';
+import { X, CheckCircle, XCircle } from 'lucide-react';
+// TaskItemsList unused - imported but not used
 import { supabase } from '../lib/supabase';
 import { useTranslation } from 'react-i18next';
 

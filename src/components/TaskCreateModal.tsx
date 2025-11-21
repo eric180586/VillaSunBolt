@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { X, Plus, Trash2, Upload } from 'lucide-react';
+import { X, Plus, Trash2 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { combineDateAndTime, getTodayDateString } from '../lib/dateUtils';
 import { useTranslation } from 'react-i18next';

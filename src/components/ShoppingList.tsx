@@ -23,7 +23,7 @@ interface ShoppingItem {
 }
 
 export function ShoppingList({ onBack }: { onBack?: () => void } = {}) {
-  const { t } = useTranslation();
+  const { t: _t } = useTranslation();
   const { profile } = useAuth();
   const [items, setItems] = useState<ShoppingItem[]>([]);
   const [showModal, setShowModal] = useState(false);
@@ -39,7 +39,7 @@ export function ShoppingList({ onBack }: { onBack?: () => void } = {}) {
   useEffect(() => {
     loadItems();
 
-    const _channel = supabase
+    const channel = supabase
       .channel(`shopping_items_${Date.now()}`)
       .on(
         'postgres_changes',
@@ -59,7 +59,7 @@ export function ShoppingList({ onBack }: { onBack?: () => void } = {}) {
     };
   }, []);
 
-  const _loadItems = async () => {
+  const loadItems = async () => {
     try {
       const { data, error } = await supabase
         .from('shopping_items')
@@ -78,10 +78,10 @@ export function ShoppingList({ onBack }: { onBack?: () => void } = {}) {
     }
   };
 
-  const _uploadPhoto = async (file: File): Promise<string> => {
-    const _fileExt = file.name.split('.').pop();
-    const _fileName = `${Math.random()}.${fileExt}`;
-    const _filePath = `shopping/${fileName}`;
+  const uploadPhoto = async (file: File): Promise<string> => {
+    const fileExt = file.name.split('.').pop();
+    const fileName = `${Math.random()}.${fileExt}`;
+    const filePath = `shopping/${fileName}`;
 
     const { error: uploadError } = await supabase.storage
       .from('task-photos')
@@ -96,7 +96,7 @@ export function ShoppingList({ onBack }: { onBack?: () => void } = {}) {
     return data.publicUrl;
   };
 
-  const _handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
@@ -126,7 +126,7 @@ export function ShoppingList({ onBack }: { onBack?: () => void } = {}) {
     }
   };
 
-  const _handleTogglePurchased = async (item: ShoppingItem) => {
+  const handleTogglePurchased = async (item: ShoppingItem) => {
     try {
       const { error } = await supabase
         .from('shopping_items')
@@ -143,7 +143,7 @@ export function ShoppingList({ onBack }: { onBack?: () => void } = {}) {
     }
   };
 
-  const _handleDelete = async (itemId: string) => {
+  const handleDelete = async (itemId: string) => {
     if (!confirm('Delete this item?')) return;
 
     try {
@@ -158,8 +158,8 @@ export function ShoppingList({ onBack }: { onBack?: () => void } = {}) {
     }
   };
 
-  const _pendingItems = items.filter((item) => !item.is_purchased);
-  const _purchasedItems = items.filter((item) => item.is_purchased);
+  const pendingItems = items.filter((item) => !item.is_purchased);
+  const purchasedItems = items.filter((item) => item.is_purchased);
 
   return (
     <div className="space-y-6">

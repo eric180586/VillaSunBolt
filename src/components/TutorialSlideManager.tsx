@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
-import { Plus, X, ChevronUp, ChevronDown, Trash2, Upload, Image as ImageIcon } from 'lucide-react';
+import { Plus, X, ChevronUp, ChevronDown, Trash2, Image as ImageIcon } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 interface TutorialSlide {

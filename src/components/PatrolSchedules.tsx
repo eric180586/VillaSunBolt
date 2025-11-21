@@ -19,7 +19,7 @@ onNavigate?: (view: string) => void;
   onBack?: () => void;
 }
 
-export function PatrolSchedules({ onNavigate, onBack }: PatrolSchedulesProps = {}) {
+export function PatrolSchedules({ onNavigate, onBack: _onBack }: PatrolSchedulesProps = {}) {
   const { t: _t } = useTranslation();
   const { profile } = useAuth();
   const { profiles } = useProfiles();

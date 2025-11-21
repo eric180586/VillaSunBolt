@@ -129,13 +129,6 @@ export function TaskCompletionModal({ task, items, onClose, onComplete, profiles
   };
 
   // Check if photo dice should be shown
-  const _checkPhotoRequirement = () => {
-    if (task.photo_proof_required) {
-      setPhotoRequired(true);
-    } else if (task.photo_required_sometimes && !photoRequired && !showDice) {
-      setShowDice(true);
-    }
-  };
 
   const staffProfiles = profiles.filter(p => p.role === 'staff' && p.id !== profile?.id);
 

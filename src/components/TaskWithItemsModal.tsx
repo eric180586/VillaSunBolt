@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { X, CheckCircle } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
@@ -11,7 +11,7 @@ interface TaskWithItemsModalProps {
   onOpenHelperPopup: () => void;
 }
 
-export function TaskWithItemsModal({ task, onClose, onComplete, onOpenHelperPopup }: TaskWithItemsModalProps) {
+export function TaskWithItemsModal({ task, onClose, onComplete: _onComplete, onOpenHelperPopup }: TaskWithItemsModalProps) {
   const { t } = useTranslation();
   const { profile } = useAuth();
   const [items, setItems] = useState(task.items || []);

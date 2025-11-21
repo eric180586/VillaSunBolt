@@ -53,7 +53,7 @@ onNavigate?: (view: string) => void;
 }
 
 export function Schedules({ onNavigate, onBack }: SchedulesProps = {}) {
-  const { t } = useTranslation();
+  const { t: _t } = useTranslation();
   const { profile } = useAuth();
   const { profiles } = useProfiles();
   const [currentWeekStart, setCurrentWeekStart] = useState<Date>(getMonday(new Date()));

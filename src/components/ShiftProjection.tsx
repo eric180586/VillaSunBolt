@@ -7,15 +7,15 @@ import { getTodayDateString } from '../lib/dateUtils';
 import { Clock } from 'lucide-react';
 
 export function ShiftProjection() {
-  const { t } = useTranslation();
+  const { t: _t } = useTranslation();
   const { profile } = useAuth();
   const { tasks } = useTasks();
   const [projectedEndTime, setProjectedEndTime] = useState<string>('');
   const [message, setMessage] = useState<string>('');
 
   useEffect(() => {
-    const _calculateProjection = async () => {
-      const _todayDateString = getTodayDateString();
+    const calculateProjection = async () => {
+      const todayDateString = getTodayDateString();
 
       // Hole alle GEPLANTEN Mitarbeiter aus weekly_schedules für heute
       const { data: weeklySchedules, error: scheduleError } = await supabase
@@ -34,8 +34,8 @@ export function ShiftProjection() {
       let userShiftType: 'morning' | 'late' | null = null;
 
       weeklySchedules?.forEach((schedule: any) => {
-        const _shiftsArray = schedule.shifts as Array<{ date: string; shift: string }>;
-        const _todayShift = shiftsArray.find((s: any) => s.date === todayDateString);
+        const shiftsArray = schedule.shifts as Array<{ date: string; shift: string }>;
+        const todayShift = shiftsArray.find((s: any) => s.date === todayDateString);
 
         if (todayShift && (todayShift.shift === 'morning' || todayShift.shift === 'late')) {
           if (todayShift.shift === 'morning') {
@@ -57,15 +57,15 @@ export function ShiftProjection() {
       }
 
       // Use the count for the user's shift type
-      const _scheduledCount = userShiftType === 'morning' ? scheduledCountEarly : scheduledCountLate;
+      const scheduledCount = userShiftType === 'morning' ? scheduledCountEarly : scheduledCountLate;
 
       // Hole alle offenen Tasks von heute (due today, not just created today)
-      const _todayTasks = tasks.filter((t) => {
+      const todayTasks = tasks.filter((t) => {
         if (t.status === 'completed' || t.status === 'cancelled' || t.status === 'archived') return false;
         if (!t.due_date) return false;
 
         // Compare due_date (YYYY-MM-DD)
-        const _taskDueDate = new Date(t.due_date).toISOString().split('T')[0];
+        const taskDueDate = new Date(t.due_date).toISOString().split('T')[0];
         return taskDueDate === todayDateString;
       }) as any;
 
@@ -73,12 +73,12 @@ export function ShiftProjection() {
       let minutesForCurrentUser = 0;
 
       todayTasks.forEach((task: any) => {
-        const _duration = task.duration_minutes || 0;
+        const duration = task.duration_minutes || 0;
 
         // Skip tasks that are for the opposite shift
-        const _taskTitle = (task.title || '').toLowerCase();
-        const _isLateShiftTask = taskTitle.includes('late') || taskTitle.includes('spät');
-        const _isEarlyShiftTask = taskTitle.includes('morning') || taskTitle.includes('früh');
+        const taskTitle = (task.title || '').toLowerCase();
+        const isLateShiftTask = taskTitle.includes('late') || taskTitle.includes('spät');
+        const isEarlyShiftTask = taskTitle.includes('morning') || taskTitle.includes('früh');
 
         if (userShiftType === 'morning' && isLateShiftTask && !task.assigned_to && !task.helper_id) {
           // Skip late shift tasks for early shift staff (unless assigned)
@@ -103,13 +103,13 @@ export function ShiftProjection() {
       }) as any;
 
       // Add 2 hours base time for regular work
-      const _BASE_WORK_MINUTES = 120;
-      const _minutesPerPerson = minutesForCurrentUser + BASE_WORK_MINUTES;
+      const BASE_WORK_MINUTES = 120;
+      const minutesPerPerson = minutesForCurrentUser + BASE_WORK_MINUTES;
 
       // Formatiere die Zeit
-      const _totalHours = Math.floor(minutesPerPerson / 60);
-      const _remainingMinutes = Math.round(minutesPerPerson % 60);
-      const _taskCount = todayTasks.length;
+      const totalHours = Math.floor(minutesPerPerson / 60);
+      const remainingMinutes = Math.round(minutesPerPerson % 60);
+      const taskCount = todayTasks.length;
 
       if (taskCount === 0) {
         setMessage(`Estimated time for the daily ToDos: 2h (base work time)`);

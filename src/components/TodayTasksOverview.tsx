@@ -10,7 +10,7 @@ interface TodayTasksOverviewProps {
 }
 
 export function TodayTasksOverview({ onBack }: TodayTasksOverviewProps) {
-  const { profile } = useAuth();
+  const { profile: _profile } = useAuth();
   const { tasks } = useTasks();
   const { t } = useTranslation();
   const [checklistInstances, setChecklistInstances] = useState<any[]>([]);

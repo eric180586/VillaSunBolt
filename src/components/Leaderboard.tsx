@@ -544,7 +544,7 @@ export function Leaderboard({ onBack, onNavigate }: { onBack?: () => void; onNav
                     <p className="font-medium text-gray-900">{entry.reason}</p>
                     <div className="flex items-center space-x-2 mt-1">
                       <p className="text-sm text-gray-600">
-                        {entry.created_at ? new Date(entry.created_at) : new Date().toLocaleString()}
+                        {entry.created_at ? new Date(entry.created_at).toLocaleString() : new Date().toLocaleString()}
                       </p>
                       {(entry.daily_achievable || 0) > 0 && (
                         <>

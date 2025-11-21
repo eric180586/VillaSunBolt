@@ -154,7 +154,7 @@ export function Notes({ onBack }: { onBack?: () => void } = {}) {
                 {note.category}
               </span>
               <span className="text-xs text-gray-500">
-                {note.created_at ? new Date(note.created_at) : new Date().toLocaleDateString()}
+                {note.created_at ? new Date(note.created_at).toLocaleDateString() : new Date().toLocaleDateString()}
               </span>
             </div>
           </div>

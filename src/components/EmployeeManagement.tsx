@@ -312,7 +312,7 @@ export function EmployeeManagement({ onBack }: { onBack?: () => void } = {}) {
                     </div>
                   </td>
                   <td className="py-4 px-6 text-gray-600">
-                    {employee.created_at ? new Date(employee.created_at) : new Date().toLocaleDateString()}
+                    {employee.created_at ? new Date(employee.created_at).toLocaleDateString() : new Date().toLocaleDateString()}
                   </td>
                   <td className="py-4 px-6">
                     <div className="flex items-center justify-end space-x-2">

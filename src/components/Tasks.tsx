@@ -4,7 +4,7 @@ import { useTasks } from '../hooks/useTasks';
 import { useProfiles } from '../hooks/useProfiles';
 import { Plus, CheckCircle, Clock, Users, X, RefreshCw, ArrowLeft, Edit2 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
-import { formatDateTimeForDisplay, formatDateForInput, getTodayDateString, combineDateAndTime } from '../lib/dateUtils';
+import { formatDateTimeForDisplay, formatDateForInput, getTodayDateString } from '../lib/dateUtils';
 import { getTodayTasks } from '../lib/taskFilters';
 import { TaskWithItemsModal } from './TaskWithItemsModal';
 import { HelperSelectionModal } from './HelperSelectionModal';
@@ -25,16 +25,6 @@ const CATEGORIES = [
 
 // Unused: const NAMES = ['Venus', 'Earth', 'Mars', 'Jupiter', 'Saturn', 'Uranus', 'Neptune', 'Pluto'];
 
-const MOTIVATIONAL_MESSAGES = [
-  'Great job! Keep up the excellent work!',
-  'Fantastic work! You are doing amazing!',
-  'Outstanding! You are a star!',
-  'Excellent! Your dedication shows!',
-  'Wonderful! You make a difference!',
-  'Superb work! Keep shining!',
-  'Amazing! You are truly appreciated!',
-  'Perfect! Your effort is inspiring!',
-];
 
 interface TasksProps {
   onNavigate?: (view: string) => void;
@@ -143,14 +133,6 @@ export function Tasks({ onNavigate, filterStatus, onBack }: TasksProps = {}) {
     }
   };
 
-  const __handleCategoryChange = (category: string) => {
-    setFormData((prev: typeof formData) => ({
-      ...prev,
-      category,
-      title: category === 'room_cleaning' || category === 'small_cleaning' ? '' : prev.title,
-      points_value: getDefaultPointsForCategory(category),
-    }));
-  };
 
   const uploadPhoto = async (file: File, folder: string): Promise<string> => {
     const fileExt = file.name.split('.').pop();
@@ -170,109 +152,6 @@ export function Tasks({ onNavigate, filterStatus, onBack }: TasksProps = {}) {
     return data.publicUrl;
   };
 
-  const getRandomMotivationalMessage = () => {
-    return MOTIVATIONAL_MESSAGES[Math.floor(Math.random() * MOTIVATIONAL_MESSAGES.length)];
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    try {
-      const dueDateTime = isRepairCategory ? null : combineDateAndTime(formData.due_date, formData.due_time);
-
-      let descriptionPhotoUrl: string[] | null = null;
-
-      if (formData.description_photo && formData.description_photo.length > 0) {
-        const uploadedUrls: string[] = [];
-        for (const file of formData.description_photo) {
-          const fileExt = file.name.split('.').pop();
-          const fileName = `description_${Math.random().toString(36).substring(2)}_${Date.now()}.${fileExt}`;
-          const filePath = `${fileName}`;
-
-          const { error: uploadError } = await supabase.storage
-            .from('checklist-explanations')
-            .upload(filePath, file);
-
-          if (uploadError) throw uploadError;
-
-          const { data: urlData } = supabase.storage
-            .from('checklist-explanations')
-            .getPublicUrl(filePath);
-
-          uploadedUrls.push(urlData.publicUrl);
-        }
-        descriptionPhotoUrl = uploadedUrls;
-      }
-
-      if (editingTask) {
-        await updateTask(editingTask.id, {
-          category: formData.category,
-          title: formData.title,
-          description: formData.description || null,
-          description_photo: descriptionPhotoUrl || editingTask.description_photo,
-          due_date: dueDateTime,
-          duration_minutes: formData.duration_minutes,
-          points_value: isRepairCategory ? 0 : formData.points_value,
-          assigned_to: isRepairCategory ? null : (formData.assigned_to || null),
-          secondary_assigned_to: isRepairCategory ? null : (formData.secondary_assigned_to || null),
-          photo_proof_required: formData.photo_proof_required,
-          photo_required_sometimes: formData.photo_required_sometimes,
-          photo_explanation_text: formData.photo_explanation_text || null,
-        }) as any;
-      } else {
-        await createTask({
-          category: formData.category,
-          title: formData.title,
-          description: formData.description || null,
-          description_photo: descriptionPhotoUrl,
-          due_date: dueDateTime,
-          duration_minutes: formData.duration_minutes,
-          points_value: isRepairCategory ? 0 : formData.points_value,
-          assigned_to: isRepairCategory ? null : (formData.assigned_to || null),
-          secondary_assigned_to: isRepairCategory ? null : (formData.secondary_assigned_to || null),
-          photo_proof_required: formData.photo_proof_required,
-          photo_required_sometimes: formData.photo_required_sometimes,
-          photo_explanation_text: formData.photo_explanation_text || null,
-          created_by: profile?.id || '',
-          status: 'pending',
-        }) as any;
-      }
-
-      if (!editingTask) {
-        const staffUsers = profiles.filter((p) => p.role === 'staff');
-        if (staffUsers.length > 0) {
-          await supabase.from('notifications').insert(
-            staffUsers.map((p) => ({
-              user_id: p.id,
-              title: 'New Task',
-              message: `New task created: ${formData.title}`,
-              type: 'task',
-            }))
-          );
-        }
-      }
-
-      setShowModal(false);
-      setEditingTask(null);
-      setFormData({
-        category: 'extras',
-        title: '',
-        description: '',
-        due_date: '',
-        due_time: '',
-        duration_minutes: 30,
-        points_value: 10,
-        assigned_to: '',
-        secondary_assigned_to: '',
-        description_photo: [],
-        photo_proof_required: false,
-        photo_required_sometimes: false,
-        photo_explanation_text: '',
-      }) as any;
-    } catch (error) {
-      console.error('Error creating task:', error);
-    }
-  };
-
   const handleAcceptTask = async (taskId: string) => {
     try {
       console.log('Accepting task:', taskId, 'for user:', profile?.id);
@@ -287,7 +166,7 @@ export function Tasks({ onNavigate, filterStatus, onBack }: TasksProps = {}) {
     }
   };
 
-  const _handleAddHelper = async (taskId: string) => {
+  const handleAddHelper = async (taskId: string) => {
     if (!profile?.id) return;
     try {
       await updateTask(taskId, {
@@ -383,7 +262,7 @@ export function Tasks({ onNavigate, filterStatus, onBack }: TasksProps = {}) {
         adminPhotoUrls = uploadedUrls;
       }
 
-      const { data, error } = await supabase.rpc('reopen_task_with_penalty', {
+      const { error } = await supabase.rpc('reopen_task_with_penalty', {
         p_task_id: task.id,
         p_admin_id: profile?.id,
         p_admin_notes: adminNotes,
@@ -419,7 +298,7 @@ export function Tasks({ onNavigate, filterStatus, onBack }: TasksProps = {}) {
     }
 
     try {
-      const _updatedItems = task.items.map((item: any, index: number) => {
+      const updatedItems = task.items.map((item: any, index: number) => {
         if (itemsToReopen.includes(index)) {
           return {
             ...item,
@@ -496,7 +375,7 @@ export function Tasks({ onNavigate, filterStatus, onBack }: TasksProps = {}) {
             if (!isAdmin && cat.id === 'admin') return false;
             return true;
           }).map((category) => {
-            const _counts = getCategoryCounts(category.id);
+            const counts = getCategoryCounts(category.id);
             return (
               <button
                 key={category.id}
@@ -578,8 +457,8 @@ export function Tasks({ onNavigate, filterStatus, onBack }: TasksProps = {}) {
   }
 
 
-  const _selectedCategoryData = CATEGORIES.find((c) => c.id === selectedCategory);
-  const _displayTitle = filterStatus === 'pending_review'
+  const selectedCategoryData = CATEGORIES.find((c) => c.id === selectedCategory);
+  const displayTitle = filterStatus === 'pending_review'
     ? 'Aufgaben zur Prüfung'
     : filterStatus === 'today'
     ? "Today's Tasks"
@@ -633,14 +512,14 @@ export function Tasks({ onNavigate, filterStatus, onBack }: TasksProps = {}) {
         )}
 
         {categoryTasks.map((task: any) => {
-          const _assignedUser = profiles.find((p) => p.id === task.assigned_to);
-          const _secondaryUser = profiles.find((p) => p.id === task.secondary_assigned_to);
-          const _taskIsRepair = task.category === 'repair';
-          const _canAccept = !task.assigned_to && task.status === 'pending' && !taskIsRepair;
-          const _isMyTask = task.assigned_to === profile?.id || task.secondary_assigned_to === profile?.id;
-          const _canHelp = task.assigned_to && task.assigned_to !== profile?.id && !task.secondary_assigned_to && (task.status === 'in_progress' || task.status === 'pending');
+          const assignedUser = profiles.find((p) => p.id === task.assigned_to);
+          const secondaryUser = profiles.find((p) => p.id === task.secondary_assigned_to);
+          const taskIsRepair = task.category === 'repair';
+          const canAccept = !task.assigned_to && task.status === 'pending' && !taskIsRepair;
+          const isMyTask = task.assigned_to === profile?.id || task.secondary_assigned_to === profile?.id;
+          const canHelp = task.assigned_to && task.assigned_to !== profile?.id && !task.secondary_assigned_to && (task.status === 'in_progress' || task.status === 'in_progress');
 
-          const _getStatusBorderColor = (status: string) => {
+          const getStatusBorderColor = (status: string) => {
             switch (status) {
               case 'pending': return 'border-l-gray-400';
               case 'in_progress': return 'border-l-blue-500';
@@ -753,7 +632,7 @@ export function Tasks({ onNavigate, filterStatus, onBack }: TasksProps = {}) {
                       </p>
                       <ul className="space-y-2">
                         {task.items.map((item: any, index: number) => {
-                          const _isCompleted = item.is_completed || item.completed;
+                          const isCompleted = item.is_completed || item.completed;
                           return (
                             <li key={index} className="flex items-start space-x-3">
                               <div className={`w-6 h-6 rounded-md flex items-center justify-center flex-shrink-0 mt-0.5 ${
@@ -891,15 +770,15 @@ export function Tasks({ onNavigate, filterStatus, onBack }: TasksProps = {}) {
 
         {/* Checklist instances now merged into tasks */}
         {false && [].map((instance: any) => {
-          const _checklist = instance.checklists;
+          const checklist = instance.checklists;
           if (!checklist) return null;
 
-          const _completedCount = instance.items?.filter((item: any) => item.completed).length || 0;
-          const _totalCount = instance.items?.length || 0;
-          const _isCompleted = instance.status === 'completed';
-          const _needsReview = isCompleted && !instance.admin_reviewed;
-          const _isApproved = instance.admin_approved === true;
-          const _isRejected = instance.admin_approved === false;
+          const completedCount = instance.items?.filter((item: any) => item.completed).length || 0;
+          const totalCount = instance.items?.length || 0;
+          const isCompleted = instance.status === 'completed';
+          const needsReview = isCompleted && !instance.admin_reviewed;
+          const isApproved = instance.admin_approved === true;
+          const isRejected = instance.admin_approved === false;
 
           return (
             <div

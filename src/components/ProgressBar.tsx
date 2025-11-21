@@ -43,7 +43,7 @@ const formatMinutesToTime = (totalMinutes: number): string => {
 
 export function ProgressBar() {
   const { t: _t } = useTranslation();
-  const { profile: _profile } = useAuth();
+  const { profile } = useAuth();
   const { tasks } = useTasks();
   const { activeModules } = useHumorModules();
   const [displayTime, setDisplayTime] = useState('--:--');
