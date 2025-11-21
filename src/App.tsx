@@ -54,14 +54,13 @@ function AppContent() {
         return;
       }
 
-      const todayStart = new Date();
-      todayStart.setHours(0, 0, 0, 0);
+      const today = new Date().toISOString().split('T')[0];
 
       const { data, error } = await supabase
         .from('check_ins')
         .select('id')
         .eq('user_id', profile.id)
-        .gte('check_in_time', todayStart.toISOString())
+        .eq('check_in_date', today)
         .maybeSingle();
 
       if (!error && !data) {

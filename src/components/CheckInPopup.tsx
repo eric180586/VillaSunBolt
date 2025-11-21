@@ -4,6 +4,7 @@ import { supabase } from '../lib/supabase';
 import { getTodayDateString } from '../lib/dateUtils';
 import { CheckCircle, Clock, X, AlertCircle } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { FortuneWheel } from './FortuneWheel';
 
 interface CheckInPopupProps {
   onClose: () => void;
@@ -16,6 +17,8 @@ export function CheckInPopup({ onClose }: CheckInPopupProps) {
   const [checkInResult, setCheckInResult] = useState<any>(null);
   const [hasScheduleToday, setHasScheduleToday] = useState<boolean | null>(null);
   const [scheduledShift, setScheduledShift] = useState<string | null>(null);
+  const [showFortuneWheel, setShowFortuneWheel] = useState(false);
+  const [currentCheckInId, setCurrentCheckInId] = useState<string | null>(null);
 
   useEffect(() => {
     checkScheduleForToday();
@@ -93,10 +96,10 @@ export function CheckInPopup({ onClose }: CheckInPopupProps) {
       if (error) throw error;
 
       setCheckInResult(data);
-
-      setTimeout(() => {
-        onClose();
-      }, 3000);
+      if (data?.check_in_id && data?.show_fortune_wheel) {
+        setCurrentCheckInId(data.check_in_id);
+        setShowFortuneWheel(true);
+      }
     } catch (error) {
       console.error('Error checking in:', error);
       alert(t('checkin.errorCheckingIn', 'Error checking in. Please try again.'));
@@ -107,6 +110,15 @@ export function CheckInPopup({ onClose }: CheckInPopupProps) {
   const handleSkip = () => {
     onClose();
   };
+
+  const handleFortuneWheelComplete = () => {
+    setShowFortuneWheel(false);
+    onClose();
+  };
+
+  if (showFortuneWheel && currentCheckInId) {
+    return <FortuneWheel checkInId={currentCheckInId} onComplete={handleFortuneWheelComplete} />;
+  }
 
   return (
     <div
@@ -151,13 +163,19 @@ export function CheckInPopup({ onClose }: CheckInPopupProps) {
                   </p>
                 )}
                 <p className="text-gray-700">
-                  {t('checkin.waitingForApproval', 'Dein Check-In wartet auf Admin-Bestätigung.')}
+                  {t('checkin.checkInApproved', 'Dein Check-In wurde genehmigt!')}
                 </p>
                 <p className="text-sm text-gray-600 mt-2">
                   {t('checkin.possiblePoints', 'Mögliche Punkte: {{points}}', { points: (checkInResult.points_awarded > 0 ? '+' : '') + checkInResult.points_awarded })}
                 </p>
               </div>
             </div>
+            <button
+              onClick={() => setShowFortuneWheel(true)}
+              className="mt-6 w-full py-4 bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-xl hover:from-amber-600 hover:to-orange-600 font-bold text-lg shadow-lg"
+            >
+              {t('checkin.spinFortuneWheel', 'Zum Glücksrad!')}
+            </button>
           </div>
         ) : hasScheduleToday === false ? (
           <div className="text-center">
