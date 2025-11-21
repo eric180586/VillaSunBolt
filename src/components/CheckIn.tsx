@@ -244,7 +244,12 @@ export function CheckIn({ onBack }: { onBack?: () => void } = {}) {
 
       if (error) {
         console.error('[CHECK-IN] RPC ERROR:', error);
-        alert(`Check-in failed: ${error.message || JSON.stringify(error)}`);
+
+        if (error.message?.includes('JWT') || error.message?.includes('token') || error.message?.includes('session')) {
+          alert('Your session has expired. Please log out and log in again.');
+        } else {
+          alert(`Check-in failed: ${error.message || JSON.stringify(error)}`);
+        }
         throw error;
       }
 
