@@ -193,15 +193,23 @@ export function CheckIn({ onBack }: { onBack?: () => void } = {}) {
     setTodayCheckIns(data || []);
   };
 
-  const handleCheckIn = async (shiftType: 'früh' | 'spät') => {
-    console.log('[CHECK-IN] handleCheckIn called with shift:', shiftType);
+  const handleCheckIn = async () => {
+    console.log('[CHECK-IN] handleCheckIn called');
     console.log('[CHECK-IN] Profile:', profile);
+    console.log('[CHECK-IN] Scheduled shift:', scheduledShift);
 
     if (!profile?.id) {
       console.error('[CHECK-IN] BLOCKED: No profile ID!', profile);
       alert('Error: Profile not loaded. Please refresh the page.');
       return;
     }
+
+    if (!scheduledShift) {
+      alert('No shift scheduled for today');
+      return;
+    }
+
+    const shiftType = scheduledShift === 'morning' ? 'früh' : 'spät';
 
     const now = new Date();
     const cambodiaTime = new Intl.DateTimeFormat('en-US', {
@@ -512,27 +520,17 @@ export function CheckIn({ onBack }: { onBack?: () => void } = {}) {
                 </div>
               </div>
             ) : (
-              <div className="grid grid-cols-2 gap-4">
-                <button
-                  onClick={() => handleCheckIn('früh')}
-                  disabled={loading}
-                  className="flex flex-col items-center justify-center p-8 bg-white border-2 border-gray-200 rounded-xl hover:shadow-xl hover:border-gray-300 transform hover:scale-105 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-md"
-                >
-                  <Clock className="w-12 h-12 mb-3 text-gray-700" />
-                  <span className="font-semibold text-gray-900 text-lg">{t('checkin.earlyShift')}</span>
-                  <span className="text-sm text-gray-600">9:00</span>
-                </button>
-
-                <button
-                  onClick={() => handleCheckIn('spät')}
-                  disabled={loading}
-                  className="flex flex-col items-center justify-center p-8 bg-white border-2 border-gray-200 rounded-xl hover:shadow-xl hover:border-gray-300 transform hover:scale-105 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-md"
-                >
-                  <Clock className="w-12 h-12 mb-3 text-gray-700" />
-                  <span className="font-semibold text-gray-900 text-lg">{t('checkin.lateShift')}</span>
-                  <span className="text-sm text-gray-600">15:00</span>
-                </button>
-              </div>
+              <button
+                onClick={handleCheckIn}
+                disabled={loading}
+                className="w-full flex flex-col items-center justify-center p-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl hover:shadow-2xl transform hover:scale-105 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg text-white"
+              >
+                <CheckCircle className="w-16 h-16 mb-4" />
+                <span className="font-bold text-2xl mb-2">{t('checkin.checkInNow')}</span>
+                <span className="text-lg opacity-90">
+                  {t('checkin.systemRecognizesShift', 'Das System erkennt deine Schicht automatisch')}
+                </span>
+              </button>
             )}
           </div>
         )}
