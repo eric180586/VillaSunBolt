@@ -1,4 +1,4 @@
-import { X, Users } from 'lucide-react';
+import { X, Users, Upload } from 'lucide-react';
 import { useState } from 'react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';

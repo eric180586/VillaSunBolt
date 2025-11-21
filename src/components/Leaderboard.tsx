@@ -249,7 +249,6 @@ export function Leaderboard({ onBack, onNavigate }: { onBack?: () => void; onNav
 
   const myMonthlyStats = profile ? monthlyStats[profile.id] : null;
   const myRank = sortedStaff.findIndex((p) => p.id === profile?.id) + 1;
-  const myDailyGoal = dailyGoals.find((g) => g.user_id === profile?.id);
   const teamDailyGoal = dailyGoals[0];
 
   if (loading) {

@@ -515,7 +515,7 @@ export function AdminDashboard({ onNavigate, onBack }: AdminDashboardProps = {})
 
       {editingTask && (
         <TaskCreateModal
-          task={editingTask}
+          editingTask={editingTask}
           onClose={() => setEditingTask(null)}
           onComplete={async () => {
             setEditingTask(null);

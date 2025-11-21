@@ -15,7 +15,6 @@ interface MonthlyGoal {
 }
 
 export function MonthlyPointsOverview() {
-  const { t } = useTranslation();
   const { profiles } = useProfiles();
   const [monthlyGoals, setMonthlyGoals] = useState<MonthlyGoal[]>([]);
   const [loading, setLoading] = useState(true);

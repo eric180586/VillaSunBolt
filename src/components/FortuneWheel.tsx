@@ -121,10 +121,6 @@ export function FortuneWheel({ onClose, onSpinComplete }: FortuneWheelProps) {
   const [currentRotation, setCurrentRotation] = useState(0);
   const [spinInterval, setSpinInterval] = useState<NodeJS.Timeout | null>(null);
 
-  const selectRandomSegment = (): WheelSegment => {
-    const randomIndex = Math.floor(Math.random() * WHEEL_SEGMENTS.length);
-    return WHEEL_SEGMENTS[randomIndex];
-  };
 
   const stopWheel = () => {
     if (!isSpinning) return;

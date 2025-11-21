@@ -1327,7 +1327,94 @@ export interface Database {
       }
     }
     Functions: {
-      [_ in never]: never
+      process_check_in: {
+        Args: {
+          p_user_id: string
+          p_shift_type: string
+          p_late_reason: string | null
+        }
+        Returns: {
+          success: boolean
+          check_in_id: string
+          points_awarded: number
+          is_late: boolean
+          message: string
+        }
+      }
+      approve_check_in: {
+        Args: {
+          p_check_in_id: string
+          p_admin_id: string
+          p_custom_points: number | null
+        }
+        Returns: void
+      }
+      reject_check_in: {
+        Args: {
+          p_check_in_id: string
+          p_admin_id: string
+          p_reason: string
+        }
+        Returns: void
+      }
+      add_bonus_points: {
+        Args: {
+          p_user_id: string
+          p_points: number
+          p_reason: string
+        }
+        Returns: void
+      }
+      approve_task_with_items: {
+        Args: {
+          p_task_id: string
+          p_admin_id: string
+          p_quality: string
+          p_admin_notes: string | null
+        }
+        Returns: void
+      }
+      approve_task_with_quality: {
+        Args: {
+          p_task_id: string
+          p_admin_id: string
+          p_quality: string
+          p_admin_notes: string | null
+        }
+        Returns: void
+      }
+      reopen_task_with_penalty: {
+        Args: {
+          p_task_id: string
+          p_admin_id: string
+          p_reason: string
+        }
+        Returns: void
+      }
+      reset_all_points: {
+        Args: Record<string, never>
+        Returns: void
+      }
+      get_team_daily_task_counts: {
+        Args: Record<string, never>
+        Returns: {
+          total_tasks: number
+          completed_tasks: number
+        }[]
+      }
+      get_team_daily_checklist_counts: {
+        Args: Record<string, never>
+        Returns: {
+          total_checklists: number
+          completed_checklists: number
+        }[]
+      }
+      update_all_monthly_point_goals: {
+        Args: {
+          p_month: string
+        }
+        Returns: void
+      }
     }
   }
 }

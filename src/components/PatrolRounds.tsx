@@ -38,7 +38,6 @@ interface PatrolScan {
 const TIME_SLOTS = ['11:00', '12:15', '13:30', '14:45', '16:00', '17:15', '18:30', '19:45', '21:00'];
 
 export function PatrolRounds({ onBack }: { onBack?: () => void } = {}) {
-  const { t } = useTranslation();
   const { profile } = useAuth();
   const [locations, setLocations] = useState<PatrolLocation[]>([]);
   const [todayRounds, setTodayRounds] = useState<PatrolRound[]>([]);
@@ -48,7 +47,6 @@ export function PatrolRounds({ onBack }: { onBack?: () => void } = {}) {
   const [showPhotoRequest, setShowPhotoRequest] = useState(false);
   const [pendingLocation, setPendingLocation] = useState<PatrolLocation | null>(null);
   const [photo, setPhoto] = useState<File | null>(null);
-  const [useCameraScanner, setUseCameraScanner] = useState(true);
 
   useEffect(() => {
     loadLocations();
@@ -211,17 +209,6 @@ export function PatrolRounds({ onBack }: { onBack?: () => void } = {}) {
 
     // Can start if: current time >= start time AND not completed
     return currentTime >= slotTime && !round.completed_at;
-  };
-
-  const isWithinPointsWindow = (round: PatrolRound): boolean => {
-    const now = new Date();
-    const currentTime = now.getHours() * 60 + now.getMinutes();
-    const [hours, minutes] = round.time_slot.split(':').map(Number);
-    const slotTime = hours * 60 + minutes;
-    const diff = currentTime - slotTime;
-
-    // Points are awarded only if scanned within 15 minutes of scheduled time
-    return diff >= 0 && diff <= 15;
   };
 
   const handleQRScan = async (qrCode: string) => {

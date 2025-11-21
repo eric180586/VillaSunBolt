@@ -8,7 +8,6 @@ interface NotesPopupProps {
 }
 
 export function NotesPopup({ onClose }: NotesPopupProps) {
-  const { t } = useTranslation();
   const { notes } = useNotes();
   const [currentNoteIndex, setCurrentNoteIndex] = useState(0);
 

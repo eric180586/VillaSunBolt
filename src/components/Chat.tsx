@@ -64,7 +64,7 @@ export function Chat({ onBack }: { onBack?: () => void } = {}) {
 
           return {
             ...msg,
-            profiles: profileData
+            profiles: profileData || undefined
           };
         })
       );
@@ -141,11 +141,11 @@ export function Chat({ onBack }: { onBack?: () => void } = {}) {
 
       const messageContent = messageText.trim();
 
-      const { error } = await supabase.from('chat_messages').insert({
+      const { error } = await supabase.from('chat_messages').insert([{
         user_id: profile.id,
         message: messageContent || '[Photo]',
         photo_url: photoUrl,
-      });
+      }]);
 
       if (error) throw error;
 

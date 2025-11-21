@@ -8,9 +8,8 @@ import { supabase } from '../lib/supabase';
 import { getTodayDateString } from '../lib/dateUtils';
 
 export function EndOfDayRequest() {
-  const { t } = useTranslation();
   const { profile } = useAuth();
-  const { schedules } = useSchedules();
+  useSchedules();
   const { requests, createRequest } = useDepartureRequests();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
