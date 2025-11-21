@@ -111,12 +111,7 @@ export function Tasks({ onNavigate, filterStatus, onBack }: TasksProps = {}) {
     const filterToday = sessionStorage.getItem('tasks_filter_today');
     if (filterToday === 'true') {
       sessionStorage.removeItem('tasks_filter_today');
-      const today = getTodayDateString();
-      const todayTasks = tasks.filter(t => {
-        if (!t.due_date) return false;
-        const taskDate = new Date(t.due_date).toISOString().split('T')[0];
-        return taskDate === today && t.status !== 'completed' && t.status !== 'archived';
-      });
+      const todayTasks = getTodayTasks(tasks).filter(t => t.status !== 'completed' && t.status !== 'archived');
       if (todayTasks.length > 0) {
         setSelectedCategory('all_today');
       }
@@ -125,13 +120,10 @@ export function Tasks({ onNavigate, filterStatus, onBack }: TasksProps = {}) {
 
 
   const getCategoryCounts = (categoryId: string) => {
-    const today = new Date();
     const categoryTasks = tasks.filter(
-      (t) => t.category === categoryId && t.is_template !== true && t.status !== 'archived'
+      (t) => t.category === categoryId && (t.is_template !== true || t.recurrence === 'daily') && t.status !== 'archived'
     );
-    const todayTasks = categoryTasks.filter(
-      (t) => t.due_date && isSameDay(t.due_date, today)
-    );
+    const todayTasks = getTodayTasks(categoryTasks);
     const openTasks = todayTasks.filter((t) => t.status !== 'completed');
 
     return {
@@ -556,18 +548,11 @@ export function Tasks({ onNavigate, filterStatus, onBack }: TasksProps = {}) {
   }
 
   let categoryTasks = selectedCategory === 'all_today'
-    ? (() => {
-        const today = getTodayDateString();
-        return tasks.filter(t => {
-          if (!t.due_date) return false;
-          const taskDate = new Date(t.due_date).toISOString().split('T')[0];
-          return taskDate === today && t.status !== 'archived';
-        });
-      })()
+    ? getTodayTasks(tasks)
     : selectedCategory
     ? tasks.filter((t) => {
         if (t.status === 'archived') return false;
-        if (t.is_template) return false;
+        if (t.is_template && t.recurrence !== 'daily') return false;
         if (t.status === 'completed') {
           const today = getTodayDateString();
           const taskDate = t.due_date ? new Date(t.due_date).toISOString().split('T')[0] : '';
@@ -577,7 +562,7 @@ export function Tasks({ onNavigate, filterStatus, onBack }: TasksProps = {}) {
       })
     : tasks.filter((t) => {
         if (t.status === 'archived') return false;
-        if (t.is_template) return false;
+        if (t.is_template && t.recurrence !== 'daily') return false;
         if (t.status === 'completed') {
           const today = getTodayDateString();
           const taskDate = t.due_date ? new Date(t.due_date).toISOString().split('T')[0] : '';
@@ -589,12 +574,7 @@ export function Tasks({ onNavigate, filterStatus, onBack }: TasksProps = {}) {
   if (filterStatus === 'pending_review') {
     categoryTasks = categoryTasks.filter((t) => t.status === 'pending_review');
   } else if (filterStatus === 'today') {
-    const today = getTodayDateString();
-    categoryTasks = categoryTasks.filter((t) => {
-      if (!t.due_date) return false;
-      const taskDate = new Date(t.due_date).toISOString().split('T')[0];
-      return taskDate === today && t.status !== 'archived';
-    });
+    categoryTasks = getTodayTasks(categoryTasks);
   }
 
 
