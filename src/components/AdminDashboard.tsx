@@ -311,8 +311,8 @@ export function AdminDashboard({ onNavigate, onBack }: AdminDashboardProps = {})
                 <div className="text-sm text-gray-600 mb-3 text-center">
                   {completedTasks.length}/{todayTasks.length} {t('dashboard.completed')}
                 </div>
-                <div className="space-y-2 max-h-48 overflow-y-auto">
-                  {todayTasks.slice(0, 5).map((task) => (
+                <div className="space-y-2 max-h-64 overflow-y-auto">
+                  {todayTasks.map((task) => (
                     <div
                       key={task.id}
                       className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
@@ -337,14 +337,12 @@ export function AdminDashboard({ onNavigate, onBack }: AdminDashboardProps = {})
                     </div>
                   ))}
                 </div>
-                {todayTasks.length > 5 && (
-                  <button
-                    onClick={() => onNavigate?.('tasks', 'today')}
-                    className="w-full text-center text-sm text-blue-600 hover:text-blue-700 hover:underline mt-2"
-                  >
-                    {t('dashboard.viewAll')} {todayTasks.length} {t('dashboard.tasks')}
-                  </button>
-                )}
+                <button
+                  onClick={() => onNavigate?.('tasks', 'today')}
+                  className="w-full text-center text-sm text-blue-600 hover:text-blue-700 hover:underline mt-2"
+                >
+                  {t('dashboard.viewAll')} {todayTasks.length} {t('dashboard.tasks')}
+                </button>
               </>
             )}
           </div>
