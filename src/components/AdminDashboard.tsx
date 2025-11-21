@@ -5,7 +5,8 @@ import { useDepartureRequests } from '../hooks/useDepartureRequests';
 import { useProfiles } from '../hooks/useProfiles';
 import { supabase } from '../lib/supabase';
 import { Plus, TrendingUp, StickyNote, CheckCircle, Home, AlertCircle, QrCode, Users, UserCheck, Shield, ArrowLeft, History, Edit2 } from 'lucide-react';
-import { isSameDay, getTodayDateString } from '../lib/dateUtils';
+import { getTodayDateString } from '../lib/dateUtils';
+import { getTodayTasks } from '../lib/taskFilters';
 import { checkAndRunDailyReset } from '../lib/dailyReset';
 import { TaskCreateModal } from './TaskCreateModal';
 import { useTranslation } from 'react-i18next';
@@ -90,16 +91,7 @@ export function AdminDashboard({ onNavigate, onBack }: AdminDashboardProps = {})
 
   const staffProfiles = profiles.filter((p) => p.role !== 'admin');
 
-  const today = new Date();
-
-  const todayTasks = tasks.filter((t) => {
-    // Include daily recurring tasks
-    if (t.recurrence === 'daily') return true;
-
-    if (!t.due_date) return false;
-    return isSameDay(t.due_date, today);
-  });
-
+  const todayTasks = getTodayTasks(tasks);
   const completedTasks = todayTasks.filter((t) => t.status === 'completed');
   const pendingReview = tasks.filter((t) => t.status === 'pending_review');
   const pendingDepartures = requests.filter((r) => r.status === 'pending');

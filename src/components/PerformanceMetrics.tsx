@@ -8,6 +8,7 @@ import { CheckSquare, Award, TrendingUp, Users } from 'lucide-react';
 import { LucideIcon } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { getTodayDateString } from '../lib/dateUtils';
+import { getTodayMyTasks } from '../lib/taskFilters';
 import { useState, useEffect } from 'react';
 
 interface MetricCardProps {
@@ -318,19 +319,7 @@ export function PerformanceMetrics({ onNavigate }: PerformanceMetricsProps = {})
 
   const currentUserSchedule = todaySchedules.find((s) => s.staff_id === profile?.id);
 
-  const todayTasks = tasks.filter((t) => {
-    if (!t.due_date) return false;
-    const taskDate = new Date(t.due_date);
-    taskDate.setHours(0, 0, 0, 0);
-    return taskDate.getTime() === today.getTime();
-  });
-
-  const myTasks = todayTasks.filter((t) =>
-    t.assigned_to === profile?.id ||
-    t.secondary_assigned_to === profile?.id ||
-    t.assigned_to === null
-  );
-
+  const myTasks = getTodayMyTasks(tasks, profile?.id);
   const completedMyTasks = myTasks.filter((t) => t.status === 'completed' || t.status === 'archived');
   const taskPercentage = myTasks.length > 0
     ? (completedMyTasks.length / myTasks.length) * 100
