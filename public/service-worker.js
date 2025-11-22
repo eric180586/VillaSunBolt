@@ -1,20 +1,30 @@
-const CACHE_VERSION = 'v7-2025-11-22-fortune-wheel-fix';
+const CACHE_VERSION = 'v8-2025-11-22-FORCE-UPDATE';
 
 self.addEventListener('install', (event) => {
+  // Force immediate activation
   self.skipWaiting();
+
+  // Delete ALL caches immediately
+  event.waitUntil(
+    caches.keys().then((cacheNames) => {
+      return Promise.all(
+        cacheNames.map((cacheName) => caches.delete(cacheName))
+      );
+    })
+  );
 });
 
 self.addEventListener('activate', (event) => {
   event.waitUntil(
+    // Delete ALL caches on activation
     caches.keys().then((cacheNames) => {
       return Promise.all(
-        cacheNames.map((cacheName) => {
-          if (cacheName !== CACHE_VERSION) {
-            return caches.delete(cacheName);
-          }
-        })
+        cacheNames.map((cacheName) => caches.delete(cacheName))
       );
-    }).then(() => clients.claim())
+    }).then(() => {
+      // Take control immediately
+      return clients.claim();
+    })
   );
 });
 
