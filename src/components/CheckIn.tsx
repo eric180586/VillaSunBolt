@@ -28,7 +28,11 @@ export function CheckIn({ onBack }: { onBack?: () => void } = {}) {
       fetchTodayCheckIns();
       checkScheduleForToday();
       checkIfAlreadySpunToday();
-      checkForMissedFortuneWheel();
+
+      // Only check for missed wheel after a delay to avoid race conditions with manual check-in
+      const wheelCheckTimer = setTimeout(() => {
+        checkForMissedFortuneWheel();
+      }, 1000);
 
       const channel = supabase
         .channel(`check_ins_changes_${Date.now()}`)
@@ -42,11 +46,13 @@ export function CheckIn({ onBack }: { onBack?: () => void } = {}) {
           },
           () => {
             fetchTodayCheckIns();
+            // Don't trigger checkForMissedFortuneWheel here to avoid closing an open wheel
           }
         )
         .subscribe();
 
       return () => {
+        clearTimeout(wheelCheckTimer);
         supabase.removeChannel(channel);
       };
     }
