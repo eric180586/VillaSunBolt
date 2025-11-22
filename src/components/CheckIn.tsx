@@ -294,15 +294,12 @@ export function CheckIn({ onBack }: { onBack?: () => void } = {}) {
       if (data?.success && data?.check_in_id) {
         console.log('Check-in successful, checking fortune wheel status...');
 
-        const hasSpun = await checkIfAlreadySpunToday();
-        console.log('Fortune wheel: Already spun today?', hasSpun);
-
-        if (!hasSpun) {
+        if (data?.show_fortune_wheel) {
           console.log('Opening Fortune Wheel for check-in:', data.check_in_id);
           setCurrentCheckInId(data.check_in_id);
           setShowFortuneWheel(true);
         } else {
-          console.log('User already spun today, skipping wheel');
+          console.log('Backend says no fortune wheel for this check-in');
         }
       } else {
         console.log('Check-in response missing required data:', data);
