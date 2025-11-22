@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'v6-2025-11-13-notification-fix';
+const CACHE_VERSION = 'v7-2025-11-22-fortune-wheel-fix';
 
 self.addEventListener('install', (event) => {
   self.skipWaiting();
