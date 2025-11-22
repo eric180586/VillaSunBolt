@@ -46,10 +46,33 @@ export function TaskWithItemsModal({ task, onClose, onComplete: _onComplete, onO
       // Check if all items are now completed
       const allNowCompleted = newItems.every((item: any) => item.is_completed);
       if (allNowCompleted) {
-        // Auto-open helper popup after a short delay
-        setTimeout(() => {
-          onOpenHelperPopup();
-        }, 500);
+        // Check if task already has a helper
+        const hasHelper = task.secondary_assigned_to || task.helper_id;
+
+        if (hasHelper) {
+          // Task already has helper, skip helper selection and submit directly
+          alert('Alle Items abgehakt! Der Task wird jetzt zur Review eingereicht.');
+
+          // Submit task directly without helper selection
+          const { error: updateError } = await supabase
+            .from('tasks')
+            .update({
+              status: 'pending_review',
+              completed_at: new Date().toISOString()
+            })
+            .eq('id', task.id);
+
+          if (updateError) {
+            alert('Fehler beim Abschließen der Aufgabe');
+          } else {
+            onClose();
+          }
+        } else {
+          // No helper yet, open helper selection modal
+          setTimeout(() => {
+            onOpenHelperPopup();
+          }, 500);
+        }
       }
     } catch (error) {
       console.error('Error saving item:', error);

@@ -701,14 +701,30 @@ export function Tasks({ onNavigate, filterStatus, onBack }: TasksProps = {}) {
                   )}
                   {isMyTask && (task.status === 'in_progress' || task.status === 'pending') && (
                     <button
-                      onClick={() => {
+                      onClick={async () => {
                         setSelectedTask(task);
+
+                        // Check if task already has a helper (someone joined via "Me Help")
+                        const hasHelper = task.secondary_assigned_to || task.helper_id;
+
                         // Check if task has items (was a checklist)
                         if (task.items && task.items.length > 0) {
                           // Open items modal for checking off items
                           setShowItemsModal(true);
+                        } else if (hasHelper) {
+                          // Task has helper, submit directly without asking for helper
+                          try {
+                            await updateTask(task.id, {
+                              status: 'pending_review',
+                              completed_at: new Date().toISOString()
+                            });
+                            alert('Task zur Review eingereicht!');
+                          } catch (error) {
+                            console.error('Error completing task:', error);
+                            alert('Fehler beim Abschließen');
+                          }
                         } else {
-                          // No items, go directly to helper selection
+                          // No helper yet, ask if they want to add one
                           setShowHelperModal(true);
                         }
                       }}

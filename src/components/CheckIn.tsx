@@ -292,15 +292,12 @@ export function CheckIn({ onBack }: { onBack?: () => void } = {}) {
       await fetchTodayCheckIns();
 
       if (data?.success && data?.check_in_id) {
-        console.log('Check-in successful, checking fortune wheel status...');
+        console.log('Check-in successful! Opening Fortune Wheel automatically...');
 
-        if (data?.show_fortune_wheel) {
-          console.log('Opening Fortune Wheel for check-in:', data.check_in_id);
-          setCurrentCheckInId(data.check_in_id);
-          setShowFortuneWheel(true);
-        } else {
-          console.log('Backend says no fortune wheel for this check-in');
-        }
+        setCurrentCheckInId(data.check_in_id);
+        setShowFortuneWheel(true);
+
+        console.log('Fortune Wheel opened for check-in:', data.check_in_id);
       } else {
         console.log('Check-in response missing required data:', data);
       }

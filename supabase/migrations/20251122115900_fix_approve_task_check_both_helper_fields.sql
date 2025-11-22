@@ -1,0 +1,174 @@
+/*
+  # Fix approve_task_with_quality - Check both helper fields
+  
+  1. Problem
+    - Function only checks helper_id but not secondary_assigned_to
+    - When user uses "Me Help", secondary_assigned_to is set
+    - Helper doesn't get points because helper_id is null
+  
+  2. Solution
+    - Check BOTH helper_id and secondary_assigned_to
+    - Use whichever is set as the helper
+    - Award 50% points to helper
+*/
+
+CREATE OR REPLACE FUNCTION approve_task_with_quality(
+  p_task_id uuid,
+  p_admin_id uuid,
+  p_review_quality text
+)
+RETURNS jsonb
+LANGUAGE plpgsql
+SECURITY DEFINER
+AS $$
+DECLARE
+  v_task record;
+  v_base_points integer;
+  v_quality_bonus integer;
+  v_total_points integer;
+  v_deadline_bonus integer := 0;
+  v_staff_id uuid;
+  v_helper_id uuid;
+  v_helper_points integer;
+  v_quality_text text;
+  v_notification_id uuid;
+BEGIN
+  SELECT * INTO v_task FROM tasks WHERE id = p_task_id;
+  
+  IF NOT FOUND THEN
+    RAISE EXCEPTION 'Task not found';
+  END IF;
+  
+  -- Determine quality bonus
+  CASE p_review_quality
+    WHEN 'very_good' THEN 
+      v_quality_bonus := 3;
+      v_quality_text := 'Sehr gut gemacht!';
+    WHEN 'ready' THEN 
+      v_quality_bonus := 0;
+      v_quality_text := 'Gut erledigt';
+    WHEN 'not_ready' THEN 
+      v_quality_bonus := -2;
+      v_quality_text := 'Bitte nochmal überarbeiten';
+    ELSE 
+      v_quality_bonus := 0;
+      v_quality_text := 'Erledigt';
+  END CASE;
+  
+  v_base_points := COALESCE(v_task.points_value, 0);
+  
+  -- Check for deadline bonus
+  IF v_task.completed_at IS NOT NULL AND v_task.due_date IS NOT NULL 
+     AND v_task.completed_at < v_task.due_date THEN
+    v_deadline_bonus := 1;
+  END IF;
+  
+  v_total_points := v_base_points + v_quality_bonus + v_deadline_bonus;
+  
+  IF v_total_points < 0 THEN
+    v_total_points := 0;
+  END IF;
+  
+  v_staff_id := v_task.assigned_to;
+  
+  -- Check BOTH helper_id and secondary_assigned_to
+  v_helper_id := COALESCE(v_task.helper_id, v_task.secondary_assigned_to);
+  v_helper_points := GREATEST(FLOOR(v_total_points * 0.5), 0);
+  
+  -- Update task
+  UPDATE tasks 
+  SET 
+    status = 'completed',
+    admin_reviewed = true,
+    admin_approved = true,
+    reviewed_by = p_admin_id,
+    reviewed_at = now(),
+    review_quality = p_review_quality,
+    quality_bonus_points = v_quality_bonus,
+    deadline_bonus_awarded = (v_deadline_bonus > 0),
+    updated_at = now()
+  WHERE id = p_task_id;
+  
+  -- Award points to primary staff
+  IF v_staff_id IS NOT NULL THEN
+    INSERT INTO points_history (user_id, points_change, category, reason, created_by)
+    VALUES (v_staff_id, v_total_points, 'task_completed', v_task.title, p_admin_id);
+    
+    INSERT INTO notifications (
+      user_id,
+      type,
+      title,
+      title_de,
+      title_en,
+      title_km,
+      message,
+      message_de,
+      message_en,
+      message_km
+    ) VALUES (
+      v_staff_id,
+      'task_approved',
+      'Task Approved!',
+      'Aufgabe genehmigt!',
+      'Task Approved!',
+      'កិច្ចការអនុម័ត!',
+      v_quality_text || ' - ' || v_task.title || ' (+' || v_total_points || ' points)',
+      v_quality_text || ' - ' || v_task.title || ' (+' || v_total_points || ' Punkte)',
+      v_quality_text || ' - ' || v_task.title || ' (+' || v_total_points || ' points)',
+      v_quality_text || ' - ' || v_task.title || ' (+' || v_total_points || ' ពិន្ទុ)'
+    )
+    RETURNING id INTO v_notification_id;
+    
+    BEGIN
+      PERFORM send_push_notification(v_staff_id, v_notification_id);
+    EXCEPTION WHEN OTHERS THEN
+      RAISE WARNING 'Push notification failed for user %: %', v_staff_id, SQLERRM;
+    END;
+  END IF;
+  
+  -- Award 50% points to helper (check both helper_id and secondary_assigned_to)
+  IF v_helper_id IS NOT NULL AND v_helper_id != v_staff_id AND v_helper_points > 0 THEN
+    INSERT INTO points_history (user_id, points_change, category, reason, created_by)
+    VALUES (v_helper_id, v_helper_points, 'task_completed', v_task.title || ' (Helper)', p_admin_id);
+    
+    INSERT INTO notifications (
+      user_id,
+      type,
+      title,
+      title_de,
+      title_en,
+      title_km,
+      message,
+      message_de,
+      message_en,
+      message_km
+    ) VALUES (
+      v_helper_id,
+      'task_approved',
+      'Helper Points!',
+      'Helfer Punkte!',
+      'Helper Points!',
+      'ពិន្ទុជំនួយការ!',
+      'Task approved: ' || v_task.title || ' (+' || v_helper_points || ' points)',
+      'Aufgabe genehmigt: ' || v_task.title || ' (+' || v_helper_points || ' Punkte)',
+      'Task approved: ' || v_task.title || ' (+' || v_helper_points || ' points)',
+      'កិច្ចការអនុម័ត: ' || v_task.title || ' (+' || v_helper_points || ' ពិន្ទុ)'
+    )
+    RETURNING id INTO v_notification_id;
+    
+    BEGIN
+      PERFORM send_push_notification(v_helper_id, v_notification_id);
+    EXCEPTION WHEN OTHERS THEN
+      RAISE WARNING 'Push notification failed for helper %: %', v_helper_id, SQLERRM;
+    END;
+  END IF;
+  
+  RETURN jsonb_build_object(
+    'success', true,
+    'points_awarded', v_total_points,
+    'helper_points', v_helper_points,
+    'quality_bonus', v_quality_bonus,
+    'deadline_bonus', v_deadline_bonus
+  );
+END;
+$$;
