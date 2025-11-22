@@ -99,13 +99,19 @@ export function CheckIn({ onBack }: { onBack?: () => void } = {}) {
 
       console.log('checkForMissedFortuneWheel: Check-in data:', checkInData, 'Error:', checkInError);
 
-      if (checkInData && !showFortuneWheel) {
+      if (checkInData) {
         console.log('Found check-in without fortune wheel spin!', checkInData.id);
-        console.log('Opening Fortune Wheel NOW!');
-        setCurrentCheckInId(checkInData.id);
-        setShowFortuneWheel(true);
+        console.log('Check-in status:', checkInData.status);
+
+        if (!showFortuneWheel) {
+          console.log('Opening Fortune Wheel NOW!');
+          setCurrentCheckInId(checkInData.id);
+          setShowFortuneWheel(true);
+        } else {
+          console.log('Fortune Wheel already showing, not opening again');
+        }
       } else {
-        console.log('checkForMissedFortuneWheel: No check-in found for today or wheel already showing');
+        console.log('checkForMissedFortuneWheel: No check-in found for today');
       }
     } finally {
       setIsCheckingWheel(false);

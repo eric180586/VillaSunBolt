@@ -146,7 +146,7 @@ export function PerformanceMetrics({ onNavigate }: PerformanceMetricsProps = {})
   const [_checklistInstances, _setChecklistInstances] = useState<any[]>([]);
   const [totalTasksToday, setTotalTasksToday] = useState(0);
   const [completedTasksToday, setCompletedTasksToday] = useState(0);
-  const [_teamEstimatedTime, _setTeamEstimatedTime] = useState(0);
+  const [teamEstimatedTime, setTeamEstimatedTime] = useState(0);
 
   useEffect(() => {
     if (dailyGoal) {
@@ -269,7 +269,7 @@ export function PerformanceMetrics({ onNavigate }: PerformanceMetricsProps = {})
         }) as any;
 
         if (scheduledCount === 0) {
-          _setTeamEstimatedTime(120);
+          setTeamEstimatedTime(120);
           return;
         }
 
@@ -291,11 +291,11 @@ export function PerformanceMetrics({ onNavigate }: PerformanceMetricsProps = {})
         const totalMinutes = totalTaskMinutes + totalChecklistMinutes;
         const estimatedMinutes = Math.ceil(totalMinutes / scheduledCount) + 120;
 
-        _setTeamEstimatedTime(estimatedMinutes);
+        setTeamEstimatedTime(estimatedMinutes);
 
       } catch (error: any) {
         console.error('Estimated time error:', error);
-        _setTeamEstimatedTime(0);
+        setTeamEstimatedTime(0);
       }
     };
 
@@ -445,6 +445,7 @@ export function PerformanceMetrics({ onNavigate }: PerformanceMetricsProps = {})
           percentage={teamPercentage}
           icon={Users}
           showProgressBar={true}
+          estimatedTime={teamEstimatedTime}
           onClick={() => onNavigate?.('leaderboard')}
         />
       </div>
