@@ -275,8 +275,9 @@ export function PerformanceMetrics({ onNavigate }: PerformanceMetricsProps = {})
 
         const { data: tasksData, error: tasksError } = await supabase
           .from('tasks')
-          .select('duration_minutes, status')
-          .eq('due_date', today)
+          .select('duration_minutes, status, due_date')
+          .gte('due_date', `${today}T00:00:00`)
+          .lt('due_date', `${today}T23:59:59`)
           .neq('status', 'completed')
           .neq('status', 'archived');
 
