@@ -6,7 +6,7 @@ import {
   Home,
   CheckSquare,
   Calendar,
-  
+
   StickyNote,
   Award,
   Bell,
@@ -17,7 +17,8 @@ import {
   X,
   Smile,
   Shield,
-  
+  TrendingUp,
+
   BookOpen,
   MessageCircle,
 } from 'lucide-react';
@@ -42,13 +43,16 @@ export function Layout({ children, currentView, onViewChange }: LayoutProps) {
     { id: 'patrol-rounds', label: t('nav.patrol'), icon: Shield },
     { id: 'schedules', label: t('nav.schedules'), icon: Calendar },
     { id: 'notes', label: t('nav.notes'), icon: StickyNote },
-    { id: 'chat', label: 'Chat', icon: MessageCircle },
-    { id: 'how-to', label: 'How-To', icon: BookOpen },
-    { id: 'leaderboard', label: t('nav.leaderboard'), icon: Award },
-    ...(isAdmin ? [
-      { id: 'employees', label: t('nav.employees'), icon: Users },
-      { id: 'humor-settings', label: t('nav.humorSettings'), icon: Smile }
-    ] : []),
+    { id: 'chat', label: t('nav.chat'), icon: MessageCircle },
+    { id: 'how-to', label: t('nav.howTo'), icon: BookOpen },
+    { id: isAdmin ? 'points-manager' : 'leaderboard', label: isAdmin ? t('nav.pointsManager') : t('nav.leaderboard'), icon: Award },
+    ...(isAdmin
+      ? [
+          { id: 'monthly-points', label: t('nav.monthlyPoints'), icon: TrendingUp },
+          { id: 'employees', label: t('nav.employees'), icon: Users },
+          { id: 'humor-settings', label: t('nav.humorSettings'), icon: Smile },
+        ]
+      : []),
   ];
 
   const handleViewChange = (view: string) => {
@@ -72,7 +76,7 @@ export function Layout({ children, currentView, onViewChange }: LayoutProps) {
                 {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
               </button>
               <h1 className="text-xl font-bold text-gray-900 ml-2 lg:ml-0">
-                Villa Sun Team
+                {t('nav.brand')}
               </h1>
             </div>
 

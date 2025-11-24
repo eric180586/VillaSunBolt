@@ -199,29 +199,29 @@ export function PerformanceMetrics({ onNavigate }: PerformanceMetricsProps = {})
     };
   }, [profile?.id]);
 
+  const fetchTeamPoints = useCallback(async () => {
+    if (dailyGoal) return;
+
+    try {
+      const today = getTodayDateString();
+
+      const { data: goalsData, error: goalsError } = await supabase
+        .from('daily_point_goals')
+        .select('team_achievable_points, team_points_earned')
+        .eq('goal_date', today)
+        .limit(1)
+        .maybeSingle() as any;
+
+      if (goalsError) throw goalsError;
+
+      setTeamAchievable(goalsData?.team_achievable_points || 0);
+      setTeamAchieved(goalsData?.team_points_earned || 0);
+    } catch (error) {
+      console.error('Error fetching team points:', error);
+    }
+  }, [dailyGoal]);
+
   useEffect(() => {
-    const fetchTeamPoints = async () => {
-      if (dailyGoal) return;
-
-      try {
-        const today = getTodayDateString();
-
-        const { data: goalsData, error: goalsError } = await supabase
-          .from('daily_point_goals')
-          .select('team_achievable_points, team_points_earned')
-          .eq('goal_date', today)
-          .limit(1)
-          .maybeSingle() as any;
-
-        if (goalsError) throw goalsError;
-
-        setTeamAchievable(goalsData?.team_achievable_points || 0);
-        setTeamAchieved(goalsData?.team_points_earned || 0);
-      } catch (error) {
-        console.error('Error fetching team points:', error);
-      }
-    };
-
     fetchTeamPoints();
 
     // Subscribe to changes
@@ -243,7 +243,7 @@ export function PerformanceMetrics({ onNavigate }: PerformanceMetricsProps = {})
     return () => {
       supabase.removeChannel(channel);
     };
-  }, []);
+  }, [fetchTeamPoints]);
 
   useEffect(() => {
     const calculateEstimatedTime = async () => {

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { ChevronLeft, ChevronRight, X } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useTranslation } from 'react-i18next';
@@ -26,22 +26,7 @@ export default function TutorialViewer({ onComplete, onClose }: TutorialViewerPr
 
   const minSwipeDistance = 50;
 
-  useEffect(() => {
-    loadSlides();
-  }, []);
-
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'ArrowLeft') goToPrevious();
-      if (e.key === 'ArrowRight') goToNext();
-      if (e.key === 'Escape') onClose();
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [currentSlide]);
-
-  const loadSlides = async () => {
+  const loadSlides = useCallback(async () => {
     try {
       const { data, error } = await supabase
         .from('tutorial_slides')
@@ -56,21 +41,35 @@ export default function TutorialViewer({ onComplete, onClose }: TutorialViewerPr
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
-  const goToNext = () => {
+  useEffect(() => {
+    loadSlides();
+  }, [loadSlides]);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'ArrowLeft') goToPrevious();
+      if (e.key === 'ArrowRight') goToNext();
+      if (e.key === 'Escape') onClose();
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [currentSlide, goToNext, goToPrevious, onClose]);
+  const goToNext = useCallback(() => {
     if (currentSlide < slides.length - 1) {
-      setCurrentSlide(currentSlide + 1);
+      setCurrentSlide((prev) => prev + 1);
     } else {
       onComplete();
     }
-  };
+  }, [currentSlide, onComplete, slides.length]);
 
-  const goToPrevious = () => {
+  const goToPrevious = useCallback(() => {
     if (currentSlide > 0) {
-      setCurrentSlide(currentSlide - 1);
+      setCurrentSlide((prev) => prev - 1);
     }
-  };
+  }, [currentSlide]);
 
   const onTouchStart = (e: React.TouchEvent) => {
     setTouchEnd(null);
