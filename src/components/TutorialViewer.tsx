@@ -47,6 +47,16 @@ export default function TutorialViewer({ onComplete, onClose }: TutorialViewerPr
     loadSlides();
   }, [loadSlides]);
 
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'ArrowLeft') goToPrevious();
+      if (e.key === 'ArrowRight') goToNext();
+      if (e.key === 'Escape') onClose();
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [currentSlide, goToNext, goToPrevious, onClose]);
   const goToNext = useCallback(() => {
     if (currentSlide < slides.length - 1) {
       setCurrentSlide((prev) => prev + 1);
@@ -60,17 +70,6 @@ export default function TutorialViewer({ onComplete, onClose }: TutorialViewerPr
       setCurrentSlide((prev) => prev - 1);
     }
   }, [currentSlide]);
-
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'ArrowLeft') goToPrevious();
-      if (e.key === 'ArrowRight') goToNext();
-      if (e.key === 'Escape') onClose();
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [currentSlide, goToNext, goToPrevious, onClose]);
 
   const onTouchStart = (e: React.TouchEvent) => {
     setTouchEnd(null);

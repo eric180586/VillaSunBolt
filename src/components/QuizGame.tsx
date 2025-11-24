@@ -49,7 +49,42 @@ export default function QuizGame({ onClose }: QuizGameProps) {
   const [allQuestions, setAllQuestions] = useState<QuizQuestion[]>([]);
   const [showFeedback, setShowFeedback] = useState<{ correct: boolean; message: string } | null>(null);
 
-  const loadQuestions = useCallback(async () => {
+  useEffect(() => {
+    loadQuestions();
+  }, []);
+
+  useEffect(() => {
+    if (gameState === 'question' && !buzzerLocked) {
+      const handleBuzzer = (e: KeyboardEvent) => {
+        const keyIndex = BUZZER_KEYS.indexOf(e.key.toLowerCase());
+        if (keyIndex !== -1 && keyIndex < players.length && !buzzerLocked) {
+          handleBuzzerPress(keyIndex);
+        }
+      };
+
+      window.addEventListener('keydown', handleBuzzer);
+      return () => window.removeEventListener('keydown', handleBuzzer);
+    }
+  }, [buzzerLocked, gameState, handleBuzzerPress, players]);
+
+  useEffect(() => {
+    if (gameState === 'question' && buzzerLocked && activePlayer !== null && timeLeft > 0) {
+      const timer = setInterval(() => {
+        setTimeLeft((prev) => {
+          if (prev <= 100) {
+            clearInterval(timer);
+            handleTimeout();
+            return 0;
+          }
+          return prev - 100;
+        }) as any;
+      }, 100);
+
+      return () => clearInterval(timer);
+    }
+  }, [activePlayer, buzzerLocked, gameState, handleTimeout, timeLeft]);
+
+  const loadQuestions = async () => {
     try {
       const { data, error } = await supabase
         .from('quiz_questions')
@@ -158,22 +193,6 @@ export default function QuizGame({ onClose }: QuizGameProps) {
     setGameState('question');
   }, [allQuestions, endGame, usedQuestions]);
 
-  const startGame = () => {
-    const newPlayers: Player[] = [];
-    for (let i = 0; i < playerCount; i++) {
-      newPlayers.push({
-        id: i === 0 ? profile?.id || `player-${i}` : `player-${i}`,
-        name: i === 0 ? profile?.full_name || `Player ${i + 1}` : `Player ${i + 1}`,
-        position: 0,
-        points: 0,
-        color: PLAYER_COLORS[i],
-      }) as any;
-    }
-    setPlayers(newPlayers);
-    setGameState('playing');
-    loadNextQuestion();
-  };
-
   const handleBuzzerPress = useCallback((playerIndex: number) => {
     if (buzzerLocked || !currentQuestion) return;
 
@@ -262,6 +281,20 @@ export default function QuizGame({ onClose }: QuizGameProps) {
             return 0;
           }
           return prev - 100;
+
+  const saveGameResults = useCallback(async (winner: Player) => {
+    try {
+      const { error: sessionError } = await supabase
+        .from('quiz_sessions')
+        .insert({
+          created_by: profile?.id,
+          player_count: playerCount,
+          player_ids: players.map(p => p.id),
+          player_names: players.map(p => p.name),
+          questions_used: usedQuestions,
+          winner_id: winner.id === profile?.id ? winner.id : null,
+          points_awarded: players.reduce((acc, p) => ({ ...acc, [p.id]: p.points }), {}),
+          completed_at: new Date().toISOString(),
         }) as any;
       }, 100);
 
