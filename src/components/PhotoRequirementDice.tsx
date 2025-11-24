@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { X } from 'lucide-react';
 
@@ -13,7 +13,7 @@ export function PhotoRequirementDice({ onResult, onCancel }: PhotoRequirementDic
   const [currentValue, setCurrentValue] = useState('🎲');
   const [finalResult, setFinalResult] = useState<boolean | null>(null);
 
-  const symbols = ['📸', '✅', '🎯', '⭐', '🎲', '💫'];
+  const symbols = useMemo(() => ['📸', '✅', '🎯', '⭐', '🎲', '💫'], []);
 
   useEffect(() => {
     if (!isRolling) return;
@@ -23,7 +23,7 @@ export function PhotoRequirementDice({ onResult, onCancel }: PhotoRequirementDic
     }, 80);
 
     return () => clearInterval(interval);
-  }, [isRolling]);
+  }, [isRolling, symbols]);
 
   const handleStop = () => {
     setIsRolling(false);

@@ -29,6 +29,8 @@ npm install
 npm run dev
 ```
 
+Create a `.env` based on `.env.example` and provide your Supabase credentials plus VAPID keys for push notifications before running the app locally.
+
 ## Build
 
 ```bash

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Trophy, Users, X, Clock, Zap } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useTranslation } from 'react-i18next';
@@ -65,7 +65,7 @@ export default function QuizGame({ onClose }: QuizGameProps) {
       window.addEventListener('keydown', handleBuzzer);
       return () => window.removeEventListener('keydown', handleBuzzer);
     }
-  }, [gameState, buzzerLocked, players]);
+  }, [buzzerLocked, gameState, handleBuzzerPress, players]);
 
   useEffect(() => {
     if (gameState === 'question' && buzzerLocked && activePlayer !== null && timeLeft > 0) {
@@ -82,7 +82,7 @@ export default function QuizGame({ onClose }: QuizGameProps) {
 
       return () => clearInterval(timer);
     }
-  }, [gameState, buzzerLocked, activePlayer, timeLeft]);
+  }, [activePlayer, buzzerLocked, gameState, handleTimeout, timeLeft]);
 
   const loadQuestions = async () => {
     try {
@@ -114,7 +114,7 @@ export default function QuizGame({ onClose }: QuizGameProps) {
     loadNextQuestion();
   };
 
-  const loadNextQuestion = () => {
+  const loadNextQuestion = useCallback(() => {
     const availableQuestions = allQuestions.filter(q => !usedQuestions.includes(q.id));
 
     if (availableQuestions.length === 0) {
@@ -131,15 +131,15 @@ export default function QuizGame({ onClose }: QuizGameProps) {
     setTimeLeft(0);
     setShowFeedback(null);
     setGameState('question');
-  };
+  }, [allQuestions, endGame, usedQuestions]);
 
-  const handleBuzzerPress = (playerIndex: number) => {
+  const handleBuzzerPress = useCallback((playerIndex: number) => {
     if (buzzerLocked || !currentQuestion) return;
 
     setBuzzerLocked(true);
     setActivePlayer(playerIndex);
     setTimeLeft(MAX_RESPONSE_TIME);
-  };
+  }, [buzzerLocked, currentQuestion]);
 
   const handleAnswer = (answer: string) => {
     if (!currentQuestion || activePlayer === null) return;
@@ -182,7 +182,7 @@ export default function QuizGame({ onClose }: QuizGameProps) {
     }
   };
 
-  const handleTimeout = () => {
+  const handleTimeout = useCallback(() => {
     setShowFeedback({
       correct: false,
       message: 'Time\'s up! Next question...',
@@ -191,23 +191,9 @@ export default function QuizGame({ onClose }: QuizGameProps) {
     setTimeout(() => {
       loadNextQuestion();
     }, 2000);
-  };
+  }, [loadNextQuestion]);
 
-  const endGame = () => {
-    const winner = players.reduce((max, player) =>
-      player.position > max.position ? player : max
-    , players[0]);
-
-    setPlayers(prev => prev.map(p => ({
-      ...p,
-      position: p.id === winner.id ? BOARD_SIZE : p.position
-    })));
-
-    setGameState('winner');
-    saveGameResults(winner);
-  };
-
-  const saveGameResults = async (winner: Player) => {
+  const saveGameResults = useCallback(async (winner: Player) => {
     try {
       const { error: sessionError } = await supabase
         .from('quiz_sessions')
@@ -267,7 +253,21 @@ export default function QuizGame({ onClose }: QuizGameProps) {
     } catch (error) {
       console.error('Error saving game results:', error);
     }
-  };
+  }, [playerCount, players, profile?.id, usedQuestions]);
+
+  const endGame = useCallback(() => {
+    const winner = players.reduce((max, player) =>
+      player.position > max.position ? player : max
+    , players[0]);
+
+    setPlayers(prev => prev.map(p => ({
+      ...p,
+      position: p.id === winner.id ? BOARD_SIZE : p.position
+    })));
+
+    setGameState('winner');
+    saveGameResults(winner);
+  }, [players, saveGameResults]);
 
   if (gameState === 'setup') {
     return (

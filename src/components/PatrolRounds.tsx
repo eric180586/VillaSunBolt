@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 import { useAuth } from '../contexts/AuthContext';
 import { Shield, Camera, CheckCircle, AlertCircle, Clock, QrCode, ArrowLeft } from 'lucide-react';
@@ -50,43 +50,7 @@ export function PatrolRounds({ onBack }: { onBack?: () => void } = {}) {
   const [showTestRound, setShowTestRound] = useState(false);
   const [testRound, setTestRound] = useState<PatrolRound | null>(null);
 
-  useEffect(() => {
-    loadLocations();
-    loadTodayData();
-    checkAndCreateRounds();
-
-    const channel = supabase
-      .channel(`patrol_updates_${Date.now()}`)
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'patrol_rounds',
-        },
-        () => {
-          loadTodayData();
-        }
-      )
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'patrol_scans',
-        },
-        () => {
-          loadTodayData();
-        }
-      )
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, []);
-
-  const loadLocations = async () => {
+  const loadLocations = useCallback(async () => {
     const { data, error } = await supabase
       .from('patrol_locations')
       .select('*')
@@ -98,9 +62,9 @@ export function PatrolRounds({ onBack }: { onBack?: () => void } = {}) {
     }
 
     setLocations(data || []);
-  };
+  }, []);
 
-  const loadTodayData = async () => {
+  const loadTodayData = useCallback(async () => {
     const today = getTodayDateString();
 
     // EVERYONE can see ALL rounds
@@ -137,9 +101,9 @@ export function PatrolRounds({ onBack }: { onBack?: () => void } = {}) {
 
     const activeRound = findActiveRound(roundsData || []);
     setCurrentRound(activeRound);
-  };
+  }, []);
 
-  const checkAndCreateRounds = async () => {
+  const checkAndCreateRounds = useCallback(async () => {
     const today = getTodayDateString();
 
     const { data: schedule } = await supabase
@@ -180,7 +144,43 @@ export function PatrolRounds({ onBack }: { onBack?: () => void } = {}) {
     }
 
     loadTodayData();
-  };
+  }, [loadTodayData]);
+
+  useEffect(() => {
+    loadLocations();
+    loadTodayData();
+    checkAndCreateRounds();
+
+    const channel = supabase
+      .channel(`patrol_updates_${Date.now()}`)
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'patrol_rounds',
+        },
+        () => {
+          loadTodayData();
+        }
+      )
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'patrol_scans',
+        },
+        () => {
+          loadTodayData();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [checkAndCreateRounds, loadLocations, loadTodayData]);
 
   const createTestRound = async () => {
     const { data: { user } } = await supabase.auth.getUser();

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '../lib/supabase';
 import { Database } from '../lib/database.types';
 import { getTodayDateString } from '../lib/dateUtils';
@@ -9,6 +9,32 @@ export function useDailyPointGoals(userId?: string, date?: string) {
   const [dailyGoal, setDailyGoal] = useState<DailyPointGoal | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
+
+  const fetchDailyGoal = useCallback(async () => {
+    if (!userId) return;
+
+    try {
+      setLoading(true);
+      const targetDate = date || getTodayDateString();
+
+      const { data, error: fetchError } = await supabase
+        .from('daily_point_goals')
+        .select('*')
+        .eq('user_id', userId)
+        .eq('goal_date', targetDate)
+        .maybeSingle() as any;
+
+      if (fetchError) throw fetchError;
+
+      setDailyGoal(data);
+      setError(null);
+    } catch (err) {
+      setError(err as Error);
+      console.error('Error fetching daily goal:', err);
+    } finally {
+      setLoading(false);
+    }
+  }, [date, userId]);
 
   useEffect(() => {
     if (!userId) {
@@ -37,33 +63,7 @@ export function useDailyPointGoals(userId?: string, date?: string) {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [userId, date]);
-
-  const fetchDailyGoal = async () => {
-    if (!userId) return;
-
-    try {
-      setLoading(true);
-      const targetDate = date || getTodayDateString();
-
-      const { data, error: fetchError } = await supabase
-        .from('daily_point_goals')
-        .select('*')
-        .eq('user_id', userId)
-        .eq('goal_date', targetDate)
-        .maybeSingle() as any;
-
-      if (fetchError) throw fetchError;
-
-      setDailyGoal(data);
-      setError(null);
-    } catch (err) {
-      setError(err as Error);
-      console.error('Error fetching daily goal:', err);
-    } finally {
-      setLoading(false);
-    }
-  };
+  }, [date, fetchDailyGoal, userId]);
 
   const refreshDailyGoal = async () => {
     if (!userId) return;
@@ -94,16 +94,7 @@ export function useMonthlyProgress(userId?: string) {
   const [monthlyProgress, setMonthlyProgress] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    if (!userId) {
-      setLoading(false);
-      return;
-    }
-
-    fetchMonthlyProgress();
-  }, [userId]);
-
-  const fetchMonthlyProgress = async () => {
+  const fetchMonthlyProgress = useCallback(async () => {
     if (!userId) return;
 
     try {
@@ -123,7 +114,16 @@ export function useMonthlyProgress(userId?: string) {
     } finally {
       setLoading(false);
     }
-  };
+  }, [userId]);
+
+  useEffect(() => {
+    if (!userId) {
+      setLoading(false);
+      return;
+    }
+
+    fetchMonthlyProgress();
+  }, [fetchMonthlyProgress, userId]);
 
   return {
     monthlyProgress,
@@ -136,11 +136,7 @@ export function useTeamMonthlyProgress() {
   const [teamProgress, setTeamProgress] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    fetchTeamProgress();
-  }, []);
-
-  const fetchTeamProgress = async () => {
+  const fetchTeamProgress = useCallback(async () => {
     try {
       setLoading(true);
       const now = new Date();
@@ -157,7 +153,11 @@ export function useTeamMonthlyProgress() {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    fetchTeamProgress();
+  }, [fetchTeamProgress]);
 
   return {
     teamProgress,

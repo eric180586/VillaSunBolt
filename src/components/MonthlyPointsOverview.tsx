@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { supabase } from '../lib/supabase';
 import { useProfiles } from '../hooks/useProfiles';
@@ -16,12 +17,33 @@ interface MonthlyGoal {
 
 export function MonthlyPointsOverview() {
   const { profiles } = useProfiles();
+  const { t, i18n } = useTranslation();
   const [monthlyGoals, setMonthlyGoals] = useState<MonthlyGoal[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedMonth, setSelectedMonth] = useState(() => {
     const now = new Date();
     return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
   }) as any;
+
+  const fetchMonthlyGoals = useCallback(async () => {
+    try {
+      setLoading(true);
+
+      const { data, error } = await supabase
+        .from('monthly_point_goals')
+        .select('*')
+        .eq('month', selectedMonth)
+        .order('percentage', { ascending: false }) as any;
+
+      if (error) throw error;
+
+      setMonthlyGoals(data || []);
+    } catch (error) {
+      console.error('Error fetching monthly goals:', error);
+    } finally {
+      setLoading(false);
+    }
+  }, [selectedMonth]);
 
   useEffect(() => {
     fetchMonthlyGoals();
@@ -44,27 +66,7 @@ export function MonthlyPointsOverview() {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [selectedMonth]);
-
-  const fetchMonthlyGoals = async () => {
-    try {
-      setLoading(true);
-
-      const { data, error } = await supabase
-        .from('monthly_point_goals')
-        .select('*')
-        .eq('month', selectedMonth)
-        .order('percentage', { ascending: false }) as any;
-
-      if (error) throw error;
-
-      setMonthlyGoals(data || []);
-    } catch (error) {
-      console.error('Error fetching monthly goals:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  }, [fetchMonthlyGoals]);
 
   const refreshMonthlyGoals = async () => {
     try {
@@ -117,7 +119,8 @@ export function MonthlyPointsOverview() {
   };
 
   const teamColor = getTeamColor();
-  const monthName = new Date(selectedMonth + '-01').toLocaleDateString('de-DE', { month: 'long', year: 'numeric' }) as any;
+  const locale = i18n.language === 'de' ? 'de-DE' : i18n.language === 'km' ? 'km-KH' : 'en-US';
+  const monthName = new Date(selectedMonth + '-01').toLocaleDateString(locale, { month: 'long', year: 'numeric' }) as any;
 
   return (
     <div className="space-y-6">
@@ -126,7 +129,7 @@ export function MonthlyPointsOverview() {
           <div className="flex items-center space-x-3">
             <Calendar className="w-8 h-8 text-blue-600" />
             <div>
-              <h2 className="text-2xl font-bold text-gray-900">Monatliche Punkteübersicht</h2>
+              <h2 className="text-2xl font-bold text-gray-900">{t('monthlyPoints.title')}</h2>
               <p className="text-sm text-gray-600 capitalize">{monthName}</p>
             </div>
           </div>
@@ -141,7 +144,7 @@ export function MonthlyPointsOverview() {
               onClick={refreshMonthlyGoals}
               className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
             >
-              Aktualisieren
+              {t('monthlyPoints.refresh')}
             </button>
           </div>
         </div>
@@ -151,9 +154,9 @@ export function MonthlyPointsOverview() {
             <div className="flex items-center space-x-4">
               <Users className="w-8 h-8 text-blue-600" />
               <div>
-                <p className="font-bold text-xl text-gray-900">Team Gesamt - {monthName}</p>
+                <p className="font-bold text-xl text-gray-900">{t('monthlyPoints.teamTotal', { month: monthName })}</p>
                 <p className={`text-base font-semibold ${getTextColorClasses(teamColor)}`}>
-                  {totalAchieved} / {totalAchievable} Punkte
+                  {t('monthlyPoints.pointsProgress', { achieved: totalAchieved, achievable: totalAchievable })}
                 </p>
               </div>
             </div>
@@ -162,12 +165,12 @@ export function MonthlyPointsOverview() {
               <div className="flex items-center space-x-2 mt-2">
                 <Target className="w-5 h-5 text-gray-600" />
                 <p className="text-sm font-semibold text-gray-600">
-                  Ziel: 90% für Team-Event
+                  {t('monthlyPoints.teamTarget')}
                 </p>
               </div>
               {teamPercentage >= 90 && (
                 <p className="text-sm font-bold text-green-600 mt-1">
-                  Team-Event erreicht!
+                  {t('monthlyPoints.teamEventAchieved')}
                 </p>
               )}
             </div>
@@ -191,7 +194,10 @@ export function MonthlyPointsOverview() {
                   <div>
                     <p className="font-bold text-gray-900">{profile.full_name}</p>
                     <p className={`text-sm font-semibold ${getTextColorClasses(goal.color_status)}`}>
-                      {goal.total_achieved_points} / {goal.total_achievable_points} Punkte
+                      {t('monthlyPoints.pointsProgress', {
+                        achieved: goal.total_achieved_points,
+                        achievable: goal.total_achievable_points,
+                      })}
                     </p>
                   </div>
                 </div>
@@ -201,14 +207,14 @@ export function MonthlyPointsOverview() {
                     <TrendingUp className={`w-4 h-4 ${getTextColorClasses(goal.color_status)}`} />
                     <span className={`text-xs font-semibold ${getTextColorClasses(goal.color_status)}`}>
                       {goal.total_achievable_points === 0
-                        ? 'Kein Zeitplan'
+                        ? t('monthlyPoints.statusNoSchedule')
                         : goal.percentage >= 90
-                        ? 'Ausgezeichnet'
+                        ? t('monthlyPoints.statusExcellent')
                         : goal.percentage >= 70
-                        ? 'Gut'
+                        ? t('monthlyPoints.statusGood')
                         : goal.percentage >= 50
-                        ? 'Weiter so'
-                        : 'Aufholen'}
+                        ? t('monthlyPoints.statusKeepGoing')
+                        : t('monthlyPoints.statusCatchUp')}
                     </span>
                   </div>
                 </div>
@@ -218,12 +224,12 @@ export function MonthlyPointsOverview() {
 
           {monthlyGoals.length === 0 && (
             <div className="text-center py-8 text-gray-500">
-              <p>Noch keine monatlichen Ziele für {monthName}</p>
+              <p>{t('monthlyPoints.emptyState', { month: monthName })}</p>
               <button
                 onClick={refreshMonthlyGoals}
                 className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
               >
-                Jetzt berechnen
+                {t('monthlyPoints.calculateNow')}
               </button>
             </div>
           )}
