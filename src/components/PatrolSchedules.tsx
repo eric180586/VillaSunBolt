@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../contexts/AuthContext';
 import { useProfiles } from '../hooks/useProfiles';
@@ -30,10 +30,6 @@ export function PatrolSchedules({ onNavigate, onBack: _onBack }: PatrolSchedules
   const isAdmin = profile?.role === 'admin';
   const staffMembers = profiles.filter((p) => p.role === 'staff');
 
-  useEffect(() => {
-    loadSchedules();
-  }, [currentWeekStart]);
-
   function getMonday(date: Date): Date {
     const d = new Date(date);
     const day = d.getDay();
@@ -51,7 +47,7 @@ export function PatrolSchedules({ onNavigate, onBack: _onBack }: PatrolSchedules
     return result;
   }
 
-  const loadSchedules = async () => {
+  const loadSchedules = useCallback(async () => {
     setLoading(true);
     try {
       const weekDates = Array.from({ length: 7 }, (_, i) =>
@@ -87,7 +83,11 @@ export function PatrolSchedules({ onNavigate, onBack: _onBack }: PatrolSchedules
     } finally {
       setLoading(false);
     }
-  };
+  }, [currentWeekStart]);
+
+  useEffect(() => {
+    loadSchedules();
+  }, [currentWeekStart, loadSchedules]);
 
   const handleAssignment = async (date: string, shift: 'early' | 'late', currentStaffId: string | null) => {
     if (!isAdmin) return;

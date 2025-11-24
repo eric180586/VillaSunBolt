@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../contexts/AuthContext';
 import { useProfiles } from '../hooks/useProfiles';
@@ -69,11 +69,6 @@ export function Schedules({ onNavigate, onBack }: SchedulesProps = {}) {
   const isAdmin = profile?.role === 'admin';
   const staffMembers = profiles.filter((p) => p.role === 'staff');
 
-  useEffect(() => {
-    loadWeekSchedules();
-    loadTimeOffRequests();
-  }, [currentWeekStart]);
-
   function getMonday(date: Date): Date {
     const d = new Date(date);
     const day = d.getDay();
@@ -88,13 +83,13 @@ export function Schedules({ onNavigate, onBack }: SchedulesProps = {}) {
     return `${year}-${month}-${day}`;
   }
 
-  function getWeekDates(monday: Date): string[] {
+  const getWeekDates = useCallback((monday: Date): string[] => {
     return Array.from({ length: 7 }, (_, i) => {
       const date = new Date(monday);
       date.setDate(monday.getDate() + i);
       return formatDate(date);
     }) as any;
-  }
+  }, []);
 
   function canRequestTimeOff(): boolean {
     const now = new Date();
@@ -118,7 +113,7 @@ export function Schedules({ onNavigate, onBack }: SchedulesProps = {}) {
     return true;
   }
 
-  const loadWeekSchedules = async () => {
+  const loadWeekSchedules = useCallback(async () => {
     try {
       const weekStart = formatDate(currentWeekStart);
       const { data, error } = await supabase
@@ -131,9 +126,9 @@ export function Schedules({ onNavigate, onBack }: SchedulesProps = {}) {
     } catch (error) {
       console.error('Error loading schedules:', error);
     }
-  };
+  }, [currentWeekStart]);
 
-  const loadTimeOffRequests = async () => {
+  const loadTimeOffRequests = useCallback(async () => {
     try {
       const weekDates = getWeekDates(currentWeekStart);
       const { data, error } = await supabase
@@ -148,7 +143,12 @@ export function Schedules({ onNavigate, onBack }: SchedulesProps = {}) {
     } catch (error) {
       console.error('Error loading time-off requests:', error);
     }
-  };
+  }, [currentWeekStart, getWeekDates]);
+
+  useEffect(() => {
+    loadWeekSchedules();
+    loadTimeOffRequests();
+  }, [currentWeekStart, loadTimeOffRequests, loadWeekSchedules]);
 
   const getStaffSchedule = (staffId: string): WeekSchedule | null => {
     return weekSchedules.find((s: any) => s.staff_id === staffId) || null;

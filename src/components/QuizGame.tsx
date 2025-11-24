@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Trophy, Users, X, Clock, Zap } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useTranslation } from 'react-i18next';
@@ -49,42 +49,7 @@ export default function QuizGame({ onClose }: QuizGameProps) {
   const [allQuestions, setAllQuestions] = useState<QuizQuestion[]>([]);
   const [showFeedback, setShowFeedback] = useState<{ correct: boolean; message: string } | null>(null);
 
-  useEffect(() => {
-    loadQuestions();
-  }, []);
-
-  useEffect(() => {
-    if (gameState === 'question' && !buzzerLocked) {
-      const handleBuzzer = (e: KeyboardEvent) => {
-        const keyIndex = BUZZER_KEYS.indexOf(e.key.toLowerCase());
-        if (keyIndex !== -1 && keyIndex < players.length && !buzzerLocked) {
-          handleBuzzerPress(keyIndex);
-        }
-      };
-
-      window.addEventListener('keydown', handleBuzzer);
-      return () => window.removeEventListener('keydown', handleBuzzer);
-    }
-  }, [gameState, buzzerLocked, players]);
-
-  useEffect(() => {
-    if (gameState === 'question' && buzzerLocked && activePlayer !== null && timeLeft > 0) {
-      const timer = setInterval(() => {
-        setTimeLeft((prev) => {
-          if (prev <= 100) {
-            clearInterval(timer);
-            handleTimeout();
-            return 0;
-          }
-          return prev - 100;
-        }) as any;
-      }, 100);
-
-      return () => clearInterval(timer);
-    }
-  }, [gameState, buzzerLocked, activePlayer, timeLeft]);
-
-  const loadQuestions = async () => {
+  const loadQuestions = useCallback(async () => {
     try {
       const { data, error } = await supabase
         .from('quiz_questions')
@@ -96,118 +61,9 @@ export default function QuizGame({ onClose }: QuizGameProps) {
     } catch (error) {
       console.error('Error loading questions:', error);
     }
-  };
+  }, []);
 
-  const startGame = () => {
-    const newPlayers: Player[] = [];
-    for (let i = 0; i < playerCount; i++) {
-      newPlayers.push({
-        id: i === 0 ? profile?.id || `player-${i}` : `player-${i}`,
-        name: i === 0 ? profile?.full_name || `Player ${i + 1}` : `Player ${i + 1}`,
-        position: 0,
-        points: 0,
-        color: PLAYER_COLORS[i],
-      }) as any;
-    }
-    setPlayers(newPlayers);
-    setGameState('playing');
-    loadNextQuestion();
-  };
-
-  const loadNextQuestion = () => {
-    const availableQuestions = allQuestions.filter(q => !usedQuestions.includes(q.id));
-
-    if (availableQuestions.length === 0) {
-      endGame();
-      return;
-    }
-
-    const randomQuestion = availableQuestions[Math.floor(Math.random() * availableQuestions.length)];
-    setCurrentQuestion(randomQuestion);
-    setUsedQuestions([...usedQuestions, randomQuestion.id]);
-    setQuestionStartTime(Date.now());
-    setBuzzerLocked(false);
-    setActivePlayer(null);
-    setTimeLeft(0);
-    setShowFeedback(null);
-    setGameState('question');
-  };
-
-  const handleBuzzerPress = (playerIndex: number) => {
-    if (buzzerLocked || !currentQuestion) return;
-
-    setBuzzerLocked(true);
-    setActivePlayer(playerIndex);
-    setTimeLeft(MAX_RESPONSE_TIME);
-  };
-
-  const handleAnswer = (answer: string) => {
-    if (!currentQuestion || activePlayer === null) return;
-
-    const responseTime = Date.now() - questionStartTime;
-    const isCorrect = answer === currentQuestion.correct_answer;
-
-    if (isCorrect) {
-      const seconds = Math.min(5, Math.ceil(responseTime / 1000));
-      const fieldsToMove = Math.max(1, 6 - seconds);
-
-      setPlayers(prev => {
-        const updated = [...prev];
-        updated[activePlayer].position = Math.min(BOARD_SIZE, updated[activePlayer].position + fieldsToMove);
-        updated[activePlayer].points += currentQuestion.points_value;
-        return updated;
-      }) as any;
-
-      setShowFeedback({
-        correct: true,
-        message: `Correct! +${fieldsToMove} fields, +${currentQuestion.points_value} points!`,
-      }) as any;
-
-      setTimeout(() => {
-        if (players[activePlayer].position + fieldsToMove >= BOARD_SIZE) {
-          endGame();
-        } else {
-          loadNextQuestion();
-        }
-      }, 2000);
-    } else {
-      setShowFeedback({
-        correct: false,
-        message: 'Wrong answer! Next question...',
-      }) as any;
-
-      setTimeout(() => {
-        loadNextQuestion();
-      }, 2000);
-    }
-  };
-
-  const handleTimeout = () => {
-    setShowFeedback({
-      correct: false,
-      message: 'Time\'s up! Next question...',
-    }) as any;
-
-    setTimeout(() => {
-      loadNextQuestion();
-    }, 2000);
-  };
-
-  const endGame = () => {
-    const winner = players.reduce((max, player) =>
-      player.position > max.position ? player : max
-    , players[0]);
-
-    setPlayers(prev => prev.map(p => ({
-      ...p,
-      position: p.id === winner.id ? BOARD_SIZE : p.position
-    })));
-
-    setGameState('winner');
-    saveGameResults(winner);
-  };
-
-  const saveGameResults = async (winner: Player) => {
+  const saveGameResults = useCallback(async (winner: Player) => {
     try {
       const { error: sessionError } = await supabase
         .from('quiz_sessions')
@@ -267,7 +123,151 @@ export default function QuizGame({ onClose }: QuizGameProps) {
     } catch (error) {
       console.error('Error saving game results:', error);
     }
+  }, [playerCount, players, profile?.id, usedQuestions]);
+
+  const endGame = useCallback(() => {
+    const winner = players.reduce((max, player) =>
+      player.position > max.position ? player : max
+    , players[0]);
+
+    setPlayers(prev => prev.map(p => ({
+      ...p,
+      position: p.id === winner.id ? BOARD_SIZE : p.position
+    })));
+
+    setGameState('winner');
+    saveGameResults(winner);
+  }, [players, saveGameResults]);
+
+  const loadNextQuestion = useCallback(() => {
+    const availableQuestions = allQuestions.filter(q => !usedQuestions.includes(q.id));
+
+    if (availableQuestions.length === 0) {
+      endGame();
+      return;
+    }
+
+    const randomQuestion = availableQuestions[Math.floor(Math.random() * availableQuestions.length)];
+    setCurrentQuestion(randomQuestion);
+    setUsedQuestions([...usedQuestions, randomQuestion.id]);
+    setQuestionStartTime(Date.now());
+    setBuzzerLocked(false);
+    setActivePlayer(null);
+    setTimeLeft(0);
+    setShowFeedback(null);
+    setGameState('question');
+  }, [allQuestions, endGame, usedQuestions]);
+
+  const startGame = () => {
+    const newPlayers: Player[] = [];
+    for (let i = 0; i < playerCount; i++) {
+      newPlayers.push({
+        id: i === 0 ? profile?.id || `player-${i}` : `player-${i}`,
+        name: i === 0 ? profile?.full_name || `Player ${i + 1}` : `Player ${i + 1}`,
+        position: 0,
+        points: 0,
+        color: PLAYER_COLORS[i],
+      }) as any;
+    }
+    setPlayers(newPlayers);
+    setGameState('playing');
+    loadNextQuestion();
   };
+
+  const handleBuzzerPress = useCallback((playerIndex: number) => {
+    if (buzzerLocked || !currentQuestion) return;
+
+    setBuzzerLocked(true);
+    setActivePlayer(playerIndex);
+    setTimeLeft(MAX_RESPONSE_TIME);
+  }, [buzzerLocked, currentQuestion]);
+
+  const handleAnswer = (answer: string) => {
+    if (!currentQuestion || activePlayer === null) return;
+
+    const responseTime = Date.now() - questionStartTime;
+    const isCorrect = answer === currentQuestion.correct_answer;
+
+    if (isCorrect) {
+      const seconds = Math.min(5, Math.ceil(responseTime / 1000));
+      const fieldsToMove = Math.max(1, 6 - seconds);
+
+      setPlayers(prev => {
+        const updated = [...prev];
+        updated[activePlayer].position = Math.min(BOARD_SIZE, updated[activePlayer].position + fieldsToMove);
+        updated[activePlayer].points += currentQuestion.points_value;
+        return updated;
+      }) as any;
+
+      setShowFeedback({
+        correct: true,
+        message: `Correct! +${fieldsToMove} fields, +${currentQuestion.points_value} points!`,
+      }) as any;
+
+      setTimeout(() => {
+        if (players[activePlayer].position + fieldsToMove >= BOARD_SIZE) {
+          endGame();
+        } else {
+          loadNextQuestion();
+        }
+      }, 2000);
+    } else {
+      setShowFeedback({
+        correct: false,
+        message: 'Wrong answer! Next question...',
+      }) as any;
+
+      setTimeout(() => {
+        loadNextQuestion();
+      }, 2000);
+    }
+  };
+
+  const handleTimeout = useCallback(() => {
+    setShowFeedback({
+      correct: false,
+      message: 'Time\'s up! Next question...',
+    }) as any;
+
+    setTimeout(() => {
+      loadNextQuestion();
+    }, 2000);
+  }, [loadNextQuestion]);
+
+  useEffect(() => {
+    loadQuestions();
+  }, [loadQuestions]);
+
+  useEffect(() => {
+    if (gameState === 'question' && !buzzerLocked) {
+      const handleBuzzer = (e: KeyboardEvent) => {
+        const keyIndex = BUZZER_KEYS.indexOf(e.key.toLowerCase());
+        if (keyIndex !== -1 && keyIndex < players.length && !buzzerLocked) {
+          handleBuzzerPress(keyIndex);
+        }
+      };
+
+      window.addEventListener('keydown', handleBuzzer);
+      return () => window.removeEventListener('keydown', handleBuzzer);
+    }
+  }, [buzzerLocked, gameState, handleBuzzerPress, players]);
+
+  useEffect(() => {
+    if (gameState === 'question' && buzzerLocked && activePlayer !== null && timeLeft > 0) {
+      const timer = setInterval(() => {
+        setTimeLeft((prev) => {
+          if (prev <= 100) {
+            clearInterval(timer);
+            handleTimeout();
+            return 0;
+          }
+          return prev - 100;
+        }) as any;
+      }, 100);
+
+      return () => clearInterval(timer);
+    }
+  }, [activePlayer, buzzerLocked, gameState, handleTimeout, timeLeft]);
 
   if (gameState === 'setup') {
     return (

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useProfiles } from '../hooks/useProfiles';
 import { supabase } from '../lib/supabase';
@@ -36,48 +36,7 @@ export function CheckInOverview({ onBack, onNavigate }: CheckInOverviewProps = {
   const [checkInStatuses, setCheckInStatuses] = useState<CheckInStatus[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    if ((profile?.role === 'admin') && profiles.length > 0) {
-      fetchCheckInStatuses();
-
-      const checkInsChannel = supabase
-        .channel(`check_ins_overview_${Date.now()}`)
-        .on(
-          'postgres_changes',
-          {
-            event: '*',
-            schema: 'public',
-            table: 'check_ins',
-          },
-          () => {
-            fetchCheckInStatuses();
-          }
-        )
-        .subscribe();
-
-      const departureChannel = supabase
-        .channel(`departure_requests_overview_${Date.now()}`)
-        .on(
-          'postgres_changes',
-          {
-            event: '*',
-            schema: 'public',
-            table: 'departure_requests',
-          },
-          () => {
-            fetchCheckInStatuses();
-          }
-        )
-        .subscribe();
-
-      return () => {
-        supabase.removeChannel(checkInsChannel);
-        supabase.removeChannel(departureChannel);
-      };
-    }
-  }, [profile, profiles]);
-
-  const fetchCheckInStatuses = async () => {
+  const fetchCheckInStatuses = useCallback(async () => {
     try {
       setLoading(true);
       const today = getTodayDateString();
@@ -186,7 +145,48 @@ export function CheckInOverview({ onBack, onNavigate }: CheckInOverviewProps = {
     } finally {
       setLoading(false);
     }
-  };
+  }, [profiles]);
+
+  useEffect(() => {
+    if ((profile?.role === 'admin') && profiles.length > 0) {
+      fetchCheckInStatuses();
+
+      const checkInsChannel = supabase
+        .channel(`check_ins_overview_${Date.now()}`)
+        .on(
+          'postgres_changes',
+          {
+            event: '*',
+            schema: 'public',
+            table: 'check_ins',
+          },
+          () => {
+            fetchCheckInStatuses();
+          }
+        )
+        .subscribe();
+
+      const departureChannel = supabase
+        .channel(`departure_requests_overview_${Date.now()}`)
+        .on(
+          'postgres_changes',
+          {
+            event: '*',
+            schema: 'public',
+            table: 'departure_requests',
+          },
+          () => {
+            fetchCheckInStatuses();
+          }
+        )
+        .subscribe();
+
+      return () => {
+        supabase.removeChannel(checkInsChannel);
+        supabase.removeChannel(departureChannel);
+      };
+    }
+  }, [fetchCheckInStatuses, profile?.role, profiles.length]);
 
   if (profile?.role !== 'admin') {
     return null;

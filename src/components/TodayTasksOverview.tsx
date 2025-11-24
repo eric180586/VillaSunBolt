@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useTasks } from '../hooks/useTasks';
 import { supabase } from '../lib/supabase';
@@ -15,8 +15,11 @@ export function TodayTasksOverview({ onBack }: TodayTasksOverviewProps) {
   const { t } = useTranslation();
   const [checklistInstances, setChecklistInstances] = useState<any[]>([]);
 
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
+  const today = useMemo(() => {
+    const date = new Date();
+    date.setHours(0, 0, 0, 0);
+    return date;
+  }, []);
 
   useEffect(() => {
     async function fetchChecklistInstances() {
@@ -62,7 +65,7 @@ export function TodayTasksOverview({ onBack }: TodayTasksOverviewProps) {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, []);
+  }, [today]);
 
   const todayTasks = tasks.filter((task: any) => {
     // Include daily recurring tasks (they don't have due_date)

@@ -240,7 +240,7 @@ export function AdminDashboard({ onNavigate, onBack }: AdminDashboardProps = {})
           )}
           <div>
             <h2 className="text-3xl font-bold text-gray-900">
-              Admin Dashboard
+              {t('dashboard.adminDashboard')}
             </h2>
             <p className="text-gray-600 mt-1">{t('dashboard.welcomeBack', { name: profile?.full_name })}</p>
           </div>
@@ -251,13 +251,13 @@ export function AdminDashboard({ onNavigate, onBack }: AdminDashboardProps = {})
       <div className="grid grid-cols-2 gap-4">
         <ActionButton
           icon={Plus}
-          label="New Task"
+          label={t('dashboard.newTask')}
           onClick={() => setShowCreateTaskModal(true)}
           color=""
         />
         <ActionButton
           icon={TrendingUp}
-          label="Manage Points"
+          label={t('dashboard.managePoints')}
           onClick={() => onNavigate?.('points-manager')}
           color=""
         />
@@ -267,19 +267,19 @@ export function AdminDashboard({ onNavigate, onBack }: AdminDashboardProps = {})
       <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
         <ActionButton
           icon={StickyNote}
-          label="New Note"
+          label={t('dashboard.newNote')}
           onClick={() => onNavigate?.('notes')}
           color=""
         />
         <ActionButton
           icon={History}
-          label="Check-In Historie"
+          label={t('dashboard.checkInHistory')}
           onClick={() => onNavigate?.('checkin-history')}
           color=""
         />
         <ActionButton
           icon={AlertCircle}
-          label="Daily Reset"
+          label={t('dashboard.dailyReset')}
           onClick={async () => {
             if (confirm(t('dashboard.dailyResetConfirm'))) {
               try {
@@ -288,7 +288,7 @@ export function AdminDashboard({ onNavigate, onBack }: AdminDashboardProps = {})
                 alert(t('dashboard.dailyResetSuccess'));
                 window.location.reload();
               } catch (error) {
-                const errorMessage = error instanceof Error ? error.message : 'Unbekannter Fehler';
+                const errorMessage = error instanceof Error ? error.message : t('howTo.unknownError');
                 alert(t('dashboard.dailyResetError') + ' ' + errorMessage);
               }
             }
@@ -300,7 +300,7 @@ export function AdminDashboard({ onNavigate, onBack }: AdminDashboardProps = {})
       {/* Dritte Reihe: Today's Tasks with List, Aufgaben prüfen */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <DashboardCard
-          title="Today's Tasks"
+          title={t('dashboard.todaysTasks')}
           icon={CheckCircle}
         >
           <div className="space-y-2">
@@ -330,7 +330,7 @@ export function AdminDashboard({ onNavigate, onBack }: AdminDashboardProps = {})
                       <button
                         onClick={() => setEditingTask(task)}
                         className="ml-2 p-2 hover:bg-gray-200 rounded-lg transition-colors flex-shrink-0"
-                        title="Edit Task"
+                        title={t('dashboard.editTask')}
                       >
                         <Edit2 className="w-4 h-4 text-gray-600" />
                       </button>
@@ -349,7 +349,7 @@ export function AdminDashboard({ onNavigate, onBack }: AdminDashboardProps = {})
         </DashboardCard>
 
         <DashboardCard
-          title="Aufgaben prüfen"
+          title={t('dashboard.reviewTasks')}
           icon={AlertCircle}
           onClick={() => onNavigate?.('tasks', 'pending_review')}
         >
@@ -377,7 +377,7 @@ export function AdminDashboard({ onNavigate, onBack }: AdminDashboardProps = {})
       {/* Vierte Reihe: Check-In/Status/Feierabend, Team Points, Aufgaben Gesamt, Patrol Rounds */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <DashboardCard
-          title="Check-In / Status / Feierabend"
+          title={t('dashboard.checkInDeparture')}
           icon={UserCheck}
           onClick={() => onNavigate?.('checkin-approval')}
         >
@@ -393,7 +393,7 @@ export function AdminDashboard({ onNavigate, onBack }: AdminDashboardProps = {})
                 <QrCode className={`w-8 h-8 ${
                   pendingCheckIns > 0 ? 'text-orange-500' : 'text-gray-400'
                 }`} />
-                <span className="font-medium text-gray-700">Check-In</span>
+                <span className="font-medium text-gray-700">{t('dashboard.checkIn')}</span>
               </div>
               <div className="flex items-center space-x-2">
                 <span className={`text-lg font-bold ${
@@ -416,7 +416,7 @@ export function AdminDashboard({ onNavigate, onBack }: AdminDashboardProps = {})
                 <Home className={`w-8 h-8 ${
                   pendingDepartures.length > 0 ? 'text-orange-500' : 'text-gray-400'
                 }`} />
-                <span className="font-medium text-gray-700">Feierabend</span>
+                <span className="font-medium text-gray-700">{t('dashboard.departure')}</span>
               </div>
               <div className="flex items-center space-x-2">
                 <span className={`text-lg font-bold ${
@@ -431,7 +431,7 @@ export function AdminDashboard({ onNavigate, onBack }: AdminDashboardProps = {})
         </DashboardCard>
 
         <DashboardCard
-          title="Team Points Today"
+          title={t('dashboard.teamPointsToday')}
           icon={Users}
           onClick={() => onNavigate?.('leaderboard')}
         >
@@ -452,13 +452,13 @@ export function AdminDashboard({ onNavigate, onBack }: AdminDashboardProps = {})
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <DashboardCard
-          title="Aufgaben Gesamt"
+          title={t('dashboard.tasksOverall')}
           icon={CheckCircle}
           onClick={() => onNavigate?.('tasks')}
         >
           <div className="text-center py-4 space-y-3">
             <div>
-              <p className="text-xs font-medium text-gray-500 mb-1">Tasks</p>
+              <p className="text-xs font-medium text-gray-500 mb-1">{t('dashboard.tasks')}</p>
               <div className="flex items-baseline justify-center space-x-2">
                 <span className="text-2xl font-bold text-gray-900">{completedTasksToday}</span>
                 <span className="text-lg text-gray-400">/</span>
@@ -471,7 +471,7 @@ export function AdminDashboard({ onNavigate, onBack }: AdminDashboardProps = {})
               </p>
             </div>
             <div className="border-t border-gray-200 pt-2">
-              <p className="text-xs font-medium text-gray-500 mb-1">Checklists</p>
+              <p className="text-xs font-medium text-gray-500 mb-1">{t('dashboard.checklists')}</p>
               <div className="flex items-baseline justify-center space-x-2">
                 <span className="text-2xl font-bold text-gray-900">{completedChecklistsToday}</span>
                 <span className="text-lg text-gray-400">/</span>
@@ -487,7 +487,7 @@ export function AdminDashboard({ onNavigate, onBack }: AdminDashboardProps = {})
         </DashboardCard>
 
         <DashboardCard
-          title="Patrol Rounds"
+          title={t('dashboard.patrolRounds')}
           icon={Shield}
           onClick={() => onNavigate?.('patrol-rounds')}
         >

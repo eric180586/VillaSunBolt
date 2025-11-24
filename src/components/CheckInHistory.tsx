@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../lib/supabase';
 import { ArrowLeft, Calendar, Filter } from 'lucide-react';
@@ -43,13 +43,7 @@ export function CheckInHistory({ onBack }: { onBack?: () => void } = {}) {
     setEndDate(today.toISOString().split('T')[0]);
   }, []);
 
-  useEffect(() => {
-    if (startDate && endDate && (profile?.role === 'admin')) {
-      fetchCheckIns();
-    }
-  }, [startDate, endDate, statusFilter, currentPage, profile]);
-
-  const fetchCheckIns = async () => {
+  const fetchCheckIns = useCallback(async () => {
     try {
       setLoading(true);
 
@@ -82,7 +76,13 @@ export function CheckInHistory({ onBack }: { onBack?: () => void } = {}) {
     } finally {
       setLoading(false);
     }
-  };
+  }, [currentPage, endDate, startDate, statusFilter]);
+
+  useEffect(() => {
+    if (startDate && endDate && (profile?.role === 'admin')) {
+      fetchCheckIns();
+    }
+  }, [endDate, fetchCheckIns, profile?.role, startDate]);
 
   const getStatusColor = (status: string) => {
     switch (status) {
