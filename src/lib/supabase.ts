@@ -12,6 +12,7 @@ export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey, {
   auth: {
     persistSession: true,
     autoRefreshToken: true,
+    detectSessionInUrl: true,
   },
   realtime: {
     params: {
@@ -19,3 +20,14 @@ export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey, {
     },
   },
 }) as any;
+
+supabase.auth.onAuthStateChange((event, session) => {
+  if (event === 'SIGNED_OUT' || !session) {
+    console.log('Auth state changed: User signed out or session expired');
+    if (window.location.pathname !== '/') {
+      localStorage.clear();
+      sessionStorage.clear();
+      window.location.href = '/';
+    }
+  }
+});

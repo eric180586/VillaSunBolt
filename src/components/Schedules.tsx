@@ -24,9 +24,12 @@ interface WeekSchedule {
 interface TimeOffRequest {
   id: string;
   staff_id: string;
-  request_date: string;
+  start_date: string;
+  end_date: string;
+  request_date?: string;
   reason: string;
   status: 'pending' | 'approved' | 'rejected';
+  request_type?: 'vacation' | 'sick_leave' | 'personal' | 'other';
   admin_response?: string;
   reviewed_by?: string;
   reviewed_at?: string;
@@ -134,8 +137,7 @@ export function Schedules({ onNavigate, onBack }: SchedulesProps = {}) {
       const { data, error } = await supabase
         .from('time_off_requests')
         .select('*')
-        .gte('request_date', weekDates[0])
-        .lte('request_date', weekDates[6])
+        .or(`start_date.lte.${weekDates[6]},end_date.gte.${weekDates[0]}`)
         .order('created_at', { ascending: false }) as any;
 
       if (error) throw error;
@@ -271,22 +273,17 @@ export function Schedules({ onNavigate, onBack }: SchedulesProps = {}) {
     try {
       const { error } = await supabase.from('time_off_requests').insert({
         staff_id: profile?.id,
-        request_date: selectedDate,
+        start_date: selectedDate,
+        end_date: selectedDate,
         reason: timeOffReason,
         status: 'pending',
+        request_type: 'vacation',
       }) as any;
 
-      if (error) throw error;
-
-      const admins = profiles.filter((p) => p.role === 'admin');
-      await supabase.from('notifications').insert(
-        admins.map((admin: any) => ({
-          user_id: admin.id,
-          title: 'Time-Off Request',
-          message: `${profile?.full_name} requested time off on ${new Date(selectedDate).toLocaleDateString()}`,
-          type: 'schedule',
-        }))
-      );
+      if (error) {
+        console.error('Error submitting time-off request:', error);
+        throw error;
+      }
 
       setShowTimeOffModal(false);
       setSelectedDate('');
@@ -313,7 +310,7 @@ export function Schedules({ onNavigate, onBack }: SchedulesProps = {}) {
       await supabase.from('notifications').insert({
         user_id: request.staff_id,
         title: 'Time-Off Approved',
-        message: `Your time-off request for ${new Date(request.request_date).toLocaleDateString()} has been approved`,
+        message: `Your time-off request for ${new Date(request.start_date).toLocaleDateString()} has been approved`,
         type: 'schedule',
       }) as any;
 
@@ -346,7 +343,7 @@ export function Schedules({ onNavigate, onBack }: SchedulesProps = {}) {
       await supabase.from('notifications').insert({
         user_id: request.staff_id,
         title: 'Time-Off Rejected',
-        message: `Your time-off request for ${new Date(request.request_date).toLocaleDateString()} was not approved. Reason: ${rejectionReason}`,
+        message: `Your time-off request for ${new Date(request.start_date).toLocaleDateString()} was not approved. Reason: ${rejectionReason}`,
         type: 'schedule',
       }) as any;
 
@@ -488,7 +485,8 @@ export function Schedules({ onNavigate, onBack }: SchedulesProps = {}) {
                       const hasTimeOffRequest = timeOffRequests.find(
                         (r: any) =>
                           r.staff_id === staff.id &&
-                          r.request_date === weekDates[dayIndex] &&
+                          weekDates[dayIndex] >= r.start_date &&
+                          weekDates[dayIndex] <= r.end_date &&
                           r.status === 'pending'
                       );
 
@@ -621,7 +619,7 @@ export function Schedules({ onNavigate, onBack }: SchedulesProps = {}) {
                       <div>
                         <h4 className="font-bold text-gray-900">{staff?.full_name}</h4>
                         <p className="text-sm text-gray-600">
-                          {new Date(request.request_date).toLocaleDateString('en-US', {
+                          {new Date(request.start_date).toLocaleDateString('en-US', {
                             weekday: 'long',
                             month: 'long',
                             day: 'numeric',
