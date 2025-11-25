@@ -64,7 +64,7 @@ export function QRScanner({ onScan, onClose }: QRScannerProps) {
         scanner.stop().catch((err) => console.error('Error stopping scanner:', err));
       }
     };
-  }, []);
+  }, [onScan]);
 
   const handleClose = () => {
     if (scannerRef.current && scannerRef.current.isScanning) {

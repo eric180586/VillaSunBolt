@@ -18,7 +18,7 @@ interface MonthlyPoints {
 }
 
 export function PointsManager({ onBack }: { onBack?: () => void } = {}) {
-  const { t: _t } = useTranslation();
+  const { t } = useTranslation();
   const { profile } = useAuth();
   const { profiles, addPoints } = useProfiles();
   const [templates, setTemplates] = useState<PointTemplate[]>([]);
@@ -169,7 +169,7 @@ export function PointsManager({ onBack }: { onBack?: () => void } = {}) {
     e.preventDefault();
 
     if (selectedStaffIds.length === 0) {
-      alert('Please select at least one staff member');
+      alert(t('pointsManager.selectStaffWarning'));
       return;
     }
 
@@ -189,10 +189,10 @@ export function PointsManager({ onBack }: { onBack?: () => void } = {}) {
       setCustomReason('');
       setPhotoFiles([]);
       setPhotoPreviews([]);
-      alert('Points awarded successfully!');
+      alert(t('pointsManager.pointsAwardedSuccess'));
     } catch (error) {
       console.error('Error awarding points:', error);
-      alert('Error awarding points');
+      alert(t('pointsManager.pointsAwardedError'));
     } finally {
       setUploading(false);
     }
@@ -220,7 +220,7 @@ export function PointsManager({ onBack }: { onBack?: () => void } = {}) {
   };
 
   const handleDeleteTemplate = async (templateId: string) => {
-    if (!confirm('Delete this template?')) return;
+    if (!confirm(t('pointsManager.confirmDeleteTemplate'))) return;
 
     const { error } = await supabase
       .from('point_templates')
@@ -236,7 +236,7 @@ export function PointsManager({ onBack }: { onBack?: () => void } = {}) {
   };
 
   const handleResetAllPoints = async () => {
-    if (!confirm('WARNING: This will reset ALL points for ALL users. This action cannot be undone. Continue?')) {
+    if (!confirm(t('pointsManager.confirmResetAllPoints'))) {
       return;
     }
 
@@ -248,11 +248,11 @@ export function PointsManager({ onBack }: { onBack?: () => void } = {}) {
         throw error;
       }
 
-      alert('All points have been reset!');
+      alert(t('pointsManager.resetAllPointsSuccess'));
       window.location.reload();
     } catch (error) {
       console.error('Error resetting points:', error);
-      alert('Error resetting points: ' + (error as any).message);
+      alert(t('pointsManager.resetAllPointsError', { message: (error as any).message }));
     }
   };
 
@@ -268,7 +268,7 @@ export function PointsManager({ onBack }: { onBack?: () => void } = {}) {
               <ArrowLeft className="w-6 h-6 text-gray-700" />
             </button>
           )}
-          <h2 className="text-3xl font-bold text-gray-900">Points Manager</h2>
+          <h2 className="text-3xl font-bold text-gray-900">{t('pointsManager.title')}</h2>
         </div>
         <div className="flex space-x-2">
           <button
@@ -276,14 +276,14 @@ export function PointsManager({ onBack }: { onBack?: () => void } = {}) {
             className="flex items-center space-x-2 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors"
           >
             <Plus className="w-5 h-5" />
-            <span>New Template</span>
+            <span>{t('pointsManager.newTemplate')}</span>
           </button>
           <button
             onClick={handleResetAllPoints}
             className="flex items-center space-x-2 bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors"
           >
             <RefreshCw className="w-5 h-5" />
-            <span>Reset All Points</span>
+            <span>{t('pointsManager.resetAllPoints')}</span>
           </button>
         </div>
       </div>
@@ -291,14 +291,14 @@ export function PointsManager({ onBack }: { onBack?: () => void } = {}) {
       <form onSubmit={handleSubmit} className="bg-white rounded-xl p-6 shadow-lg border border-gray-200 space-y-6">
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            Select Template (Optional)
+            {t('pointsManager.selectTemplate')}
           </label>
           <select
             value={selectedTemplateId}
             onChange={(e) => handleTemplateSelect(e.target.value)}
             className="w-full px-3 py-2 border border-gray-300 rounded-lg"
           >
-            <option value="">Custom Points</option>
+            <option value="">{t('pointsManager.customPointsOption')}</option>
             {templates.map((template) => (
               <option key={template.id} value={template.id}>
                 {template.name} ({template.points > 0 ? '+' : ''}{template.points} pts) - {template.category}
@@ -309,7 +309,7 @@ export function PointsManager({ onBack }: { onBack?: () => void } = {}) {
 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            Select Staff Members (Multiple)
+            {t('pointsManager.selectStaff')}
           </label>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 max-h-64 overflow-y-auto border border-gray-200 rounded-lg p-3">
             {staffProfiles.map((staff) => (
@@ -329,7 +329,7 @@ export function PointsManager({ onBack }: { onBack?: () => void } = {}) {
                 />
                 <div>
                   <p className="font-medium text-gray-900">{staff.full_name}</p>
-                  <p className="text-xs text-gray-600">{monthlyPoints[staff.id] || 0} pts (monthly)</p>
+                  <p className="text-xs text-gray-600">{t('pointsManager.monthlyPoints', { points: monthlyPoints[staff.id] || 0 })}</p>
                 </div>
               </label>
             ))}
@@ -338,7 +338,7 @@ export function PointsManager({ onBack }: { onBack?: () => void } = {}) {
 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            Points Amount
+            {t('pointsManager.pointsAmount')}
           </label>
           <div className="flex space-x-2">
             <button
@@ -367,7 +367,7 @@ export function PointsManager({ onBack }: { onBack?: () => void } = {}) {
 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            Reason
+            {t('pointsManager.reason')}
           </label>
           <textarea
             value={customReason}
@@ -380,12 +380,12 @@ export function PointsManager({ onBack }: { onBack?: () => void } = {}) {
 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            Photo Evidence (Optional)
+            {t('pointsManager.photoEvidence')}
           </label>
           <div className="space-y-3">
             <label className="flex items-center space-x-2 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 cursor-pointer w-fit">
               <Upload className="w-5 h-5" />
-              <span>Upload Photos (Multiple)</span>
+              <span>{t('pointsManager.uploadPhotos')}</span>
               <input
                 type="file"
                 accept="image/*"
@@ -400,7 +400,7 @@ export function PointsManager({ onBack }: { onBack?: () => void } = {}) {
                   <div key={index} className="relative">
                     <img
                       src={preview}
-                      alt={`Preview ${index + 1}`}
+                      alt={t('pointsManager.photoPreviewAlt', { index: index + 1 })}
                       className="w-20 h-20 object-cover rounded-lg"
                     />
                     <button
@@ -426,12 +426,16 @@ export function PointsManager({ onBack }: { onBack?: () => void } = {}) {
           className="w-full flex items-center justify-center space-x-2 bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
         >
           <Award className="w-5 h-5" />
-          <span>{uploading ? 'Awarding Points...' : `Award Points to ${selectedStaffIds.length} Staff Member(s: any)`}</span>
+          <span>
+            {uploading
+              ? t('pointsManager.awarding')
+              : t('pointsManager.awardPoints', { count: selectedStaffIds.length })}
+          </span>
         </button>
       </form>
 
       <div className="bg-white rounded-xl p-6 shadow-lg border border-gray-200">
-        <h3 className="text-xl font-bold text-gray-900 mb-4">Saved Templates</h3>
+        <h3 className="text-xl font-bold text-gray-900 mb-4">{t('pointsManager.savedTemplates')}</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {templates.map((template) => (
             <div
@@ -473,11 +477,11 @@ export function PointsManager({ onBack }: { onBack?: () => void } = {}) {
             className="bg-white rounded-xl p-6 w-full max-w-md"
             onClick={(e) => e.stopPropagation()}
           >
-            <h3 className="text-xl font-bold text-gray-900 mb-4">New Point Template</h3>
+            <h3 className="text-xl font-bold text-gray-900 mb-4">{t('pointsManager.newTemplateTitle')}</h3>
             <form onSubmit={handleSaveTemplate} className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Template Name
+                  {t('pointsManager.templateName')}
                 </label>
                 <input
                   type="text"
@@ -489,7 +493,7 @@ export function PointsManager({ onBack }: { onBack?: () => void } = {}) {
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Points
+                  {t('pointsManager.pointsLabel')}
                 </label>
                 <input
                   type="number"
@@ -501,7 +505,7 @@ export function PointsManager({ onBack }: { onBack?: () => void } = {}) {
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Reason
+                  {t('pointsManager.reason')}
                 </label>
                 <textarea
                   value={newTemplate.reason}
@@ -513,17 +517,17 @@ export function PointsManager({ onBack }: { onBack?: () => void } = {}) {
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Category
+                  {t('pointsManager.category')}
                 </label>
                 <select
                   value={newTemplate.category}
                   onChange={(e) => setNewTemplate({ ...newTemplate, category: e.target.value })}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg"
                 >
-                  <option value="general">General</option>
-                  <option value="bonus">Bonus</option>
-                  <option value="penalty">Penalty</option>
-                  <option value="achievement">Achievement</option>
+                  <option value="general">{t('pointsManager.categoryGeneral')}</option>
+                  <option value="bonus">{t('pointsManager.categoryBonus')}</option>
+                  <option value="penalty">{t('pointsManager.categoryPenalty')}</option>
+                  <option value="achievement">{t('pointsManager.categoryAchievement')}</option>
                 </select>
               </div>
               <div className="flex space-x-3 pt-4">
@@ -532,14 +536,14 @@ export function PointsManager({ onBack }: { onBack?: () => void } = {}) {
                   onClick={() => setShowNewTemplate(false)}
                   className="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
                 >
-                  Cancel
+                  {t('common.cancel')}
                 </button>
                 <button
                   type="submit"
                   className="flex-1 flex items-center justify-center space-x-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
                 >
                   <Save className="w-5 h-5" />
-                  <span>Save</span>
+                  <span>{t('common.save')}</span>
                 </button>
               </div>
             </form>

@@ -1,10 +1,11 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../lib/supabase';
 import { getTodayDateString } from '../lib/dateUtils';
 import { CheckCircle, Clock, X, AlertCircle } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { FortuneWheel } from './FortuneWheel';
+import type { FortuneWheelSegment } from '../types/common';
 
 interface CheckInPopupProps {
   onClose: () => void;
@@ -20,11 +21,7 @@ export function CheckInPopup({ onClose }: CheckInPopupProps) {
   const [showFortuneWheel, setShowFortuneWheel] = useState(false);
   const [currentCheckInId, setCurrentCheckInId] = useState<string | null>(null);
 
-  useEffect(() => {
-    checkScheduleForToday();
-  }, [profile]);
-
-  const checkScheduleForToday = async () => {
+  const checkScheduleForToday = useCallback(async () => {
     if (!profile?.id) return;
 
     try {
@@ -65,7 +62,11 @@ export function CheckInPopup({ onClose }: CheckInPopupProps) {
       console.error('Error checking schedule:', error);
       setHasScheduleToday(false);
     }
-  };
+  }, [profile?.id]);
+
+  useEffect(() => {
+    checkScheduleForToday();
+  }, [checkScheduleForToday]);
 
   const handleCheckIn = async () => {
     if (!profile?.id) return;
@@ -115,6 +116,53 @@ export function CheckInPopup({ onClose }: CheckInPopupProps) {
 
   const handleSkip = () => {
     onClose();
+  };
+
+  const handleFortuneWheelComplete = async (segment: FortuneWheelSegment) => {
+    if (!profile?.id || !currentCheckInId) {
+      return;
+    }
+
+    try {
+      const today = getTodayDateString();
+
+      const { data: existingSpin } = await supabase
+        .from('fortune_wheel_spins')
+        .select('id')
+        .eq('user_id', profile.id)
+        .eq('spin_date', today)
+        .maybeSingle() as any;
+
+      if (existingSpin) {
+        return;
+      }
+
+      const { error } = await supabase
+        .from('fortune_wheel_spins')
+        .insert([{
+          user_id: profile.id,
+          check_in_id: currentCheckInId,
+          spin_date: today,
+          points_won: segment.actualPoints || 0,
+          reward_type: segment.rewardType,
+          reward_value: segment.rewardValue,
+          reward_label: segment.label,
+        }] as any);
+
+      if (error) {
+        throw error;
+      }
+
+      if (segment.rewardType === 'bonus_points' && segment.actualPoints !== 0) {
+        await supabase.rpc('add_bonus_points', {
+          p_user_id: profile.id,
+          p_points: segment.actualPoints,
+          p_reason: `${t('fortuneWheel.title')}: ${segment.label}`,
+        }) as any;
+      }
+    } catch (error) {
+      console.error('Error completing fortune wheel spin:', error);
+    }
   };
 
 
@@ -236,11 +284,12 @@ export function CheckInPopup({ onClose }: CheckInPopupProps) {
       {/* Fortune Wheel Modal */}
       {showFortuneWheel && currentCheckInId && (
         <FortuneWheel
-          checkInId={currentCheckInId}
           onClose={() => {
             setShowFortuneWheel(false);
+            setCurrentCheckInId(null);
             onClose(); // Close the entire check-in popup after fortune wheel
           }}
+          onSpinComplete={handleFortuneWheelComplete}
         />
       )}
     </div>

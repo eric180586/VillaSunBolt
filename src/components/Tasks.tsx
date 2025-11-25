@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useTasks } from '../hooks/useTasks';
 import { useProfiles } from '../hooks/useProfiles';
@@ -132,9 +132,7 @@ export function Tasks({ onNavigate, filterStatus, onBack }: TasksProps = {}) {
         return 2;
     }
   };
-
-
-  const uploadPhoto = async (file: File, folder: string): Promise<string> => {
+  const uploadPhoto = useCallback(async (file: File, folder: string): Promise<string> => {
     const fileExt = file.name.split('.').pop();
     const fileName = `${Math.random()}.${fileExt}`;
     const filePath = `${folder}/${fileName}`;
@@ -150,7 +148,7 @@ export function Tasks({ onNavigate, filterStatus, onBack }: TasksProps = {}) {
 
     const { data } = supabase.storage.from('task-photos').getPublicUrl(filePath);
     return data.publicUrl;
-  };
+  }, []);
 
   const handleAcceptTask = async (taskId: string) => {
     try {
@@ -182,7 +180,7 @@ export function Tasks({ onNavigate, filterStatus, onBack }: TasksProps = {}) {
 
   // Old handleCompleteTask removed - now handled by HelperSelectionModal
 
-  const handleApproveTask = async (quality: 'very_good' | 'ready' | 'not_ready') => {
+  const handleApproveTask = useCallback(async (quality: 'very_good' | 'ready' | 'not_ready') => {
     const task = selectedTask;
     if (!task) return;
 
@@ -232,22 +230,9 @@ export function Tasks({ onNavigate, filterStatus, onBack }: TasksProps = {}) {
       console.error('Error approving task:', error);
       alert(t('tasks.errorApproveTask'));
     }
-  };
+  }, [adminNotes, adminPhoto, profile?.id, refetch, selectedTask, t, updateTask, uploadPhoto]);
 
-  const handleNotReady = () => {
-    const task = selectedTask;
-    if (!task) return;
-
-    if (task.items && task.items.length > 0) {
-      setShowReviewModal(false);
-      setShowReopenItemsModal(true);
-      setItemsToReopen([]);
-    } else {
-      handleReopenEntireTask();
-    }
-  };
-
-  const handleReopenEntireTask = async () => {
+  const handleReopenEntireTask = useCallback(async () => {
     const task = selectedTask;
     if (!task) return;
 
@@ -286,7 +271,20 @@ export function Tasks({ onNavigate, filterStatus, onBack }: TasksProps = {}) {
       console.error('Error reopening task:', error);
       alert(t('tasks.errorReopenTask'));
     }
-  };
+  }, [adminNotes, adminPhoto, profile?.id, refetch, selectedTask, t, updateTask, uploadPhoto]);
+
+  const handleNotReady = useCallback(() => {
+    const task = selectedTask;
+    if (!task) return;
+
+    if (task.items && task.items.length > 0) {
+      setShowReviewModal(false);
+      setShowReopenItemsModal(true);
+      setItemsToReopen([]);
+    } else {
+      handleReopenEntireTask();
+    }
+  }, [handleReopenEntireTask, selectedTask]);
 
   const handleReopenSelectedItems = async () => {
     const task = selectedTask;

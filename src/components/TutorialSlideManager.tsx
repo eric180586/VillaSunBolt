@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import { Plus, X, ChevronUp, ChevronDown, Trash2, Image as ImageIcon } from 'lucide-react';
@@ -29,13 +29,7 @@ export default function TutorialSlideManager({ onClose }: { onClose: () => void 
 
   const isAdmin = profile?.role === 'admin';
 
-  useEffect(() => {
-    if (isAdmin) {
-      loadSlides();
-    }
-  }, [isAdmin]);
-
-  const loadSlides = async () => {
+  const loadSlides = useCallback(async () => {
     try {
       const { data, error } = await supabase
         .from('tutorial_slides')
@@ -49,7 +43,13 @@ export default function TutorialSlideManager({ onClose }: { onClose: () => void 
       const errorMessage = error?.message || t('howTo.unknownError');
       alert(`${t('howTo.errorLoadingSlides')}: ${errorMessage}`);
     }
-  };
+  }, [t]);
+
+  useEffect(() => {
+    if (isAdmin) {
+      loadSlides();
+    }
+  }, [isAdmin, loadSlides]);
 
   const uploadImage = async (file: File): Promise<string> => {
     const fileExt = file.name.split('.').pop();
