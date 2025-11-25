@@ -387,6 +387,11 @@ export function PatrolRounds({ onBack }: { onBack?: () => void } = {}) {
 
       const uniqueLocations = new Set(roundScans?.map((s: any) => s.location_id) || []);
 
+      // Get total location count from database (not from state)
+      const { count: totalLocations } = await supabase
+        .from('patrol_locations')
+        .select('*', { count: 'exact', head: true });
+
       // Calculate if within time window (simplified - always true for now)
       const withinWindow = true;
 
@@ -396,9 +401,9 @@ export function PatrolRounds({ onBack }: { onBack?: () => void } = {}) {
 
       await loadTodayData();
 
-      if (uniqueLocations.size === locations.length) {
+      if (totalLocations && uniqueLocations.size >= totalLocations) {
         // Mark round as complete
-        const pointsForRound = withinWindow ? locations.length : 0;
+        const pointsForRound = withinWindow ? totalLocations : 0;
         await supabase
           .from('patrol_rounds')
           .update({
@@ -409,7 +414,7 @@ export function PatrolRounds({ onBack }: { onBack?: () => void } = {}) {
           .eq('id', roundId);
 
         if (withinWindow) {
-          alert(`Patrol round completed! +${locations.length} points awarded`);
+          alert(`Patrol round completed! +${totalLocations} points awarded`);
         } else {
           alert('Patrol round completed (time expired, no points awarded)');
         }
@@ -418,7 +423,8 @@ export function PatrolRounds({ onBack }: { onBack?: () => void } = {}) {
         setShowScanner(false);
       } else {
         // Individual scan feedback - keep scanner open to continue scanning
-        alert(`Location scanned! +1 point. ${uniqueLocations.size}/${locations.length} complete. Scan next location.`);
+        const total = totalLocations || 3;
+        alert(`Location scanned! +1 point. ${uniqueLocations.size}/${total} complete. Scan next location.`);
         setShowScanner(true);
       }
     } catch (error) {
