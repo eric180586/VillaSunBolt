@@ -230,7 +230,7 @@
     "addNote": "បន្ថែមកំណត់ចំណាំ",
     "completionNote": "កំណត់ចំណាំបញ្ចប់",
     "reviewNote": "កំណត់ចំណាំពិនិត្យ",
-    "selectHelper": "ជ្រើសរើសអ្នកជួយ",
+    "selectHelper": "សូមជ្រើសរើសជំនួយការ!",
     "withHelper": "ជាមួយអ្នកជួយ",
     "duration": "ពេលវេលា",
     "minutes": "នាទី",
@@ -252,7 +252,6 @@
     "errorSaving": "កំហុសក្នុងការរក្សាទុក",
     "photoExamplePlaceholder": "ឧ. សូមថតរូបពីគ្រែស្អាត",
     "checkAllTasks": "សូមធីកកិច្ចការទាំងអស់មុនពេលបញ្ចប់!",
-    "selectHelper": "សូមជ្រើសរើសជំនួយការ!",
     "errorCompleting": "កំហុសក្នុងការបញ្ចប់",
     "warningCheckAll": "⚠️ សូមធីកកិច្ចការទាំងអស់មុនពេលបញ្ចប់",
     "errorApprovingTask": "កំហុសក្នុងការអនុម័ត",
@@ -363,9 +362,7 @@
     "deleteItem": "លុបធាតុ",
     "itemAdded": "បានបន្ថែមធាតុ",
     "itemUpdated": "បានធ្វើបច្ចុប្បន្នភាពធាតុ",
-    "employeeCreatedEmailConfirm": "សំខាន់: បានបង្កើតនិយោជិត ប៉ុន្តែត្រូវការបញ្ជាក់អ៊ីមែល!\n\nនិយោជិតត្រូវតែចុចលើការបញ្ជាក់អ៊ីមែលមុនពេលពួកគេអាចចូល។",
-    "tooManyRequests": "សំណើច្រើនពេក។ សូមរងចាំមួយសន្ទុះហើយព្យាយាមម្តងទៀត។",
-    "errorCreatingEmployee": "កំហុសក្នុងការបង្កើតនិយោជិត"
+    "itemDeleted": "បានលុបធាតុ"
   },
   "employees": {
     "title": "និយោជិត",
@@ -385,7 +382,10 @@
     "employeeUpdated": "បានធ្វើបច្ចុប្បន្នភាពនិយោជិត",
     "employeeDeleted": "បានលុបនិយោជិត",
     "resetPassword": "កំណត់ពាក្យសម្ងាត់ម្តងទៀត",
-    "passwordReset": "បានកំណត់ពាក្យសម្ងាត់ម្តងទៀត"
+    "passwordReset": "បានកំណត់ពាក្យសម្ងាត់ម្តងទៀត",
+    "employeeCreatedEmailConfirm": "សំខាន់: បានបង្កើតនិយោជិត ប៉ុន្តែត្រូវការបញ្ជាក់អ៊ីមែល!\n\nនិយោជិតត្រូវតែចុចលើការបញ្ជាក់អ៊ីមែលមុនពេលពួកគេអាចចូល។",
+    "tooManyRequests": "សំណើច្រើនពេក។ សូមរងចាំមួយសន្ទុះហើយព្យាយាមម្តងទៀត។",
+    "errorCreatingEmployee": "កំហុសក្នុងការបង្កើតនិយោជិត"
   },
   "departure": {
     "title": "ស្នើសុំចាកចេញ",
@@ -456,16 +456,11 @@
     "question": "សូរប្រស្ន៍",
     "answer": "ចម្លើយ",
     "submit": "ដាក់ស្នើរ",
-    "errorSendingMessage": "កំហុសក្នុងការផ្ញើសារ",
-    "errorDeleting": "កំហុសក្នុងការលុប",
-    "errorUploading": "កំហុសក្នុងការផ្ទុកឡើង",
-    "errorUpdating": "កំហុសក្នុងការធ្វើបច្ចុប្បន្នភាព",
-    "errorDownloading": "កំហុសក្នុងការទាញយក",
-    "noCurrentInfo": "មិនមានព័ត៌មានបច្ចុប្បន្ន",
-    "unknownError": "កំហុសមិនស្គាល់",
-    "errorLoadingSlides": "កំហុសក្នុងការផ្ទុក slides",
-    "errorAddingSlide": "កំហុសក្នុងការបន្ថែម slide",
-    "errorMoving": "កំហុសក្នុងការផ្លាស់ទី"
+    "correct": "ត្រឹមត្រូវ",
+    "incorrect": "មិនត្រឹមត្រូវ",
+    "score": "ពិន្ទុ",
+    "highscores": "ពិន្ទុខ្ពស់",
+    "noHighscores": "មិនទាន់មានពិន្ទុខ្ពស់ទេ"
   },
   "performance": {
     "title": "រូបមែត្រសម្រេចកិច្ចការ",
@@ -491,7 +486,17 @@
     "editMessage": "កែសម្រួលសារ",
     "deleteMessage": "លុបសារ",
     "messageContent": "មិនុស្សសារ",
-    "sortOrder": "លំដាប់ទាប់"
+    "sortOrder": "លំដាប់ទាប់",
+    "errorSendingMessage": "កំហុសក្នុងការផ្ញើសារ",
+    "errorDeleting": "កំហុសក្នុងការលុប",
+    "errorUploading": "កំហុសក្នុងការផ្ទុកឡើង",
+    "errorUpdating": "កំហុសក្នុងការធ្វើបច្ចុប្បន្នភាព",
+    "errorDownloading": "កំហុសក្នុងការទាញយក",
+    "noCurrentInfo": "មិនមានព័ត៌មានបច្ចុប្បន្ន",
+    "unknownError": "កំហុសមិនស្គាល់",
+    "errorLoadingSlides": "កំហុសក្នុងការផ្ទុក slides",
+    "errorAddingSlide": "កំហុសក្នុងការបន្ថែម slide",
+    "errorMoving": "កំហុសក្នុងការផ្លាស់ទី"
   },
   "auth": {
     "login": "ចុះគណនី",
