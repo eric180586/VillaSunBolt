@@ -51,6 +51,17 @@
   "dashboard": {
     "welcomeBack": "Willkommen zurück, {{name}}!",
     "whatsHappening": "Das passiert heute",
+    "myPointsToday": "Meine Punkte Heute",
+    "myPointsMonthly": "Meine Punkte Monatlich",
+    "estimatedTime": "Geschätzte Zeit",
+    "pointsUnit": "Punkten",
+    "tasksUnit": "Aufgaben",
+    "achieved": "erreichte",
+    "completed": "erledigte",
+    "achievable": "erreichbaren",
+    "total": "gesamt",
+    "achievedOf": "{{achieved}} erreichte von {{total}} erreichbaren {{unit}}",
+    "completedOf": "{{completed}} erledigte von {{total}} gesamt {{unit}}",
     "adminDashboard": "Admin Dashboard",
     "newTask": "Neue Aufgabe",
     "managePoints": "Punkte verwalten",
@@ -77,7 +88,21 @@
     "checklists": "Checklisten",
     "noChecklists": "Keine Checklisten",
     "patrolRounds": "Patrol Rounds",
-    "viewAll": "Alle anzeigen"
+    "viewAll": "Alle anzeigen",
+    "motivationalMessages": {
+      "earlyExcellent": "Fantastischer Start! Du bist super im Plan!",
+      "earlyGood": "Guter Start in den Monat! Bleib dran!",
+      "earlySolid": "Solider Start! Mit etwas mehr Einsatz schaffst du es!",
+      "earlyKeepFocused": "Noch viel Zeit! Bleib fokussiert!",
+      "midExcellent": "Überragend! Du liegst über dem Soll!",
+      "midOnTrack": "Du bist genau im Soll! Weiter so!",
+      "midSlightlyBehind": "Leicht zurück, aber das holst du noch auf!",
+      "midStayFocused": "Bleib dran! Du kannst es noch schaffen!",
+      "lateAlmostThere": "Fast geschafft! Der Bonus ist zum Greifen nah!",
+      "lateHomeStretch": "Auf der Zielgeraden! Gib nochmal Gas!",
+      "lateStillPossible": "Noch ist alles drin! Kämpf bis zum Ende!",
+      "lateEveryPoint": "Jeder Punkt zählt! Mach weiter!"
+    }
   },
   "checkin": {
     "title": "Check-In",

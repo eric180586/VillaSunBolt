@@ -51,6 +51,17 @@
   "dashboard": {
     "welcomeBack": "សូមស្វាគមន៍ត្រឡប់មកវិញ, {{name}}!",
     "whatsHappening": "នេះគឺជាអ្វីដែលកំពុងកើតឡើងថ្ងៃនេះ",
+    "myPointsToday": "ពាក្យរបស់ខ្ញុំថ្ងៃនេះ",
+    "myPointsMonthly": "ពាក្យរបស់ខ្ញុំប្រចាំខែ",
+    "estimatedTime": "ពេលស្មាន",
+    "pointsUnit": "ពាក្យ",
+    "tasksUnit": "កិច្ចការ",
+    "achieved": "បានស្រេច",
+    "completed": "បានបញ្ចប់",
+    "achievable": "អាចស្រេចបាន",
+    "total": "សរុប",
+    "achievedOf": "{{achieved}} បានស្រេច នៃ {{total}} អាចស្រេចបាន {{unit}}",
+    "completedOf": "{{completed}} បានបញ្ចប់ នៃ {{total}} សរុប {{unit}}",
     "adminDashboard": "Admin Dashboard",
     "newTask": "New Task",
     "managePoints": "Manage Points",
@@ -77,7 +88,21 @@
     "checklists": "Checklists",
     "noChecklists": "គ្មានបញ្ជីពិនិត្យ",
     "patrolRounds": "Patrol Rounds",
-    "viewAll": "មើលទាំងអស់"
+    "viewAll": "មើលទាំងអស់",
+    "motivationalMessages": {
+      "earlyExcellent": "ការចាប់ផ្តើមល្អ! អ្នកនៅលើពេលវេលា!",
+      "earlyGood": "ការចាប់ផ្តើមល្អស្រាប់ខែ! បន្តការប្រឹងយ៉ាងនោះ!",
+      "earlySolid": "ការចាប់ផ្តើមរឹងមាំ! ប្រឹងទៀតអំនាចនៅល្អិតទៀត!",
+      "earlyKeepFocused": "នៅមានពេលច្រើន! ការប្រកាន់ក្រិតក្រៅ!",
+      "midExcellent": "ល្អប្រសើរ! អ្នកនៅលើគ៉េតត្រូវការ!",
+      "midOnTrack": "អ្នកនៅត្រូវពេលវេលា! បន្តសីត្រូវបែបនេះ!",
+      "midSlightlyBehind": "ក្រោយបន្តិចប្រហែល បុ៉ន្តែអ្នកអាចរំពឹងវាបាន!",
+      "midStayFocused": "បន្តការប្រឹងយ៉ាងនោះ! អ្នកនៅទៀបាន!",
+      "lateAlmostThere": "ស្រេចប្រហែលហើយ! បូនុសនៅជិតពេលទៅទៀ!",
+      "lateHomeStretch": "នៅលើពេលចុងក្រោយ! ប្រឹងយ៉ាងនោះមួយដំទៀត!",
+      "lateStillPossible": "នៅមានអ្វីទាំងអស់! ប្រឹងយ៉ាងរហូតដល់ចុងក្រោយ!",
+      "lateEveryPoint": "រាំង់ពាក្យគុណនា! បន្តយ៉ាងនោះ!"
+    }
   },
   "checkin": {
     "title": "ចុះឈ្មោះចូល",

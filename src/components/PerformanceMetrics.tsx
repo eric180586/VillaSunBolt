@@ -27,12 +27,13 @@ interface MetricCardProps {
 }
 
 function MetricCard({ title, value, total, percentage, icon: Icon, colorStatus, showProgressBar = false, unit = 'points', estimatedTime, onClick, checklistValue, checklistTotal }: MetricCardProps) {
+  const { t } = useTranslation();
   const displayValue = total === '0' && value === '0' ? '0/0' : total === '-' ? value : `${value}/${total}`;
   const displayPercentage = total === '0' || total === '-' ? '' : `${percentage.toFixed(0)}%`;
 
-  const unitText = unit === 'tasks' ? 'Aufgaben' : 'Punkten';
-  const achievedText = unit === 'tasks' ? 'erledigte' : 'erreichte';
-  const achievableText = unit === 'tasks' ? 'gesamt' : 'erreichbaren';
+  const unitText = unit === 'tasks' ? t('dashboard.tasksUnit') : t('dashboard.pointsUnit');
+  const achievedText = unit === 'tasks' ? t('dashboard.completed') : t('dashboard.achieved');
+  const achievableText = unit === 'tasks' ? t('dashboard.total') : t('dashboard.achievable');
 
   const descriptiveText = total === '0' && value === '0' ? `0 ${achievedText} von 0 ${achievableText} ${unitText}` :
     total === '-' ? '' : `${value} ${achievedText} von ${total} ${achievableText} ${unitText}`;
@@ -112,7 +113,7 @@ function MetricCard({ title, value, total, percentage, icon: Icon, colorStatus, 
       )}
       {estimatedTime !== undefined && (
         <p className="text-xs text-gray-600 font-medium">
-          Geschätzte Zeit: {Math.floor(estimatedTime / 60)}h {estimatedTime % 60}m
+          {t('dashboard.estimatedTime')}: {Math.floor(estimatedTime / 60)}h {estimatedTime % 60}m
         </p>
       )}
 
@@ -133,7 +134,7 @@ interface PerformanceMetricsProps {
 }
 
 export function PerformanceMetrics({ onNavigate }: PerformanceMetricsProps = {}) {
-  const { t: _t } = useTranslation();
+  const { t } = useTranslation();
   const { profile } = useAuth();
   const { tasks } = useTasks();
   const { schedules } = useSchedules();
@@ -358,33 +359,33 @@ export function PerformanceMetrics({ onNavigate }: PerformanceMetricsProps = {})
 
     if (currentDay < 10) {
       if (monthlyPerc >= 90) {
-        message = 'Fantastischer Start! Du bist super im Plan!';
+        message = t('dashboard.motivationalMessages.earlyExcellent');
       } else if (monthlyPerc >= 70) {
-        message = 'Guter Start in den Monat! Bleib dran!';
+        message = t('dashboard.motivationalMessages.earlyGood');
       } else if (monthlyPerc >= 50) {
-        message = 'Solider Start! Mit etwas mehr Einsatz schaffst du es!';
+        message = t('dashboard.motivationalMessages.earlySolid');
       } else {
-        message = 'Noch viel Zeit! Bleib fokussiert!';
+        message = t('dashboard.motivationalMessages.earlyKeepFocused');
       }
     } else if (currentDay < 20) {
       if (monthlyPerc >= progressThroughMonth + 10) {
-        message = 'Überragend! Du liegst über dem Soll!';
+        message = t('dashboard.motivationalMessages.midExcellent');
       } else if (monthlyPerc >= progressThroughMonth - 5) {
-        message = 'Du bist genau im Soll! Weiter so!';
+        message = t('dashboard.motivationalMessages.midOnTrack');
       } else if (monthlyPerc >= progressThroughMonth - 15) {
-        message = 'Leicht zurück, aber das holst du noch auf!';
+        message = t('dashboard.motivationalMessages.midSlightlyBehind');
       } else {
-        message = 'Bleib dran! Du kannst es noch schaffen!';
+        message = t('dashboard.motivationalMessages.midStayFocused');
       }
     } else {
       if (monthlyPerc >= 90) {
-        message = 'Fast geschafft! Der Bonus ist zum Greifen nah!';
+        message = t('dashboard.motivationalMessages.lateAlmostThere');
       } else if (monthlyPerc >= 75) {
-        message = 'Auf der Zielgeraden! Gib nochmal Gas!';
+        message = t('dashboard.motivationalMessages.lateHomeStretch');
       } else if (monthlyPerc >= 60) {
-        message = 'Noch ist alles drin! Kämpf bis zum Ende!';
+        message = t('dashboard.motivationalMessages.lateStillPossible');
       } else {
-        message = 'Jeder Punkt zählt! Mach weiter!';
+        message = t('dashboard.motivationalMessages.lateEveryPoint');
       }
     }
 
@@ -418,7 +419,7 @@ export function PerformanceMetrics({ onNavigate }: PerformanceMetricsProps = {})
         />
 
         <MetricCard
-          title="Meine Punkte Heute"
+          title={t('dashboard.myPointsToday')}
           value={dailyGoalAchieved.toString()}
           total={dailyGoalTotal.toString()}
           percentage={dailyGoalPercentage}
@@ -429,7 +430,7 @@ export function PerformanceMetrics({ onNavigate }: PerformanceMetricsProps = {})
         />
 
         <MetricCard
-          title="Meine Punkte Monatlich"
+          title={t('dashboard.myPointsMonthly')}
           value={monthlyAchieved.toString()}
           total={monthlyTotal.toString()}
           percentage={monthlyPercentage}
