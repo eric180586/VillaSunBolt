@@ -960,8 +960,7 @@ export function Tasks({ onNavigate, filterStatus, onBack }: TasksProps = {}) {
             await refetch();
           }}
           onOpenHelperPopup={() => {
-            // Items modal closed, now open helper modal
-            setShowItemsModal(false);
+            // Keep items modal open, show helper modal on top
             setShowHelperModal(true);
           }}
         />
@@ -973,9 +972,13 @@ export function Tasks({ onNavigate, filterStatus, onBack }: TasksProps = {}) {
           task={selectedTask}
           onClose={() => {
             setShowHelperModal(false);
+            setShowItemsModal(false);
             setSelectedTask(null);
           }}
           onComplete={async () => {
+            setShowHelperModal(false);
+            setShowItemsModal(false);
+            setSelectedTask(null);
             await refetch();
           }}
           staffMembers={profiles.filter(p => p.role === 'staff' && p.id !== profile?.id)}

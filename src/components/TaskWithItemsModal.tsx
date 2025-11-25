@@ -90,8 +90,7 @@ export function TaskWithItemsModal({ task, onClose, onComplete: _onComplete, onO
       return;
     }
 
-    // Close this modal and open helper popup
-    onClose();
+    // Keep this modal open and open helper popup on top
     onOpenHelperPopup();
   };
 
