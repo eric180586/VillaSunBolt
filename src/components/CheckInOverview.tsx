@@ -17,7 +17,7 @@ interface CheckInStatus {
   status: string;
   check_in_time: string | null;
   check_in_id: string | null;
-  checkout_time: string | null;
+  check_out_time: string | null;
   work_hours: number | null;
   has_departure_request: boolean;
   departure_status: string | null;
@@ -129,7 +129,7 @@ export function CheckInOverview({ onBack, onNavigate }: CheckInOverviewProps = {
           status: checkIn?.status || 'missing',
           check_in_time: checkIn?.check_in_time || null,
           check_in_id: checkIn?.id || null,
-          checkout_time: checkIn?.checkout_time || null,
+          check_out_time: checkIn?.check_out_time || null,
           work_hours: checkIn?.work_hours || null,
           has_departure_request: !!departureRequest,
           departure_status: departureRequest?.status || null,
@@ -255,7 +255,7 @@ export function CheckInOverview({ onBack, onNavigate }: CheckInOverviewProps = {
 
       if (checkInFetchError || !checkIn) {
         console.error('Could not find check-in:', checkInFetchError);
-      } else if (!checkIn.checkout_time) {
+      } else if (!checkIn.check_out_time) {
         const checkInTime = new Date(checkIn.check_in_time);
         const checkOutTime = new Date(now);
         const workHours = (checkOutTime.getTime() - checkInTime.getTime()) / (1000 * 60 * 60);
@@ -263,7 +263,7 @@ export function CheckInOverview({ onBack, onNavigate }: CheckInOverviewProps = {
         const { error: checkInUpdateError } = await supabase
           .from('check_ins')
           .update({
-            checkout_time: now,
+            check_out_time: now,
             work_hours: Math.round(workHours * 100) / 100,
           } as any)
           .eq('id', checkIn.id);
@@ -575,7 +575,7 @@ export function CheckInOverview({ onBack, onNavigate }: CheckInOverviewProps = {
                         <p className="text-sm font-semibold text-gray-900">
                           {status.work_hours.toFixed(2)}h
                         </p>
-                      ) : status.check_in_time && !status.checkout_time ? (
+                      ) : status.check_in_time && !status.check_out_time ? (
                         <p className="text-sm text-blue-600 animate-pulse">
                           Läuft...
                         </p>

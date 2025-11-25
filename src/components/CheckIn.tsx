@@ -294,10 +294,15 @@ export function CheckIn({ onBack }: { onBack?: () => void } = {}) {
       if (data?.success && data?.check_in_id) {
         console.log('Check-in successful! Opening Fortune Wheel automatically...');
 
-        setCurrentCheckInId(data.check_in_id);
-        setShowFortuneWheel(true);
-
-        console.log('Fortune Wheel opened for check-in:', data.check_in_id);
+        // Check if already spun today before opening wheel
+        const hasSpun = await checkIfAlreadySpunToday();
+        if (!hasSpun) {
+          setCurrentCheckInId(data.check_in_id);
+          setShowFortuneWheel(true);
+          console.log('Fortune Wheel opened for check-in:', data.check_in_id);
+        } else {
+          console.log('Already spun today, not opening Fortune Wheel');
+        }
       } else {
         console.log('Check-in response missing required data:', data);
       }
