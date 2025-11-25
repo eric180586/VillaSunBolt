@@ -312,8 +312,8 @@ export function PatrolRounds({ onBack }: { onBack?: () => void } = {}) {
           alert(`TEST: All locations scanned! (No points awarded - test mode)`);
           setShowScanner(false);
         } else {
-          alert(`TEST: Location scanned! ${uniqueLocations.size}/${locations.length} complete. Press "Scan QR Code" to continue.`);
-          setShowScanner(false);
+          alert(`TEST: Location scanned! ${uniqueLocations.size}/${locations.length} complete. Scan next location.`);
+          setShowScanner(true);
         }
 
         return;
@@ -417,9 +417,9 @@ export function PatrolRounds({ onBack }: { onBack?: () => void } = {}) {
         // Close scanner after round completion
         setShowScanner(false);
       } else {
-        // Individual scan feedback - show alert, user must manually reopen scanner
-        alert(`Location scanned! +1 point. ${uniqueLocations.size}/${locations.length} complete. Press "Scan QR Code" to continue.`);
-        setShowScanner(false);
+        // Individual scan feedback - keep scanner open to continue scanning
+        alert(`Location scanned! +1 point. ${uniqueLocations.size}/${locations.length} complete. Scan next location.`);
+        setShowScanner(true);
       }
     } catch (error) {
       console.error('Error completing scan:', error);
@@ -751,6 +751,16 @@ export function PatrolRounds({ onBack }: { onBack?: () => void } = {}) {
                   className="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
                 >
                   Cancel
+                </button>
+                <button
+                  onClick={async () => {
+                    if (pendingLocation && currentRound) {
+                      await completeScan(pendingLocation.id, currentRound.id, null, true);
+                    }
+                  }}
+                  className="flex-1 px-4 py-2 border border-orange-300 bg-orange-50 rounded-lg hover:bg-orange-100"
+                >
+                  Skip Photo
                 </button>
                 <button
                   onClick={handlePhotoSubmit}
