@@ -566,5 +566,14 @@
     "noDeparturesOpen": "No open departure requests",
     "rejectTitle": "Reject {{type}}",
     "provideRejectionReason": "Please provide a reason for rejection:"
+  },
+  "pointsHistory": {
+    "title": "Points History",
+    "days": "Days",
+    "totalAchieved": "Achieved",
+    "totalAchievable": "Achievable",
+    "avgPercentage": "Average",
+    "trend": "Trend",
+    "noData": "No data for this period"
   }
 }

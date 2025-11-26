@@ -566,5 +566,14 @@
     "noDeparturesOpen": "Keine offenen Feierabend Anfragen",
     "rejectTitle": "{{type}} ablehnen",
     "provideRejectionReason": "Bitte gib einen Grund für die Ablehnung an:"
+  },
+  "pointsHistory": {
+    "title": "Punkteverlauf",
+    "days": "Tage",
+    "totalAchieved": "Erreicht",
+    "totalAchievable": "Erreichbar",
+    "avgPercentage": "Durchschnitt",
+    "trend": "Trend",
+    "noData": "Keine Daten für diesen Zeitraum"
   }
 }

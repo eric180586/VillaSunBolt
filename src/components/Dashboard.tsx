@@ -9,6 +9,7 @@ import { NotesPopup } from './NotesPopup';
 import { AdminDashboard } from './AdminDashboard';
 import { RepairRequestModal } from './RepairRequestModal';
 import { FortuneWheel } from './FortuneWheel';
+import { PointsHistoryChart } from './PointsHistoryChart';
 import { useTranslation } from 'react-i18next';
 import { Wrench, ShoppingCart, Trophy, Sparkles } from 'lucide-react';
 import { supabase } from '../lib/supabase';
@@ -198,6 +199,8 @@ export function Dashboard({ onNavigate, onBack }: DashboardProps = {}) {
         <PerformanceMetrics onNavigate={onNavigate} />
 
         <ProgressBar />
+
+        <PointsHistoryChart />
 
         <EndOfDayRequest />
 

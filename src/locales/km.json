@@ -565,5 +565,14 @@
     "noDeparturesOpen": "គ្មានស្នើរ Departure កំពុងបើក",
     "rejectTitle": "បដិសេធ {{type}}",
     "provideRejectionReason": "សូមផ្តល់មូលហេតុសម្រាប់ការបដិសេធ:"
+  },
+  "pointsHistory": {
+    "title": "ប្រវត្តិពិន្ទុ",
+    "days": "ថ្ងៃ",
+    "totalAchieved": "ទទួលបាន",
+    "totalAchievable": "អាចទទួលបាន",
+    "avgPercentage": "មធ្យម",
+    "trend": "ទំនោរ",
+    "noData": "គ្មានទិន្នន័យសម្រាប់រយៈពេលនេះ"
   }
 }
