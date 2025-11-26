@@ -96,15 +96,21 @@ export function CheckInPopup({ onClose }: CheckInPopupProps) {
 
       if (error) throw error;
 
+      console.log('[CHECK-IN POPUP] Setting check-in result:', data);
       setCheckInResult(data);
+
       if (data?.check_in_id) {
+        console.log('[CHECK-IN POPUP] Setting currentCheckInId:', data.check_in_id);
         setCurrentCheckInId(data.check_in_id);
 
         // AUTOMATICALLY open Fortune Wheel after successful check-in
-        console.log('[CHECK-IN POPUP] Auto-opening Fortune Wheel for check-in:', data.check_in_id);
+        console.log('[CHECK-IN POPUP] Auto-opening Fortune Wheel in 2 seconds...');
         setTimeout(() => {
+          console.log('[CHECK-IN POPUP] NOW showing Fortune Wheel');
           setShowFortuneWheel(true);
-        }, 1500); // Small delay to show success message first
+        }, 2000); // 2 seconds delay to show success message first
+      } else {
+        console.warn('[CHECK-IN POPUP] No check_in_id in response!', data);
       }
       setLoading(false);
     } catch (error) {
@@ -282,16 +288,26 @@ export function CheckInPopup({ onClose }: CheckInPopupProps) {
       </div>
 
       {/* Fortune Wheel Modal */}
-      {showFortuneWheel && currentCheckInId && (
-        <FortuneWheel
-          onClose={() => {
-            setShowFortuneWheel(false);
-            setCurrentCheckInId(null);
-            onClose(); // Close the entire check-in popup after fortune wheel
-          }}
-          onSpinComplete={handleFortuneWheelComplete}
-        />
-      )}
+      {(() => {
+        console.log('[CHECK-IN POPUP] Render check - showFortuneWheel:', showFortuneWheel, 'currentCheckInId:', currentCheckInId);
+        if (showFortuneWheel && currentCheckInId) {
+          console.log('[CHECK-IN POPUP] ✅ Rendering FortuneWheel component');
+          return (
+            <FortuneWheel
+              onClose={() => {
+                console.log('[CHECK-IN POPUP] FortuneWheel closed by user');
+                setShowFortuneWheel(false);
+                setCurrentCheckInId(null);
+                onClose(); // Close the entire check-in popup after fortune wheel
+              }}
+              onSpinComplete={handleFortuneWheelComplete}
+            />
+          );
+        } else {
+          console.log('[CHECK-IN POPUP] ❌ NOT rendering FortuneWheel');
+          return null;
+        }
+      })()}
     </div>
   );
 }
