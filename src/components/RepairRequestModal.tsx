@@ -37,6 +37,11 @@ export function RepairRequestModal({ onClose, onComplete }: RepairRequestModalPr
       return;
     }
 
+    if (!profile?.id) {
+      alert('Error: User profile not loaded. Please refresh the page.');
+      return;
+    }
+
     setIsSubmitting(true);
 
     try {
@@ -82,13 +87,17 @@ export function RepairRequestModal({ onClose, onComplete }: RepairRequestModalPr
         recurrence: 'one_time',
       }) as any;
 
-      if (error) throw error;
+      if (error) {
+        console.error('Supabase error:', error);
+        throw error;
+      }
 
       alert('Reparatur-Anfrage erfolgreich erstellt!');
       onComplete();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error creating repair request:', error);
-      alert(t('tasks.errorCreatingRequest'));
+      const errorMessage = error?.message || error?.toString() || 'Unknown error';
+      alert(`Error creating repair request: ${errorMessage}`);
     } finally {
       setIsSubmitting(false);
     }
