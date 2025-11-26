@@ -3,7 +3,8 @@ import { useTranslation } from 'react-i18next';
 
 import { supabase } from '../lib/supabase';
 import { useProfiles } from '../hooks/useProfiles';
-import { Calendar, TrendingUp, Users, Target } from 'lucide-react';
+import { Calendar, TrendingUp, Users, Target, History } from 'lucide-react';
+import { PointsHistoryModal } from './PointsHistoryModal';
 
 interface MonthlyGoal {
   id: string;
@@ -24,6 +25,8 @@ export function MonthlyPointsOverview() {
     const now = new Date();
     return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
   }) as any;
+  const [showHistoryModal, setShowHistoryModal] = useState(false);
+  const [selectedUser, setSelectedUser] = useState<{ id: string; name: string } | null>(null);
 
   const fetchMonthlyGoals = useCallback(async () => {
     try {
@@ -201,21 +204,33 @@ export function MonthlyPointsOverview() {
                     </p>
                   </div>
                 </div>
-                <div className="text-right">
-                  <p className={`text-2xl font-bold ${getTextColorClasses(goal.color_status)}`}>{goal.percentage.toFixed(1)}%</p>
-                  <div className="flex items-center space-x-1 mt-1">
-                    <TrendingUp className={`w-4 h-4 ${getTextColorClasses(goal.color_status)}`} />
-                    <span className={`text-xs font-semibold ${getTextColorClasses(goal.color_status)}`}>
-                      {goal.total_achievable_points === 0
-                        ? t('monthlyPoints.statusNoSchedule')
-                        : goal.percentage >= 90
-                        ? t('monthlyPoints.statusExcellent')
-                        : goal.percentage >= 70
-                        ? t('monthlyPoints.statusGood')
-                        : goal.percentage >= 50
-                        ? t('monthlyPoints.statusKeepGoing')
-                        : t('monthlyPoints.statusCatchUp')}
-                    </span>
+                <div className="flex items-center gap-3">
+                  <button
+                    onClick={() => {
+                      setSelectedUser({ id: goal.user_id, name: profile.full_name });
+                      setShowHistoryModal(true);
+                    }}
+                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2 font-medium"
+                  >
+                    <History className="w-4 h-4" />
+                    {t('common.history', 'Verlauf')}
+                  </button>
+                  <div className="text-right">
+                    <p className={`text-2xl font-bold ${getTextColorClasses(goal.color_status)}`}>{goal.percentage.toFixed(1)}%</p>
+                    <div className="flex items-center space-x-1 mt-1">
+                      <TrendingUp className={`w-4 h-4 ${getTextColorClasses(goal.color_status)}`} />
+                      <span className={`text-xs font-semibold ${getTextColorClasses(goal.color_status)}`}>
+                        {goal.total_achievable_points === 0
+                          ? t('monthlyPoints.statusNoSchedule')
+                          : goal.percentage >= 90
+                          ? t('monthlyPoints.statusExcellent')
+                          : goal.percentage >= 70
+                          ? t('monthlyPoints.statusGood')
+                          : goal.percentage >= 50
+                          ? t('monthlyPoints.statusKeepGoing')
+                          : t('monthlyPoints.statusCatchUp')}
+                      </span>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -235,6 +250,18 @@ export function MonthlyPointsOverview() {
           )}
         </div>
       </div>
+
+      {showHistoryModal && selectedUser && (
+        <PointsHistoryModal
+          userId={selectedUser.id}
+          userName={selectedUser.name}
+          month={selectedMonth}
+          onClose={() => {
+            setShowHistoryModal(false);
+            setSelectedUser(null);
+          }}
+        />
+      )}
     </div>
   );
 }

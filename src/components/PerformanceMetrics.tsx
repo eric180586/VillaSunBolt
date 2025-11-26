@@ -4,12 +4,13 @@ import { useTasks } from '../hooks/useTasks';
 import { useSchedules } from '../hooks/useSchedules';
 import { useProfiles } from '../hooks/useProfiles';
 import { useDailyPointGoals, useMonthlyProgress } from '../hooks/useDailyPointGoals';
-import { CheckSquare, Award, TrendingUp, Users } from 'lucide-react';
+import { CheckSquare, Award, TrendingUp, Users, History } from 'lucide-react';
 import { LucideIcon } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { getTodayDateString } from '../lib/dateUtils';
 import { getTodayMyTasks } from '../lib/taskFilters';
 import { useState, useEffect, useCallback } from 'react';
+import { PointsHistoryModal } from './PointsHistoryModal';
 
 interface MetricCardProps {
   title: string;
@@ -148,6 +149,7 @@ export function PerformanceMetrics({ onNavigate }: PerformanceMetricsProps = {})
   const [totalTasksToday, setTotalTasksToday] = useState(0);
   const [completedTasksToday, setCompletedTasksToday] = useState(0);
   const [teamEstimatedTime, setTeamEstimatedTime] = useState(0);
+  const [showHistoryModal, setShowHistoryModal] = useState(false);
 
   useEffect(() => {
     if (dailyGoal) {
@@ -406,6 +408,17 @@ export function PerformanceMetrics({ onNavigate }: PerformanceMetricsProps = {})
         </div>
       )}
 
+      <div className="flex items-center justify-between mb-4">
+        <div></div>
+        <button
+          onClick={() => setShowHistoryModal(true)}
+          className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2 font-medium shadow-lg"
+        >
+          <History className="w-4 h-4" />
+          {t('common.history', 'Verlauf')}
+        </button>
+      </div>
+
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <MetricCard
           title="Today's Tasks"
@@ -451,6 +464,14 @@ export function PerformanceMetrics({ onNavigate }: PerformanceMetricsProps = {})
           onClick={() => onNavigate?.('leaderboard')}
         />
       </div>
+
+      {showHistoryModal && profile && (
+        <PointsHistoryModal
+          userId={profile.id}
+          userName={profile.full_name}
+          onClose={() => setShowHistoryModal(false)}
+        />
+      )}
     </div>
   );
 }

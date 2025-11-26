@@ -574,6 +574,9 @@
     "totalAchievable": "Erreichbar",
     "avgPercentage": "Durchschnitt",
     "trend": "Trend",
-    "noData": "Keine Daten für diesen Zeitraum"
+    "noData": "Keine Daten für diesen Zeitraum",
+    "daysWorked": "Arbeitstage",
+    "achieved": "Erreicht",
+    "achievable": "Erreichbar"
   }
 }

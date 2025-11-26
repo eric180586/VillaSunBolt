@@ -574,6 +574,9 @@
     "totalAchievable": "Achievable",
     "avgPercentage": "Average",
     "trend": "Trend",
-    "noData": "No data for this period"
+    "noData": "No data for this period",
+    "daysWorked": "Days Worked",
+    "achieved": "Achieved",
+    "achievable": "Achievable"
   }
 }
