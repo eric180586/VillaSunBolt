@@ -41,8 +41,12 @@ export function useNotifications() {
   useRealtimeSubscription<Notification>(
     'notifications',
     async (payload) => {
+      console.log('🔔 [Realtime] New notification received:', payload);
       const newNotif = payload.new as Notification;
+      console.log('🔔 [Realtime] User ID match?', newNotif.user_id, '===', user?.id, '=', newNotif.user_id === user?.id);
+
       if (newNotif.user_id === user?.id) {
+        console.log('🔔 [Realtime] Fetching translated notification...');
         const { data: translatedNotification } = await supabase
           .from('notifications_translated')
           .select('*')
@@ -50,6 +54,7 @@ export function useNotifications() {
           .single() as any;
 
         const notificationToAdd = translatedNotification || newNotif;
+        console.log('🔔 [Realtime] Adding notification to state:', notificationToAdd);
         setNotifications((current) => [notificationToAdd as Notification, ...current]);
         setUnreadCount((count) => count + 1);
 
