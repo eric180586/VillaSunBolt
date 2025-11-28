@@ -6,6 +6,7 @@ import { Plus, CheckCircle, Clock, Users, X, RefreshCw, ArrowLeft, Edit2 } from 
 import { supabase } from '../lib/supabase';
 import { formatDateTimeForDisplay, formatDateForInput, getTodayDateString } from '../lib/dateUtils';
 import { getTodayTasks } from '../lib/taskFilters';
+import { getTaskDisplayTitle } from '../lib/taskUtils';
 import { TaskWithItemsModal } from './TaskWithItemsModal';
 import { HelperSelectionModal } from './HelperSelectionModal';
 import { TaskCreateModal } from './TaskCreateModal';
@@ -532,7 +533,7 @@ export function Tasks({ onNavigate, filterStatus, onBack }: TasksProps = {}) {
               <div className="flex items-start justify-between mb-4">
                 <div className="flex-1">
                   <div className="flex items-center space-x-2 mb-2">
-                    <h3 className="text-xl font-bold text-gray-900">{task.title}</h3>
+                    <h3 className="text-xl font-bold text-gray-900">{getTaskDisplayTitle(task)}</h3>
                     {task.status === 'pending' && (
                       <span className="bg-gray-100 text-gray-700 px-2 py-1 rounded text-xs font-medium">
                         Pending

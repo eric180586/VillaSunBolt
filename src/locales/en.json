@@ -220,6 +220,10 @@
   "tasks": {
     "title": "Tasks",
     "createTask": "New Task",
+    "categoryRoomCleaning": "Room Cleaning",
+    "categorySmallCleaning": "Small Cleaning",
+    "categoryExtras": "Extras",
+    "categoryRepair": "Repair",
     "myTasks": "My Tasks",
     "allTasks": "All Tasks",
     "unassigned": "Unassigned",

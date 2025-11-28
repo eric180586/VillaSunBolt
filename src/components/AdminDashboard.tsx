@@ -7,6 +7,7 @@ import { supabase } from '../lib/supabase';
 import { Plus, TrendingUp, StickyNote, CheckCircle, Home, AlertCircle, QrCode, Users, UserCheck, Shield, ArrowLeft, History, Edit2 } from 'lucide-react';
 import { getTodayDateString } from '../lib/dateUtils';
 import { getTodayTasks } from '../lib/taskFilters';
+import { getTaskDisplayTitle } from '../lib/taskUtils';
 import { checkAndRunDailyReset } from '../lib/dailyReset';
 import { TaskCreateModal } from './TaskCreateModal';
 import { useTranslation } from 'react-i18next';
@@ -324,7 +325,7 @@ export function AdminDashboard({ onNavigate, onBack }: AdminDashboardProps = {})
                           }`}
                         />
                         <span className="text-sm font-medium text-gray-900 truncate">
-                          {task.title}
+                          {getTaskDisplayTitle(task)}
                         </span>
                       </div>
                       <button

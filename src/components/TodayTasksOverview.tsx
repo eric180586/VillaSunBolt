@@ -3,6 +3,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { useTasks } from '../hooks/useTasks';
 import { supabase } from '../lib/supabase';
 import { useTranslation } from 'react-i18next';
+import { getTaskDisplayTitle } from '../lib/taskUtils';
 import { CheckCircle2, Clock, AlertCircle, ArrowLeft } from 'lucide-react';
 
 interface TodayTasksOverviewProps {
@@ -212,7 +213,7 @@ export function TodayTasksOverview({ onBack }: TodayTasksOverviewProps) {
                     {getStatusIcon(task.status)}
                     <div className="flex-1 min-w-0">
                       <h3 className="font-semibold text-gray-900 mb-1">
-                        {task.title}
+                        {getTaskDisplayTitle(task)}
                       </h3>
                       {task.description && (
                         <p className="text-sm text-gray-600 mb-2">

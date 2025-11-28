@@ -3,6 +3,7 @@ import { X, CheckCircle } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import { useTranslation } from 'react-i18next';
+import { getTaskDisplayTitle } from '../lib/taskUtils';
 
 interface TaskWithItemsModalProps {
   task: any;
@@ -98,7 +99,7 @@ export function TaskWithItemsModal({ task, onClose, onComplete: _onComplete, onO
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
       <div className="bg-white rounded-xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
         <div className="flex items-center justify-between mb-6">
-          <h3 className="text-xl font-bold text-gray-900">{task.title}</h3>
+          <h3 className="text-xl font-bold text-gray-900">{getTaskDisplayTitle(task)}</h3>
           <button
             onClick={onClose}
             className="p-2 hover:bg-gray-100 rounded-lg transition-colors"

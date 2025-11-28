@@ -220,6 +220,10 @@
   "tasks": {
     "title": "Aufgaben",
     "createTask": "Neue Aufgabe",
+    "categoryRoomCleaning": "Zimmer Reinigung",
+    "categorySmallCleaning": "Kleine Reinigung",
+    "categoryExtras": "Extras",
+    "categoryRepair": "Reparatur",
     "myTasks": "Meine Aufgaben",
     "allTasks": "Alle Aufgaben",
     "unassigned": "Nicht zugewiesen",

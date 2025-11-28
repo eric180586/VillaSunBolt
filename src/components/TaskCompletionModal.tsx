@@ -4,6 +4,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../lib/supabase';
 import { useTranslation } from 'react-i18next';
 import { TaskItemsList } from './TaskItemsList';
+import { getTaskDisplayTitle } from '../lib/taskUtils';
 
 interface TaskCompletionModalProps {
   task: any;
@@ -110,7 +111,7 @@ export function TaskCompletionModal({ task, items, onClose, onComplete, profiles
         user_id: adminResult.data.id,
         type: 'task_completed',
         title: 'Task zur Review',
-        message: `${profile?.full_name} hat "${task.title}" abgeschlossen`,
+        message: `${profile?.full_name} hat "${getTaskDisplayTitle(task)}" abgeschlossen`,
         reference_id: task.id,
         priority: 'high'
       }) as any;
@@ -146,7 +147,7 @@ export function TaskCompletionModal({ task, items, onClose, onComplete, profiles
         </div>
 
         <div className="mb-4">
-          <h4 className="font-semibold text-gray-900 mb-2">{task.title}</h4>
+          <h4 className="font-semibold text-gray-900 mb-2">{getTaskDisplayTitle(task)}</h4>
           {task.description && (
             <p className="text-sm text-gray-600">{task.description}</p>
           )}

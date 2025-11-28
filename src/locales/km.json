@@ -220,6 +220,10 @@
   "tasks": {
     "title": "កិច្ចការ",
     "createTask": "កិច្ចការថ្មី",
+    "categoryRoomCleaning": "សម្អាតបន្ទប់",
+    "categorySmallCleaning": "សម្អាតតូច",
+    "categoryExtras": "បន្ថែម",
+    "categoryRepair": "ជួសជុល",
     "myTasks": "កិច្ចការរបស់ខ្ញុំ",
     "allTasks": "កិច្ចការទាំងអស់",
     "unassigned": "មិនទាន់កំណត់",

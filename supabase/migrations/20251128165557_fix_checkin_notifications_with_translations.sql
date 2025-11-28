@@ -1,0 +1,247 @@
+/*
+  # Fix Check-In Notifications with Proper Translations
+  
+  Updates the process_check_in function to include proper translations
+  for all notification messages in English, German, and Khmer.
+  
+  Changes:
+  - Add title_en, title_de, title_km columns to notification inserts
+  - Add message_en, message_de, message_km columns to notification inserts
+  - Proper translations for both late and on-time check-ins
+  - Proper translations for admin notifications
+*/
+
+CREATE OR REPLACE FUNCTION process_check_in(
+  p_user_id uuid,
+  p_shift_type text,
+  p_late_reason text DEFAULT NULL
+)
+RETURNS jsonb
+LANGUAGE plpgsql
+SECURITY DEFINER
+AS $$
+DECLARE
+  v_check_in_time timestamptz;
+  v_check_in_date date;
+  v_check_in_id uuid;
+  v_deadline_time time;
+  v_minutes_late integer := 0;
+  v_has_existing_checkin boolean;
+  v_actual_check_in_time time;
+  v_user_name text;
+  v_admin_record record;
+  v_is_late boolean := false;
+  v_cambodia_time timestamp;
+  v_points_awarded integer := 0;
+  v_notification_id uuid;
+BEGIN
+  v_check_in_time := NOW();
+  
+  -- Convert UTC to Cambodia time
+  v_cambodia_time := v_check_in_time AT TIME ZONE 'Asia/Phnom_Penh';
+  v_check_in_date := v_cambodia_time::date;
+  v_actual_check_in_time := v_cambodia_time::time;
+
+  SELECT full_name INTO v_user_name FROM profiles WHERE id = p_user_id;
+
+  -- Check if already checked in today
+  SELECT EXISTS(
+    SELECT 1 FROM check_ins
+    WHERE user_id = p_user_id
+    AND check_in_date = v_check_in_date
+  ) INTO v_has_existing_checkin;
+
+  IF v_has_existing_checkin THEN
+    RETURN jsonb_build_object(
+      'success', false,
+      'message', 'You have already checked in today',
+      'check_in_id', NULL,
+      'show_fortune_wheel', false
+    );
+  END IF;
+
+  -- Set deadline based on shift type
+  IF p_shift_type = 'early' OR p_shift_type = 'morning' THEN
+    v_deadline_time := '09:00:59'::time;
+  ELSIF p_shift_type = 'late' THEN
+    v_deadline_time := '15:00:59'::time;
+  ELSE
+    RETURN jsonb_build_object(
+      'success', false,
+      'message', 'Invalid shift type',
+      'check_in_id', NULL,
+      'show_fortune_wheel', false
+    );
+  END IF;
+
+  -- Calculate if late
+  IF v_actual_check_in_time > v_deadline_time THEN
+    v_minutes_late := EXTRACT(EPOCH FROM (v_actual_check_in_time - v_deadline_time)) / 60;
+    v_is_late := true;
+    v_points_awarded := -(v_minutes_late / 5)::integer;
+  ELSE
+    v_points_awarded := 5;
+  END IF;
+
+  -- Insert check-in record
+  INSERT INTO check_ins (
+    user_id,
+    check_in_time,
+    shift_type,
+    late_reason,
+    check_in_date,
+    is_late,
+    minutes_late,
+    status,
+    points_awarded,
+    approved_at
+  ) VALUES (
+    p_user_id,
+    v_check_in_time,
+    p_shift_type,
+    p_late_reason,
+    v_check_in_date,
+    v_is_late,
+    v_minutes_late,
+    'approved',
+    v_points_awarded,
+    NOW()
+  )
+  RETURNING id INTO v_check_in_id;
+
+  -- Update user points
+  UPDATE profiles
+  SET total_points = total_points + v_points_awarded
+  WHERE id = p_user_id;
+
+  -- Record in points history
+  INSERT INTO points_history (
+    user_id,
+    points_change,
+    category,
+    reason
+  ) VALUES (
+    p_user_id,
+    v_points_awarded,
+    'check_in',
+    CASE 
+      WHEN v_is_late THEN 'Check-in ' || v_minutes_late || ' minutes late'
+      ELSE 'Punctual check-in'
+    END
+  );
+
+  -- Update daily point goals for this user
+  PERFORM update_daily_point_goals(p_user_id, v_check_in_date);
+
+  -- Notify user with proper translations
+  INSERT INTO notifications (
+    user_id,
+    type,
+    title,
+    message,
+    title_en,
+    message_en,
+    title_de,
+    message_de,
+    title_km,
+    message_km
+  ) VALUES (
+    p_user_id,
+    'check_in',
+    CASE WHEN v_is_late THEN 'Check-in Late' ELSE 'Check-in Successful' END,
+    CASE 
+      WHEN v_is_late THEN 'You checked in ' || v_minutes_late || ' minutes late. Points: ' || v_points_awarded
+      ELSE 'You checked in on time! Points awarded: +' || v_points_awarded
+    END,
+    -- English
+    CASE WHEN v_is_late THEN 'Check-in Late' ELSE 'Check-in Successful' END,
+    CASE 
+      WHEN v_is_late THEN 'You checked in ' || v_minutes_late || ' minutes late. Points: ' || v_points_awarded
+      ELSE 'You checked in on time! Points awarded: +' || v_points_awarded
+    END,
+    -- German
+    CASE WHEN v_is_late THEN 'Verspäteter Check-in' ELSE 'Check-in erfolgreich' END,
+    CASE 
+      WHEN v_is_late THEN 'Du hast dich ' || v_minutes_late || ' Minuten verspätet eingecheckt. Punkte: ' || v_points_awarded
+      ELSE 'Du hast dich pünktlich eingecheckt! Punkte erhalten: +' || v_points_awarded
+    END,
+    -- Khmer
+    CASE WHEN v_is_late THEN 'ចូលយឺត' ELSE 'ចូលជោគជ័យ' END,
+    CASE 
+      WHEN v_is_late THEN 'អ្នកបានចូលយឺត ' || v_minutes_late || ' នាទី។ ពិន្ទុ៖ ' || v_points_awarded
+      ELSE 'អ្នកបានចូលទាន់ពេល! ពិន្ទុទទួលបាន៖ +' || v_points_awarded
+    END
+  )
+  RETURNING id INTO v_notification_id;
+
+  -- Send push notification to user
+  BEGIN
+    PERFORM send_push_notification(p_user_id, v_notification_id);
+  EXCEPTION WHEN OTHERS THEN
+    RAISE WARNING 'Push notification failed for user %: %', p_user_id, SQLERRM;
+  END;
+
+  -- Notify admins with proper translations
+  FOR v_admin_record IN 
+    SELECT id FROM profiles WHERE role = 'admin'
+  LOOP
+    INSERT INTO notifications (
+      user_id,
+      type,
+      title,
+      message,
+      title_en,
+      message_en,
+      title_de,
+      message_de,
+      title_km,
+      message_km
+    ) VALUES (
+      v_admin_record.id,
+      'check_in',
+      CASE WHEN v_is_late THEN 'Staff Late Check-in' ELSE 'Staff Check-in' END,
+      CASE 
+        WHEN v_is_late THEN v_user_name || ' checked in ' || v_minutes_late || ' minutes late (' || p_shift_type || ' shift). Penalty: ' || v_points_awarded || ' points.'
+        ELSE v_user_name || ' checked in on time (' || p_shift_type || ' shift). Points awarded: +' || v_points_awarded
+      END,
+      -- English
+      CASE WHEN v_is_late THEN 'Staff Late Check-in' ELSE 'Staff Check-in' END,
+      CASE 
+        WHEN v_is_late THEN v_user_name || ' checked in ' || v_minutes_late || ' minutes late (' || p_shift_type || ' shift). Penalty: ' || v_points_awarded || ' points.'
+        ELSE v_user_name || ' checked in on time (' || p_shift_type || ' shift). Points awarded: +' || v_points_awarded
+      END,
+      -- German
+      CASE WHEN v_is_late THEN 'Mitarbeiter verspäteter Check-in' ELSE 'Mitarbeiter Check-in' END,
+      CASE 
+        WHEN v_is_late THEN v_user_name || ' hat sich ' || v_minutes_late || ' Minuten verspätet eingecheckt (' || p_shift_type || ' Schicht). Strafe: ' || v_points_awarded || ' Punkte.'
+        ELSE v_user_name || ' hat sich pünktlich eingecheckt (' || p_shift_type || ' Schicht). Punkte vergeben: +' || v_points_awarded
+      END,
+      -- Khmer
+      CASE WHEN v_is_late THEN 'បុគ្គលិកចូលយឺត' ELSE 'បុគ្គលិកចូល' END,
+      CASE 
+        WHEN v_is_late THEN v_user_name || ' បានចូលយឺត ' || v_minutes_late || ' នាទី (' || p_shift_type || ' វេន)។ ការពិន័យ៖ ' || v_points_awarded || ' ពិន្ទុ។'
+        ELSE v_user_name || ' បានចូលទាន់ពេល (' || p_shift_type || ' វេន)។ ពិន្ទុផ្តល់ឱ្យ៖ +' || v_points_awarded
+      END
+    )
+    RETURNING id INTO v_notification_id;
+
+    BEGIN
+      PERFORM send_push_notification(v_admin_record.id, v_notification_id);
+    EXCEPTION WHEN OTHERS THEN
+      RAISE WARNING 'Push notification failed for admin %: %', v_admin_record.id, SQLERRM;
+    END;
+  END LOOP;
+
+  RETURN jsonb_build_object(
+    'success', true,
+    'message', 'Check-in successful',
+    'check_in_id', v_check_in_id,
+    'is_late', v_is_late,
+    'points_awarded', v_points_awarded,
+    'show_fortune_wheel', NOT v_is_late
+  );
+END;
+$$;
+
+COMMENT ON FUNCTION process_check_in IS 
+'Process staff check-in with proper multilingual notifications';

@@ -3,6 +3,7 @@ import { X, CheckCircle, XCircle } from 'lucide-react';
 // TaskItemsList unused - imported but not used
 import { supabase } from '../lib/supabase';
 import { useTranslation } from 'react-i18next';
+import { getTaskDisplayTitle } from '../lib/taskUtils';
 
 interface TaskReviewModalProps {
   task: any;
@@ -118,7 +119,7 @@ export function TaskReviewModal({ task, onClose, onComplete }: TaskReviewModalPr
 
         {/* Task Info */}
         <div className="mb-6 p-4 bg-gray-50 rounded-lg">
-          <h4 className="font-semibold text-gray-900 mb-2">{task.title}</h4>
+          <h4 className="font-semibold text-gray-900 mb-2">{getTaskDisplayTitle(task)}</h4>
           {task.description && <p className="text-sm text-gray-600 mb-2">{task.description}</p>}
           <div className="flex items-center space-x-4 text-sm text-gray-600">
             <span>👤 {task.profiles?.full_name}</span>
