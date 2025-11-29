@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useProfiles } from '../hooks/useProfiles';
-import { User, Mail, Award, Shield, Calendar, Globe } from 'lucide-react';
+import { User, Mail, Award, Shield, Calendar, Globe, Bell } from 'lucide-react';
+import { PushNotificationToggle } from './PushNotificationToggle';
 import { useTranslation } from 'react-i18next';
 
 export function Profile({ onBack: _onBack }: { onBack?: () => void } = {}) {
@@ -73,6 +74,12 @@ export function Profile({ onBack: _onBack }: { onBack?: () => void } = {}) {
                   <option value="km">{t('languages.km')}</option>
                 </select>
               </div>
+
+      {/* Push notifications toggle */}
+      <div className="flex items-center space-x-2 text-gray-600">
+        <Bell className="w-5 h-5" />
+        <PushNotificationToggle />
+      </div>
             </div>
           </div>
         </div>

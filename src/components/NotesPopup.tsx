@@ -14,29 +14,32 @@ export function NotesPopup({ onClose }: NotesPopupProps) {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
-  const importantNotes = notes.filter((note: any) => {
+  // Filter notes for the current day that belong to the reception category. The
+  // requirement is to display reception information when staff members check
+  // in for the first time. We deliberately ignore the previous logic that
+  // focused only on important/announcement categories. Only notes with
+  // category === 'reception' created today will be shown in the modal.
+  const receptionNotesForToday = notes.filter((note: any) => {
     const noteDate = note.created_at ? new Date(note.created_at) : new Date();
     noteDate.setHours(0, 0, 0, 0);
-    return (
-      noteDate.getTime() === today.getTime() &&
-      (note.is_important || note.category === 'important' || note.category === 'announcement')
-    );
+    return noteDate.getTime() === today.getTime() && note.category === 'reception';
   }) as any;
 
   useEffect(() => {
-    if (importantNotes.length === 0) {
+    // Close the popup immediately if there are no reception notes for today.
+    if (receptionNotesForToday.length === 0) {
       onClose();
     }
-  }, [importantNotes.length, onClose]);
+  }, [receptionNotesForToday.length, onClose]);
 
-  if (importantNotes.length === 0) {
+  if (receptionNotesForToday.length === 0) {
     return null;
   }
 
-  const currentNote = importantNotes[currentNoteIndex];
+  const currentNote = receptionNotesForToday[currentNoteIndex];
 
   const handleNext = () => {
-    if (currentNoteIndex < importantNotes.length - 1) {
+    if (currentNoteIndex < receptionNotesForToday.length - 1) {
       setCurrentNoteIndex(currentNoteIndex + 1);
     } else {
       onClose();
@@ -94,7 +97,7 @@ export function NotesPopup({ onClose }: NotesPopupProps) {
 
         <div className="flex items-center justify-between">
           <span className="text-sm text-gray-600">
-            Note {currentNoteIndex + 1} of {importantNotes.length}
+            Note {currentNoteIndex + 1} of {receptionNotesForToday.length}
           </span>
           <div className="flex space-x-3">
             {importantNotes.length > 1 && (
