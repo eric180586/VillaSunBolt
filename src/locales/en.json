@@ -73,7 +73,6 @@
     "dailyResetSuccess": "Daily reset executed successfully!",
     "dailyResetError": "Daily reset failed:",
     "todaysTasks": "Today's Tasks",
-    "completed": "completed",
     "noTasksToday": "No tasks today",
     "reviewTasks": "Review Tasks",
     "taskToReview": "task to review",
@@ -261,7 +260,7 @@
     "addNote": "Add note",
     "completionNote": "Completion note",
     "reviewNote": "Review note",
-    "selectHelper": "Select helper",
+    "selectHelper": "Please select a helper!",
     "withHelper": "With helper",
     "duration": "Duration",
     "minutes": "Minutes",
@@ -283,7 +282,6 @@
     "errorSaving": "Error saving",
     "photoExamplePlaceholder": "E.g. Please take photo of clean bed",
     "checkAllTasks": "Please check all tasks before completing!",
-    "selectHelper": "Please select a helper!",
     "errorCompleting": "Error completing",
     "warningCheckAll": "⚠️ Please check all tasks before completing",
     "errorApprovingTask": "Error approving",
@@ -293,7 +291,9 @@
     "selectHelperFirst": "Please select a helper",
     "checkAllItems": "Please check all items!",
     "enterTitlePlease": "Please enter a title",
-    "errorCreatingRequest": "Error creating request"
+    "errorCreatingRequest": "Error creating request",
+    "notificationReviewTitle": "Task to review",
+    "notificationReviewMessage": "{{staffName}} has completed \"{{taskTitle}}\""
   },
   "checklists": {
     "title": "Checklists",
@@ -456,7 +456,31 @@
     "checkInApproved": "Check-in approved",
     "checkInRejected": "Check-in rejected",
     "departureApproved": "Departure approved",
-    "departureRejected": "Departure rejected"
+    "departureRejected": "Departure rejected",
+    "checkIn": {
+      "punctualTitle": "On-time check-in",
+      "punctualBody": "You checked in on time and received points.",
+      "lateTitle": "Late check-in",
+      "lateBody": "You checked in late and points were deducted."
+    },
+    "patrol": {
+      "missedTitle": "Patrol round missed",
+      "missedBody": "You missed a scheduled patrol round.",
+      "upcomingTitle": "Patrol round coming up",
+      "upcomingBody": "A patrol round starts in a few minutes."
+    },
+    "unassignedTask": {
+      "title": "New unassigned task",
+      "body": "New task: \"{{taskTitle}}\""
+    },
+    "bonus": {
+      "title": "Bonus received",
+      "body": "You received {{points}} bonus points: {{reason}}"
+    },
+    "penalty": {
+      "title": "Penalty applied",
+      "body": "{{points}} points were deducted: {{reason}}"
+    }
   },
   "chat": {
     "title": "Team Chat",

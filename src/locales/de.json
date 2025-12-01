@@ -57,7 +57,7 @@
     "pointsUnit": "Punkten",
     "tasksUnit": "Aufgaben",
     "achieved": "erreichte",
-    "completed": "erledigte",
+    "completed": "erledigt",
     "achievable": "erreichbaren",
     "total": "gesamt",
     "achievedOf": "{{achieved}} erreichte von {{total}} erreichbaren {{unit}}",
@@ -73,7 +73,6 @@
     "dailyResetSuccess": "Daily Reset erfolgreich ausgeführt!",
     "dailyResetError": "Daily Reset fehlgeschlagen:",
     "todaysTasks": "Heutige Aufgaben",
-    "completed": "erledigt",
     "noTasksToday": "Keine Aufgaben heute",
     "reviewTasks": "Aufgaben prüfen",
     "taskToReview": "Aufgabe zu prüfen",
@@ -261,7 +260,7 @@
     "addNote": "Notiz hinzufügen",
     "completionNote": "Abschlussnotiz",
     "reviewNote": "Überprüfungsnotiz",
-    "selectHelper": "Helfer auswählen",
+    "selectHelper": "Bitte Helfer auswählen!",
     "withHelper": "Mit Helfer",
     "duration": "Dauer",
     "minutes": "Minuten",
@@ -283,7 +282,6 @@
     "errorSaving": "Fehler beim Speichern",
     "photoExamplePlaceholder": "Z.B. Bitte Foto von sauberem Bett machen",
     "checkAllTasks": "Bitte alle Aufgaben abhaken bevor du abschließt!",
-    "selectHelper": "Bitte Helfer auswählen!",
     "errorCompleting": "Fehler beim Abschließen",
     "warningCheckAll": "⚠️ Bitte alle Aufgaben abhaken bevor du abschließt",
     "errorApprovingTask": "Fehler beim Genehmigen",
@@ -293,7 +291,9 @@
     "selectHelperFirst": "Bitte wähle einen Helfer aus",
     "checkAllItems": "Bitte alle Items abhaken!",
     "enterTitlePlease": "Bitte geben Sie einen Titel ein",
-    "errorCreatingRequest": "Fehler beim Erstellen der Anfrage"
+    "errorCreatingRequest": "Fehler beim Erstellen der Anfrage",
+    "notificationReviewTitle": "Aufgabe zur Prüfung",
+    "notificationReviewMessage": "{{staffName}} hat \"{{taskTitle}}\" abgeschlossen"
   },
   "checklists": {
     "title": "Checklisten",
@@ -456,7 +456,31 @@
     "checkInApproved": "Check-In bestätigt",
     "checkInRejected": "Check-In abgelehnt",
     "departureApproved": "Feierabend genehmigt",
-    "departureRejected": "Feierabend abgelehnt"
+    "departureRejected": "Feierabend abgelehnt",
+    "checkIn": {
+      "punctualTitle": "Pünktlicher Check-in",
+      "punctualBody": "Du hast pünktlich eingecheckt und Punkte erhalten.",
+      "lateTitle": "Zu spät eingecheckt",
+      "lateBody": "Du hast zu spät eingecheckt und es wurden Punkte abgezogen."
+    },
+    "patrol": {
+      "missedTitle": "Patrouillenrunde verpasst",
+      "missedBody": "Du hast eine geplante Patrouillenrunde verpasst.",
+      "upcomingTitle": "Patrouillenrunde steht an",
+      "upcomingBody": "In wenigen Minuten steht eine Patrouillenrunde an."
+    },
+    "unassignedTask": {
+      "title": "Neue unzugewiesene Aufgabe",
+      "body": "Neue Aufgabe: \"{{taskTitle}}\""
+    },
+    "bonus": {
+      "title": "Bonus erhalten",
+      "body": "Du hast {{points}} Bonuspunkte erhalten: {{reason}}"
+    },
+    "penalty": {
+      "title": "Punkteabzug",
+      "body": "Dir wurden {{points}} Punkte abgezogen: {{reason}}"
+    }
   },
   "chat": {
     "title": "Team-Chat",

@@ -66,7 +66,7 @@ export function TaskCompletionModal({ task, items, onClose, onComplete, profiles
     }
 
     if (photoRequired && photos.length === 0) {
-      alert('Foto erforderlich!');
+      alert(t('tasks.photoRequired'));
       return;
     }
 
@@ -110,8 +110,8 @@ export function TaskCompletionModal({ task, items, onClose, onComplete, profiles
         await supabase.from('notifications').insert({
         user_id: adminResult.data.id,
         type: 'task_completed',
-        title: 'Task zur Review',
-        message: `${profile?.full_name} hat "${getTaskDisplayTitle(task)}" abgeschlossen`,
+        title: t('tasks.notificationReviewTitle'),
+        message: t('tasks.notificationReviewMessage',{staffName: profile?.full_name ?? '', taskTitle: getTaskDisplayTitle(task)})`${profile?.full_name} hat "${getTaskDisplayTitle(task)}" abgeschlossen`,
         reference_id: task.id,
         priority: 'high'
       }) as any;

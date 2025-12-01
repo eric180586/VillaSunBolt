@@ -73,7 +73,6 @@
     "dailyResetSuccess": "កំណត់ឡើងវិញប្រចាំថ្ងៃបានដំណើរការដោយជោគជ័យ!",
     "dailyResetError": "កំណត់ឡើងវិញប្រចាំថ្ងៃបរាជ័យ:",
     "todaysTasks": "Today's Tasks",
-    "completed": "បានបញ្ចប់",
     "noTasksToday": "គ្មានកិច្ចការថ្ងៃនេះ",
     "reviewTasks": "Review Tasks",
     "taskToReview": "កិច្ចការត្រូវពិនិត្យ",
@@ -292,7 +291,9 @@
     "selectHelperFirst": "សូមជ្រើសរើសជំនួយការ",
     "checkAllItems": "សូមធីកធាតុទាំងអស់!",
     "enterTitlePlease": "សូមបញ្ចូលចំណងជើង",
-    "errorCreatingRequest": "កំហុសក្នុងការបង្កើតសំណើ"
+    "errorCreatingRequest": "កំហុសក្នុងការបង្កើតសំណើ",
+    "notificationReviewTitle": "កិច្ចការត្រូវពិនិត្យ",
+    "notificationReviewMessage": "{{staffName}} បានបញ្ចប់ \"{{taskTitle}}\""
   },
   "checklists": {
     "title": "បញ្ជីពិនិត្យ",
@@ -455,7 +456,31 @@
     "checkInApproved": "ចុះឈ្មោះបានអនុម័ត",
     "checkInRejected": "ចុះឈ្មោះបានបដិសេធ",
     "departureApproved": "ចាកចេញបានអនុម័ត",
-    "departureRejected": "ចាកចេញបានបដិសេធ"
+    "departureRejected": "ចាកចេញបានបដិសេធ",
+    "checkIn": {
+      "punctualTitle": "ចូលម៉ោងទាន់ពេល",
+      "punctualBody": "អ្នកបានចូលម៉ោងទាន់ពេល។",
+      "lateTitle": "ចូលម៉ោងយឺត",
+      "lateBody": "អ្នកបានចូលម៉ោងយឺត និងបានកាត់ពិន្ទុ។"
+    },
+    "patrol": {
+      "missedTitle": "ខកចោលវេនត្រួតពិនិត្យ",
+      "missedBody": "អ្នកបានខកខានវេនត្រួតពិនិត្យ។",
+      "upcomingTitle": "វេនត្រួតពិនិត្យជិតដល់",
+      "upcomingBody": "វេនត្រួតពិនិត្យនឹងចាប់ផ្តើមឆាប់ៗនេះ។"
+    },
+    "unassignedTask": {
+      "title": "ភារកិច្ចមិនទាន់ចាត់ចែង",
+      "body": "ភារកិច្ចថ្មី: \"{{taskTitle}}\""
+    },
+    "bonus": {
+      "title": "ទទួលបានពិន្ទុបន្ថែម",
+      "body": "អ្នកបានទទួល {{points}} ពិន្ទុបន្ថែម៖ {{reason}}"
+    },
+    "penalty": {
+      "title": "ការកាត់ពិន្ទុ",
+      "body": "{{points}} ពិន្ទុត្រូវបានកាត់៖ {{reason}}"
+    }
   },
   "chat": {
     "title": "ជំនាន់ក្រុម",
