@@ -1,189 +1,83 @@
-import { useState, useEffect } from 'react';
-import { AuthProvider, useAuth } from './contexts/AuthContext';
-import { Auth } from './components/Auth';
-import { Layout } from './components/Layout';
-import { Dashboard } from './components/Dashboard';
-import { Tasks } from './components/Tasks';
-import { Schedules } from './components/Schedules';
-import { Notes } from './components/Notes';
-import { Leaderboard } from './components/Leaderboard';
-import { Notifications } from './components/Notifications';
-import { Profile } from './components/Profile';
-import { EmployeeManagement } from './components/EmployeeManagement';
-import { HumorModuleSettings } from './components/HumorModuleSettings';
-import { PointsManager } from './components/PointsManager';
-import { CheckIn } from './components/CheckIn';
-import { CheckInOverview } from './components/CheckInOverview';
-import { CheckInHistory } from './components/CheckInHistory';
-import { ShoppingList } from './components/ShoppingList';
-import { PatrolRounds } from './components/PatrolRounds';
-import { PatrolSchedules } from './components/PatrolSchedules';
-import { PatrolQRCodes } from './components/PatrolQRCodes';
-import { CheckInPopup } from './components/CheckInPopup';
-import { MonthlyPointsOverview } from './components/MonthlyPointsOverview';
-import { DepartureRequestAdmin } from './components/DepartureRequestAdmin';
-import { HowTo } from './components/HowTo';
-import { Chat } from './components/Chat';
-import { supabase } from './lib/supabase';
+// src/App.tsx
+import React, { useState } from "react";
+import { Routes, Route, useNavigate, useLocation } from "react-router-dom";
+import { useRealtimeSubscription } from "./hooks/useRealtimeSubscription";
+import { Notifications } from "./components/Notifications";
+import { ConnectionStatusIndicator } from "./components/ConnectionStatusIndicator";
 
-function AppContent() {
-  const { user, profile, loading } = useAuth();
-  const [currentView, setCurrentView] = useState('dashboard');
-  const [taskFilter, setTaskFilter] = useState<'pending_review' | 'today' | null>(null);
-  const [showCheckInPopup, setShowCheckInPopup] = useState(false);
+import Dashboard from "./routes/Dashboard";
+import TaskDetail from "./routes/TaskDetail";
+import HowToDetail from "./routes/HowToDetail";
+import ChecklistDetail from "./routes/ChecklistDetail";
+import NotFound from "./routes/NotFound";
 
-  const handleNavigate = (view: string, filter?: 'pending_review' | 'today' | null) => {
-    setCurrentView(view);
-    if (view === 'tasks') {
-      setTaskFilter(filter || null);
-    } else {
-      setTaskFilter(null);
-    }
-  };
+// Beispielinitialisierung – später aus Datenbank/State laden!
+const initialNotifications = [
+  // { id: "n1", type: "task", entityId: "t123", message: "Neue Aufgabe verfügbar!", timestamp: new Date().toISOString() }
+];
 
-  const handleBack = () => {
-    setCurrentView('dashboard');
-    setTaskFilter(null);
-  };
+export default function App() {
+  // Echtzeit-Status für die wichtigsten Channels
+  const tasks = useRealtimeSubscription("tasks-channel", "tasks", () => {});
+  const howtos = useRealtimeSubscription("howto-channel", "howtos", () => {});
+  const checklists = useRealtimeSubscription("checklists-channel", "checklists", () => {});
+  const notificationsRealtime = useRealtimeSubscription("notifications-channel", "notifications", () => {});
 
-  useEffect(() => {
-    const checkForTodayCheckIn = async () => {
-      if (!user || !profile?.id) return;
+  const [notifications, setNotifications] = useState(initialNotifications);
 
-      if (profile.role === 'admin') {
-        return;
-      }
-
-      const today = new Date().toISOString().split('T')[0];
-
-      const { data, error } = await supabase
-        .from('check_ins')
-        .select('id')
-        .eq('user_id', profile.id)
-        .eq('check_in_date', today)
-        .maybeSingle();
-
-      if (!error && !data) {
-        setShowCheckInPopup(true);
-      } else if (data) {
-        setShowCheckInPopup(false);
-      }
-    };
-
-    checkForTodayCheckIn();
-
-    const checkInChannel = supabase
-      .channel(`check_ins_app_${Date.now()}`)
-      .on(
-        'postgres_changes',
-        {
-          event: 'INSERT',
-          schema: 'public',
-          table: 'check_ins',
-          filter: `user_id=eq.${profile?.id}`,
-        },
-        () => {
-          setShowCheckInPopup(false);
-        }
-      )
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(checkInChannel);
-    };
-  }, [user, profile]);
-
-  const handleCloseCheckInPopup = () => {
-    setShowCheckInPopup(false);
-  };
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-beige-50 to-orange-50 flex items-center justify-center">
-        <div className="text-center animate-fadeIn">
-          <div className="w-20 h-20 border-4 border-orange-500 border-t-transparent rounded-full animate-spin mx-auto mb-6" />
-          <h2 className="text-2xl font-bold text-gray-800 mb-2">Villa Sun Team</h2>
-          <p className="text-gray-600 animate-pulse">Loading your workspace...</p>
-        </div>
-      </div>
+  const markAsRead = (id: string) =>
+    setNotifications((prev) =>
+      prev.map((n) => (n.id === id ? { ...n, read: true } : n))
     );
-  }
 
-  if (!user) {
-    return <Auth />;
-  }
-
-  const renderView = () => {
-    switch (currentView) {
-      case 'dashboard':
-        return <Dashboard onNavigate={handleNavigate} onBack={currentView !== 'dashboard' ? handleBack : undefined} />;
-      case 'tasks':
-        return <Tasks onNavigate={handleNavigate} filterStatus={taskFilter} onBack={handleBack} />;
-      case 'shopping':
-        return <ShoppingList onBack={handleBack} />;
-      case 'schedules':
-        return <Schedules onNavigate={handleNavigate} onBack={handleBack} />;
-      case 'patrol-schedules':
-        return <PatrolSchedules onNavigate={handleNavigate} onBack={handleBack} />;
-      case 'patrol-rounds':
-        return <PatrolRounds onBack={handleBack} />;
-      case 'patrol-qrcodes':
-        return <PatrolQRCodes onBack={handleBack} />;
-      case 'checklists':
-        return <Tasks onBack={handleBack} />;
-      case 'notes':
-        return <Notes onBack={handleBack} />;
-      case 'chat':
-        return <Chat onBack={handleBack} />;
-      case 'how-to':
-        return <HowTo onBack={handleBack} />;
-      case 'leaderboard':
-        return <Leaderboard onBack={handleBack} onNavigate={handleNavigate} />;
-      case 'notifications':
-        return <Notifications onBack={handleBack} />;
-      case 'profile':
-        return <Profile onBack={handleBack} />;
-      case 'employees':
-        return <EmployeeManagement onBack={handleBack} />;
-      case 'humor-settings':
-        return <HumorModuleSettings onBack={handleBack} />;
-      case 'points-manager':
-        return <PointsManager onBack={handleBack} />;
-      case 'checkin':
-        return <CheckIn onBack={handleBack} />;
-      case 'checkin-approval':
-        return <CheckInOverview onBack={handleBack} onNavigate={handleNavigate} />;
-      case 'checkin-history':
-        return <CheckInHistory onBack={handleBack} />;
-      case 'checklist-review':
-        return <Tasks onBack={handleBack} filterStatus="pending_review" />;
-      case 'monthly-points':
-        return <MonthlyPointsOverview />;
-      case 'departure-requests':
-        return <DepartureRequestAdmin onBack={handleBack} />;
-      case 'today-tasks-overview':
-        return <Tasks onNavigate={handleNavigate} filterStatus="today" onBack={handleBack} />;
-      default:
-        return <Dashboard onNavigate={handleNavigate} />;
+  // Navigation nach Notification-Klick (Deep-Link)
+  const navigate = useNavigate();
+  const handleNotificationClick = (notification: any) => {
+    if (notification.type === "task") {
+      navigate(`/tasks/${notification.entityId}`);
+    } else if (notification.type === "howto") {
+      navigate(`/howto/${notification.entityId}`);
+    } else if (notification.type === "checklist") {
+      navigate(`/checklists/${notification.entityId}`);
     }
+    markAsRead(notification.id);
   };
 
+  // Status-Aggregator
+  const status = [tasks.status, howtos.status, checklists.status, notificationsRealtime.status]
+    .includes("disconnected")
+    ? "disconnected"
+    : [tasks.status, howtos.status, checklists.status, notificationsRealtime.status]
+        .includes("reconnecting")
+    ? "reconnecting"
+    : "connected";
+
+  const error =
+    tasks.error ||
+    howtos.error ||
+    checklists.error ||
+    notificationsRealtime.error;
+
   return (
-    <>
-      <Layout currentView={currentView} onViewChange={handleNavigate}>
-        {renderView()}
-      </Layout>
-      {showCheckInPopup && <CheckInPopup onClose={handleCloseCheckInPopup} />}
-    </>
+    <div>
+      <header>
+        <h1>Hotel Bonus Mitarbeiter App</h1>
+        <ConnectionStatusIndicator status={status} error={error} />
+      </header>
+      <main>
+        <Notifications
+          notifications={notifications}
+          markAsRead={markAsRead}
+          onClick={handleNotificationClick}
+        />
+        <Routes>
+          <Route path="/" element={<Dashboard />} />
+          <Route path="/tasks/:id" element={<TaskDetail />} />
+          <Route path="/howto/:id" element={<HowToDetail />} />
+          <Route path="/checklists/:id" element={<ChecklistDetail />} />
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </main>
+    </div>
   );
 }
-
-function App() {
-  return (
-    <AuthProvider>
-      <AppContent />
-    </AuthProvider>
-  );
-}
-
-export default App;
