@@ -312,7 +312,14 @@
     "notesPlaceholder": "Additional remarks...",
     "completingWithHelper": "Complete with helper",
     "completeAlone": "Complete alone",
-    "completing": "Completing..."
+    "completing": "Completing...",
+    "tasksForReview": "Tasks for Review",
+    "forReview": "For Review:",
+    "waitingForReview": "Waiting for review",
+    "explanationPhotos": "Explanation Photos:",
+    "explanation": "Explanation",
+    "adminExplanation": "Admin Explanation",
+    "errorCompletingTask": "Error completing task"
   },
   "checklists": {
     "title": "Checklists",
@@ -612,7 +619,16 @@
     "noCheckInsOpen": "No open check-in requests",
     "noDeparturesOpen": "No open departure requests",
     "rejectTitle": "Reject {{type}}",
-    "provideRejectionReason": "Please provide a reason for rejection:"
+    "provideRejectionReason": "Please provide a reason for rejection:",
+    "onlyForAdmins": "Only available for admins",
+    "requestsOverview": "Requests Overview",
+    "minutesLate": "{{minutes}} minutes late",
+    "reason": "Reason:",
+    "confirm": "Confirm",
+    "confirmCheckIn": "Confirm Check-In",
+    "lateness": "Lateness:",
+    "autoReducedDueToLateness": "Automatically reduced due to {{minutes}} min lateness",
+    "punctualArrival": "Punctual arrival"
   },
   "pointsHistory": {
     "title": "Points History",

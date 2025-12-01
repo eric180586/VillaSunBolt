@@ -253,7 +253,7 @@ export function CheckInApproval({ onNavigate }: CheckInApprovalProps = {}) {
   if (profile?.role !== 'admin') {
     return (
       <div className="text-center py-12">
-        <p className="text-gray-600">Nur für Admins verfügbar</p>
+        <p className="text-gray-600">{t('admin.onlyForAdmins')}</p>
       </div>
     );
   }
@@ -270,7 +270,7 @@ export function CheckInApproval({ onNavigate }: CheckInApprovalProps = {}) {
           </button>
         )}
         <div>
-          <h2 className="text-3xl font-bold text-gray-900">Anfragen Übersicht</h2>
+          <h2 className="text-3xl font-bold text-gray-900">{t('admin.requestsOverview')}</h2>
           <p className="text-gray-600 mt-1">
             {t('admin.checkInAndDeparture')}
           </p>
@@ -353,13 +353,13 @@ export function CheckInApproval({ onNavigate }: CheckInApprovalProps = {}) {
                         <div className="flex items-center space-x-2 mb-2">
                           <AlertCircle className="w-5 h-5 text-orange-600" />
                           <span className="font-semibold text-orange-900">
-                            {checkIn.minutes_late} Minuten zu spät
+                            {t('admin.minutesLate', { minutes: checkIn.minutes_late })}
                           </span>
                         </div>
                         {checkIn.late_reason && (
                           <div className="mt-2 pl-7">
                             <p className="text-sm text-gray-700">
-                              <span className="font-semibold text-gray-900">Begründung:</span>
+                              <span className="font-semibold text-gray-900">{t('admin.reason')}</span>
                             </p>
                             <p className="text-sm text-gray-700 italic mt-1">
                               "{checkIn.late_reason}"
@@ -390,7 +390,7 @@ export function CheckInApproval({ onNavigate }: CheckInApprovalProps = {}) {
                     className="flex items-center space-x-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50"
                   >
                     <CheckCircle className="w-5 h-5" />
-                    <span>Bestätigen</span>
+                    <span>{t('admin.confirm')}</span>
                   </button>
 
                   <button
@@ -417,7 +417,7 @@ export function CheckInApproval({ onNavigate }: CheckInApprovalProps = {}) {
             className="bg-white rounded-xl p-6 w-full max-w-md shadow-2xl"
             onClick={(e) => e.stopPropagation()}
           >
-            <h3 className="text-xl font-bold text-gray-900 mb-4">Check-In bestätigen</h3>
+            <h3 className="text-xl font-bold text-gray-900 mb-4">{t('admin.confirmCheckIn')}</h3>
 
             {(() => {
               const checkIn = getCheckInById(showApproveModal);
@@ -438,7 +438,7 @@ export function CheckInApproval({ onNavigate }: CheckInApprovalProps = {}) {
                     </div>
                     {checkIn.is_late && (
                       <div className="flex items-center justify-between">
-                        <span className="text-sm text-gray-600">Verspätung:</span>
+                        <span className="text-sm text-gray-600">{t('admin.lateness')}</span>
                         <span className="font-semibold text-orange-600">{checkIn.minutes_late} Min</span>
                       </div>
                     )}
@@ -454,8 +454,8 @@ export function CheckInApproval({ onNavigate }: CheckInApprovalProps = {}) {
                       </p>
                       <p className="text-xs text-gray-600">
                         {checkIn.is_late
-                          ? `Automatisch reduziert wegen ${checkIn.minutes_late} Min Verspätung`
-                          : 'Pünktliches Erscheinen'}
+                          ? t('admin.autoReducedDueToLateness', { minutes: checkIn.minutes_late })
+                          : t('admin.punctualArrival')}
                       </p>
                     </div>
 
@@ -533,7 +533,7 @@ export function CheckInApproval({ onNavigate }: CheckInApprovalProps = {}) {
                       className="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 flex items-center justify-center space-x-2"
                     >
                       <CheckCircle className="w-5 h-5" />
-                      <span>Bestätigen</span>
+                      <span>{t('admin.confirm')}</span>
                     </button>
                   </div>
                 </>

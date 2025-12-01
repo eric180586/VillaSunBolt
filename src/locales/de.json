@@ -312,7 +312,14 @@
     "notesPlaceholder": "Zusätzliche Anmerkungen...",
     "completingWithHelper": "Mit Helfer abschließen",
     "completeAlone": "Alleine abschließen",
-    "completing": "Wird abgeschlossen..."
+    "completing": "Wird abgeschlossen...",
+    "tasksForReview": "Aufgaben zur Prüfung",
+    "forReview": "Zur Prüfung:",
+    "waitingForReview": "Wartet auf Überprüfung",
+    "explanationPhotos": "Erklärungs-Fotos:",
+    "explanation": "Erklärung",
+    "adminExplanation": "Admin Erklärung",
+    "errorCompletingTask": "Fehler beim Abschließen"
   },
   "checklists": {
     "title": "Checklisten",
@@ -612,7 +619,16 @@
     "noCheckInsOpen": "Keine offenen Check-In Anfragen",
     "noDeparturesOpen": "Keine offenen Feierabend Anfragen",
     "rejectTitle": "{{type}} ablehnen",
-    "provideRejectionReason": "Bitte gib einen Grund für die Ablehnung an:"
+    "provideRejectionReason": "Bitte gib einen Grund für die Ablehnung an:",
+    "onlyForAdmins": "Nur für Admins verfügbar",
+    "requestsOverview": "Anfragen Übersicht",
+    "minutesLate": "{{minutes}} Minuten zu spät",
+    "reason": "Begründung:",
+    "confirm": "Bestätigen",
+    "confirmCheckIn": "Check-In bestätigen",
+    "lateness": "Verspätung:",
+    "autoReducedDueToLateness": "Automatisch reduziert wegen {{minutes}} Min Verspätung",
+    "punctualArrival": "Pünktliches Erscheinen"
   },
   "pointsHistory": {
     "title": "Punkteverlauf",

@@ -312,7 +312,14 @@
     "notesPlaceholder": "មតិយោបល់បន្ថែម...",
     "completingWithHelper": "បញ្ចប់ជាមួយជំនួយការ",
     "completeAlone": "បញ្ចប់តែឯង",
-    "completing": "កំពុងបញ្ចប់..."
+    "completing": "កំពុងបញ្ចប់...",
+    "tasksForReview": "កិច្ចការសម្រាប់ពិនិត្យ",
+    "forReview": "សម្រាប់ពិនិត្យ:",
+    "waitingForReview": "រង់ចាំការពិនិត្យ",
+    "explanationPhotos": "រូបថតពន្យល់:",
+    "explanation": "ការពន្យល់",
+    "adminExplanation": "ការពន្យល់របស់អ្នកគ្រប់គ្រង",
+    "errorCompletingTask": "កំហុសក្នុងការបញ្ចប់កិច្ចការ"
   },
   "checklists": {
     "title": "បញ្ជីពិនិត្យ",
@@ -612,7 +619,16 @@
     "noCheckInsOpen": "គ្មានស្នើរ Check-In កំពុងបើក",
     "noDeparturesOpen": "គ្មានស្នើរ Departure កំពុងបើក",
     "rejectTitle": "បដិសេធ {{type}}",
-    "provideRejectionReason": "សូមផ្តល់មូលហេតុសម្រាប់ការបដិសេធ:"
+    "provideRejectionReason": "សូមផ្តល់មូលហេតុសម្រាប់ការបដិសេធ:",
+    "onlyForAdmins": "មានតែសម្រាប់អ្នកគ្រប់គ្រងប៉ុណ្ណោះ",
+    "requestsOverview": "ទិដ្ឋភាពនៃសំណើ",
+    "minutesLate": "យឺត {{minutes}} នាទី",
+    "reason": "មូលហេតុ:",
+    "confirm": "បញ្ជាក់",
+    "confirmCheckIn": "បញ្ជាក់ការចុះឈ្មោះ",
+    "lateness": "ការយឺត:",
+    "autoReducedDueToLateness": "កាត់បន្ថយដោយស្វ័យប្រវត្តិដោយសារយឺត {{minutes}} នាទី",
+    "punctualArrival": "មកដល់ទាន់ពេលវេលា"
   },
   "pointsHistory": {
     "title": "ប្រវត្តិពិន្ទុ",

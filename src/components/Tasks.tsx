@@ -458,9 +458,9 @@ export function Tasks({ onNavigate, filterStatus, onBack }: TasksProps = {}) {
 
   const selectedCategoryData = CATEGORIES.find((c) => c.id === selectedCategory);
   const displayTitle = filterStatus === 'pending_review'
-    ? 'Aufgaben zur Prüfung'
+    ? t('tasks.tasksForReview')
     : filterStatus === 'today'
-    ? "Today's Tasks"
+    ? t('tasks.todaysTasks', "Today's Tasks")
     : selectedCategory === 'all_today'
     ? "Today's Tasks"
     : (selectedCategoryData?.label || 'All Tasks');
@@ -483,7 +483,7 @@ export function Tasks({ onNavigate, filterStatus, onBack }: TasksProps = {}) {
           <h2 className="text-3xl font-bold text-gray-900">{displayTitle}</h2>
           {filterStatus && (
             <span className="bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-sm font-medium">
-              Zur Prüfung: {categoryTasks.length}
+              {t('tasks.forReview')} {categoryTasks.length}
             </span>
           )}
         </div>
@@ -593,13 +593,13 @@ export function Tasks({ onNavigate, filterStatus, onBack }: TasksProps = {}) {
 
                   {task.description_photo && Array.isArray(task.description_photo) && task.description_photo.length > 0 && (
                     <div className="mb-3">
-                      <p className="text-sm font-medium text-gray-700 mb-2">Erklärungs-Fotos:</p>
+                      <p className="text-sm font-medium text-gray-700 mb-2">{t('tasks.explanationPhotos')}</p>
                       <div className="grid grid-cols-2 gap-2">
                         {task.description_photo.map((url: string, index: number) => (
                           <img
                             key={index}
                             src={url}
-                            alt={`Erklärung ${index + 1}`}
+                            alt={`${t('tasks.explanation')} ${index + 1}`}
                             className="rounded-lg w-full h-auto max-h-48 object-cover border border-gray-300 cursor-pointer hover:opacity-90 transition-opacity"
                             onClick={() => window.open(url, '_blank')}
                           />
@@ -720,7 +720,7 @@ export function Tasks({ onNavigate, filterStatus, onBack }: TasksProps = {}) {
                             alert('Task zur Review eingereicht!');
                           } catch (error) {
                             console.error('Error completing task:', error);
-                            alert('Fehler beim Abschließen');
+                            alert(t('tasks.errorCompletingTask'));
                           }
                         } else {
                           // No helper yet, ask if they want to add one
@@ -826,7 +826,7 @@ export function Tasks({ onNavigate, filterStatus, onBack }: TasksProps = {}) {
                       </span>
                     ) : needsReview ? (
                       <span className="bg-yellow-100 text-yellow-700 px-2 py-1 rounded text-xs font-medium">
-                        Wartet auf Überprüfung
+                        {t('tasks.waitingForReview')}
                       </span>
                     ) : isCompleted ? (
                       <span className="bg-green-100 text-green-700 px-2 py-1 rounded text-xs font-medium">
@@ -847,7 +847,7 @@ export function Tasks({ onNavigate, filterStatus, onBack }: TasksProps = {}) {
                       {instance.admin_photo && (
                         <img
                           src={instance.admin_photo}
-                          alt="Admin Erklärung"
+                          alt={t('tasks.adminExplanation')}
                           className="rounded-lg max-w-full h-auto max-h-32 object-cover border border-red-400 mt-2"
                         />
                       )}
