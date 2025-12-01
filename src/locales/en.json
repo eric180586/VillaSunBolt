@@ -139,7 +139,14 @@
     "latePointsDeduction": "Per 5 min. late: -1 point",
     "autoDetect": "The system automatically detects your shift",
     "checkInLater": "Check in later",
-    "errorCheckingIn": "Error checking in. Please try again."
+    "errorCheckingIn": "Error checking in. Please try again.",
+    "alreadyCheckedIn": "Already checked in",
+    "alreadyCheckedInMessage": "You have already checked in today.",
+    "scheduledFor": "Scheduled for:",
+    "systemRecognizesShift": "The system automatically recognizes your shift",
+    "submit": "Submit",
+    "checkInApproved": "Check-in approved",
+    "spinFortuneWheel": "Spin the Fortune Wheel!"
   },
   "profile": {
     "title": "Profile",
@@ -293,7 +300,19 @@
     "enterTitlePlease": "Please enter a title",
     "errorCreatingRequest": "Error creating request",
     "notificationReviewTitle": "Task to review",
-    "notificationReviewMessage": "{{staffName}} has completed \"{{taskTitle}}\""
+    "notificationReviewMessage": "{{staffName}} has completed \"{{taskTitle}}\"",
+    "helperQuestionTitle": "Was a second staff member involved?",
+    "helperQuestionBody": "If yes, points will be split 50/50.",
+    "helperYes": "Yes, with helper",
+    "helperNo": "No, alone",
+    "helperSelectPlaceholder": "Select helper...",
+    "photoOptionalLabel": "Photo (optional)",
+    "photosSelected": "{{count}} photo(s) selected",
+    "notesOptionalLabel": "Notes (optional)",
+    "notesPlaceholder": "Additional remarks...",
+    "completingWithHelper": "Complete with helper",
+    "completeAlone": "Complete alone",
+    "completing": "Completing..."
   },
   "checklists": {
     "title": "Checklists",

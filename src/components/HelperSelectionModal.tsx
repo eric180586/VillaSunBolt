@@ -124,7 +124,7 @@ export function HelperSelectionModal({
           <div className="flex items-center space-x-2">
             <Users className="w-6 h-6 text-blue-600" />
             <h3 className="text-xl font-semibold text-gray-900">
-              War ein zweiter Mitarbeiter beteiligt?
+              {t('tasks.helperQuestionTitle')}
             </h3>
           </div>
           <button
@@ -140,7 +140,7 @@ export function HelperSelectionModal({
           {/* Photo Upload (Optional) */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Foto (optional)
+              {t('tasks.photoOptionalLabel')}
             </label>
             <div className="flex items-center space-x-2">
               <input
@@ -155,7 +155,7 @@ export function HelperSelectionModal({
             </div>
             {photos.length > 0 && (
               <p className="text-sm text-green-600 mt-2">
-                {photos.length} Foto(s: any) ausgewählt
+                {t('tasks.photosSelected', { count: photos.length })}
               </p>
             )}
           </div>
@@ -163,21 +163,21 @@ export function HelperSelectionModal({
           {/* Notes (Optional) */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Notizen (optional)
+              {t('tasks.notesOptionalLabel')}
             </label>
             <textarea
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               rows={3}
               className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-              placeholder="Zusätzliche Anmerkungen..."
+              placeholder={t('tasks.notesPlaceholder')}
               disabled={loading}
             />
           </div>
 
           <div className="border-t border-gray-200 pt-4">
             <p className="text-gray-600 mb-4">
-              Hat dir jemand bei dieser Aufgabe geholfen? Die Punkte werden 50/50 aufgeteilt.
+              {t('tasks.helperQuestionBody')}
             </p>
 
             <button
@@ -185,12 +185,12 @@ export function HelperSelectionModal({
               disabled={loading}
               className="w-full px-4 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium mb-3 disabled:bg-gray-400"
             >
-              {loading ? 'Wird abgeschlossen...' : '○ Nein, ich habe alleine gearbeitet'}
+              {loading ? t('tasks.completing') : `○ ${t('tasks.helperNo')}`}
             </button>
 
             <div className="border-t border-gray-200 pt-4">
               <p className="text-sm font-medium text-gray-700 mb-3">
-                ● Ja, mit Hilfe von:
+                ● {t('tasks.helperYes')}:
               </p>
 
               <select
@@ -199,7 +199,7 @@ export function HelperSelectionModal({
                 className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 mb-3"
                 disabled={loading}
               >
-                <option value="">Helfer auswählen...</option>
+                <option value="">{t('tasks.helperSelectPlaceholder')}</option>
                 {staffMembers.map((staff) => (
                   <option key={staff.id} value={staff.id}>
                     {staff.full_name}
@@ -209,7 +209,7 @@ export function HelperSelectionModal({
 
               {selectedHelper && (
                 <p className="text-sm text-blue-600 mb-3 p-2 bg-blue-50 rounded">
-                  ℹ️ Die Punkte werden 50/50 aufgeteilt
+                  ℹ️ {t('tasks.helperQuestionBody')}
                 </p>
               )}
 
@@ -218,7 +218,7 @@ export function HelperSelectionModal({
                 disabled={!selectedHelper || loading}
                 className="w-full px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium disabled:bg-gray-400 disabled:cursor-not-allowed"
               >
-                {loading ? 'Wird abgeschlossen...' : 'Mit Helfer abschließen'}
+                {loading ? t('tasks.completing') : t('tasks.completingWithHelper')}
               </button>
             </div>
           </div>

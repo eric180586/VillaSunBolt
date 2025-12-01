@@ -139,7 +139,14 @@
     "latePointsDeduction": "Pro 5 Min. zu spät: -1 Punkt",
     "autoDetect": "Das System erkennt deine Schicht automatisch",
     "checkInLater": "Später einchecken",
-    "errorCheckingIn": "Fehler beim Einchecken. Bitte versuche es erneut."
+    "errorCheckingIn": "Fehler beim Einchecken. Bitte versuche es erneut.",
+    "alreadyCheckedIn": "Bereits eingecheckt",
+    "alreadyCheckedInMessage": "Du hast dich heute bereits eingecheckt.",
+    "scheduledFor": "Eingeplant für:",
+    "systemRecognizesShift": "Das System erkennt deine Schicht automatisch",
+    "submit": "Absenden",
+    "checkInApproved": "Check-In genehmigt",
+    "spinFortuneWheel": "Zum Glücksrad!"
   },
   "profile": {
     "title": "Profil",
@@ -293,7 +300,19 @@
     "enterTitlePlease": "Bitte geben Sie einen Titel ein",
     "errorCreatingRequest": "Fehler beim Erstellen der Anfrage",
     "notificationReviewTitle": "Aufgabe zur Prüfung",
-    "notificationReviewMessage": "{{staffName}} hat \"{{taskTitle}}\" abgeschlossen"
+    "notificationReviewMessage": "{{staffName}} hat \"{{taskTitle}}\" abgeschlossen",
+    "helperQuestionTitle": "War ein zweiter Mitarbeiter beteiligt?",
+    "helperQuestionBody": "Falls ja, werden die Punkte 50/50 geteilt.",
+    "helperYes": "Ja, mit Helfer",
+    "helperNo": "Nein, alleine",
+    "helperSelectPlaceholder": "Helfer auswählen...",
+    "photoOptionalLabel": "Foto (optional)",
+    "photosSelected": "{{count}} Foto(s) ausgewählt",
+    "notesOptionalLabel": "Notizen (optional)",
+    "notesPlaceholder": "Zusätzliche Anmerkungen...",
+    "completingWithHelper": "Mit Helfer abschließen",
+    "completeAlone": "Alleine abschließen",
+    "completing": "Wird abgeschlossen..."
   },
   "checklists": {
     "title": "Checklisten",

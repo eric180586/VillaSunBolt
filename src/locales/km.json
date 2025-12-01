@@ -139,7 +139,14 @@
     "latePointsDeduction": "រៀងរាល់ 5 នាទីយឺត: -1 ពិន្ទុ",
     "autoDetect": "ប្រព័ន្ធស្វ័យប្រវត្តិរកឃើញវេនរបស់អ្នក",
     "checkInLater": "ចុះឈ្មោះពេលក្រោយ",
-    "errorCheckingIn": "កំហុសក្នុងការចុះឈ្មោះ។ សូមព្យាយាមម្តងទៀត។"
+    "errorCheckingIn": "កំហុសក្នុងការចុះឈ្មោះ។ សូមព្យាយាមម្តងទៀត។",
+    "alreadyCheckedIn": "បានចុះឈ្មោះរួចហើយ",
+    "alreadyCheckedInMessage": "អ្នកបានចុះឈ្មោះថ្ងៃនេះរួចហើយ។",
+    "scheduledFor": "កាលវិភាគសម្រាប់:",
+    "systemRecognizesShift": "ប្រព័ន្ធទទួលស្គាល់វេនរបស់អ្នកដោយស្វ័យប្រវត្តិ",
+    "submit": "ដាក់ស្នើ",
+    "checkInApproved": "ការចុះឈ្មោះត្រូវបានអនុម័ត",
+    "spinFortuneWheel": "បង្វិលកង់សំណាង!"
   },
   "profile": {
     "title": "ប្រវត្តិរូប",
@@ -293,7 +300,19 @@
     "enterTitlePlease": "សូមបញ្ចូលចំណងជើង",
     "errorCreatingRequest": "កំហុសក្នុងការបង្កើតសំណើ",
     "notificationReviewTitle": "កិច្ចការត្រូវពិនិត្យ",
-    "notificationReviewMessage": "{{staffName}} បានបញ្ចប់ \"{{taskTitle}}\""
+    "notificationReviewMessage": "{{staffName}} បានបញ្ចប់ \"{{taskTitle}}\"",
+    "helperQuestionTitle": "តើមានបុគ្គលិកទីពីរចូលរួមទេ?",
+    "helperQuestionBody": "ប្រសិនបើមាន ពិន្ទុនឹងត្រូវបែងចែក 50/50។",
+    "helperYes": "មាន ជាមួយជំនួយការ",
+    "helperNo": "ទេ តែឯង",
+    "helperSelectPlaceholder": "ជ្រើសរើសជំនួយការ...",
+    "photoOptionalLabel": "រូបថត (ស្រេចចិត្ត)",
+    "photosSelected": "{{count}} រូបថតបានជ្រើសរើស",
+    "notesOptionalLabel": "កំណត់ចំណាំ (ស្រេចចិត្ត)",
+    "notesPlaceholder": "មតិយោបល់បន្ថែម...",
+    "completingWithHelper": "បញ្ចប់ជាមួយជំនួយការ",
+    "completeAlone": "បញ្ចប់តែឯង",
+    "completing": "កំពុងបញ្ចប់..."
   },
   "checklists": {
     "title": "បញ្ជីពិនិត្យ",

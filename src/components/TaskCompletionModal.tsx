@@ -168,7 +168,7 @@ export function TaskCompletionModal({ task, items, onClose, onComplete, profiles
         <div className="mb-6 p-4 bg-blue-50 rounded-lg">
           <div className="flex items-center space-x-2 mb-3">
             <Users className="w-5 h-5 text-blue-600" />
-            <p className="font-medium text-gray-900">War ein zweiter Mitarbeiter beteiligt?</p>
+            <p className="font-medium text-gray-900">{t('tasks.helperQuestionTitle')}</p>
           </div>
 
           <div className="space-y-3">
@@ -182,7 +182,7 @@ export function TaskCompletionModal({ task, items, onClose, onComplete, profiles
                 }}
                 className="w-4 h-4 text-purple-600"
               />
-              <span className="text-gray-700">Nein, nur ich</span>
+              <span className="text-gray-700">{t('tasks.helperNo')}</span>
             </label>
 
             <label className="flex items-center space-x-3 cursor-pointer">
@@ -192,7 +192,7 @@ export function TaskCompletionModal({ task, items, onClose, onComplete, profiles
                 onChange={() => setHasHelper(true)}
                 className="w-4 h-4 text-purple-600"
               />
-              <span className="text-gray-700">Ja, mit Hilfe</span>
+              <span className="text-gray-700">{t('tasks.helperYes')}</span>
             </label>
 
             {hasHelper && (
@@ -201,7 +201,7 @@ export function TaskCompletionModal({ task, items, onClose, onComplete, profiles
                 onChange={(e) => setSelectedHelper(e.target.value)}
                 className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500"
               >
-                <option value="">Helfer auswählen...</option>
+                <option value="">{t('tasks.helperSelectPlaceholder')}</option>
                 {staffProfiles.map((p) => (
                   <option key={p.id} value={p.id}>
                     {p.full_name}
@@ -212,7 +212,7 @@ export function TaskCompletionModal({ task, items, onClose, onComplete, profiles
 
             {hasHelper && selectedHelper && (
               <p className="text-sm text-blue-600">
-                ℹ️ Die Punkte werden 50/50 aufgeteilt
+                ℹ️ {t('tasks.helperQuestionBody')}
               </p>
             )}
           </div>
@@ -221,7 +221,7 @@ export function TaskCompletionModal({ task, items, onClose, onComplete, profiles
         {/* Photo Upload */}
         <div className="mb-6">
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            {photoRequired ? 'Foto erforderlich *' : 'Foto (optional)'}
+            {photoRequired ? t('tasks.photoRequired') + ' *' : t('tasks.photoOptionalLabel')}
           </label>
           <div className="flex items-center space-x-2">
             <input
@@ -267,7 +267,7 @@ export function TaskCompletionModal({ task, items, onClose, onComplete, profiles
             disabled={!allItemsCompleted || loading || (hasHelper && !selectedHelper)}
             className="flex-1 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
           >
-            {loading ? 'Wird abgeschlossen...' : 'Abschließen'}
+            {loading ? t('tasks.completing') : t('tasks.completeTask')}
           </button>
         </div>
 
