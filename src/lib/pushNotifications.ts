@@ -1,187 +1,58 @@
-import { supabase } from './supabase';
+// lib/pushNotifications.ts
+export type PushStatus = "supported" | "not_supported" | "granted" | "denied" | "prompt" | "error";
 
-export interface PushSubscriptionData {
-  endpoint: string;
-  keys: {
-    p256dh: string;
-    auth: string;
-  };
+export async function checkPushSupport(): Promise<PushStatus> {
+  if (!("Notification" in window) || !("serviceWorker" in navigator) || !("PushManager" in window)) {
+    return "not_supported";
+  }
+  if (Notification.permission === "granted") return "granted";
+  if (Notification.permission === "denied") return "denied";
+  return "prompt";
 }
 
-export async function registerServiceWorker(): Promise<ServiceWorkerRegistration | null> {
-  if (!('serviceWorker' in navigator)) {
-    return null;
-  }
-
+export async function requestPushPermission(): Promise<PushStatus> {
   try {
-    const existingRegistration = await navigator.serviceWorker.getRegistration('/');
-    if (existingRegistration) {
-      return existingRegistration;
-    }
-
-    const registration = await navigator.serviceWorker.register('/service-worker.js', {
-      scope: '/',
-    }) as any;
-    await navigator.serviceWorker.ready;
-    return registration;
+    const status = await Notification.requestPermission();
+    if (status === "granted") return "granted";
+    if (status === "denied") return "denied";
+    return "prompt";
   } catch {
-    // Silently fail in environments without Service Worker support (e.g., StackBlitz)
-    // In production, Service Worker will work normally for push notifications
-    return null;
+    return "error";
   }
 }
 
-export async function requestNotificationPermission(): Promise<NotificationPermission> {
-  if (!('Notification' in window)) {
-    return 'denied';
+// Registrierung Service Worker für Push (bei Vite/React: z.B. public/sw.js)
+export async function registerServiceWorker(): Promise<ServiceWorkerRegistration | null> {
+  if ("serviceWorker" in navigator) {
+    try {
+      const reg = await navigator.serviceWorker.register("/sw.js");
+      return reg;
+    } catch (err) {
+      return null;
+    }
   }
-
-  if (Notification.permission !== 'default') {
-    return Notification.permission;
-  }
-
-  const permission = await Notification.requestPermission();
-  return permission;
+  return null;
 }
 
-export async function subscribeToPushNotifications(
-  userId: string
-): Promise<PushSubscription | null> {
+export async function subscribeUserToPush(reg: ServiceWorkerRegistration): Promise<PushSubscription | null> {
+  if (!reg.pushManager) return null;
   try {
-    if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
-      return null;
-    }
-
-    await navigator.serviceWorker.ready;
-
-    const registration = await navigator.serviceWorker.getRegistration('/');
-    if (!registration) {
-      return null;
-    }
-
-    const existingSubscription = await registration.pushManager.getSubscription();
-    if (existingSubscription) {
-      return existingSubscription;
-    }
-
-    if (!('Notification' in window)) {
-      return null;
-    }
-
-    if (Notification.permission !== 'granted') {
-      const permission = await requestNotificationPermission();
-      if (permission !== 'granted') {
-        return null;
-      }
-    }
-
-    const vapidKey = import.meta.env.VITE_VAPID_PUBLIC_KEY;
-    if (!vapidKey) {
-      return null;
-    }
-
-    const subscription = await registration.pushManager.subscribe({
+    const subscription = await reg.pushManager.subscribe({
       userVisibleOnly: true,
-      applicationServerKey: urlBase64ToUint8Array(vapidKey),
-    }) as any;
-
-    await savePushSubscription(userId, subscription);
+      applicationServerKey: import.meta.env.VITE_VAPID_PUBLIC_KEY
+    });
     return subscription;
   } catch (err) {
-    console.error('Push subscription failed:', err);
     return null;
   }
 }
 
-export async function savePushSubscription(
-  userId: string,
-  subscription: PushSubscription
-): Promise<void> {
-  const subData = subscription.toJSON();
-  const keys = subData.keys;
-
-  if (!keys?.p256dh || !keys?.auth) {
-    throw new Error('Invalid subscription data');
+// Unsubscribe Helper
+export async function unsubscribePush(reg: ServiceWorkerRegistration): Promise<boolean> {
+  const sub = await reg.pushManager.getSubscription();
+  if (sub) {
+    await sub.unsubscribe();
+    return true;
   }
-
-  const { error } = await supabase.from('push_subscriptions').insert({
-    user_id: userId,
-    endpoint: subData.endpoint || '',
-    p256dh: keys.p256dh,
-    auth: keys.auth,
-    user_agent: navigator.userAgent,
-  }) as any;
-
-  if (error && error.code !== '23505') {
-    console.error('Error saving push subscription:', error);
-    throw error;
-  }
-}
-
-export async function unsubscribeFromPush(userId: string): Promise<void> {
-  const registration = await navigator.serviceWorker.ready;
-  const subscription = await registration.pushManager.getSubscription();
-
-  if (subscription) {
-    await subscription.unsubscribe();
-  }
-
-  const { error } = await supabase
-    .from('push_subscriptions')
-    .delete()
-    .eq('user_id', userId);
-
-  if (error) {
-    console.error('Error removing push subscription:', error);
-    throw error;
-  }
-}
-
-export async function checkPushSubscription(): Promise<PushSubscription | null> {
-  if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
-    return null;
-  }
-
-  try {
-    const registration = await navigator.serviceWorker.getRegistration('/');
-    if (!registration) {
-      return null;
-    }
-
-    const subscription = await registration.pushManager.getSubscription();
-    return subscription;
-  } catch {
-    return null;
-  }
-}
-
-function urlBase64ToUint8Array(base64String: string): Uint8Array {
-  const padding = '='.repeat((4 - (base64String.length % 4)) % 4);
-  const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
-
-  const rawData = window.atob(base64);
-  const outputArray = new Uint8Array(rawData.length);
-
-  for (let i = 0; i < rawData.length; ++i) {
-    outputArray[i] = rawData.charCodeAt(i);
-  }
-  return outputArray;
-}
-
-export async function sendPushNotification(params: {
-  user_ids?: string[];
-  role?: string;
-  title: string;
-  body: string;
-  icon?: string;
-  data?: any;
-}): Promise<void> {
-  const { error } = await supabase.functions.invoke('send-push-notification', {
-    body: params,
-  }) as any;
-
-  if (error) {
-    console.error('Error sending push notification:', error);
-    throw error;
-  }
+  return false;
 }
