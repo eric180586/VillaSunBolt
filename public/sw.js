@@ -1,5 +1,3 @@
-// public/sw.js
-
 self.addEventListener("push", function (event) {
   const data = event.data ? event.data.json() : {};
   const options = {
