@@ -1,14 +1,14 @@
 import React from "react";
 import { useParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 export default function ChecklistDetail() {
+  const { t } = useTranslation();
   const { id } = useParams<{ id: string }>();
-  // Hole Checklist-Details per ID (API/Hooks)
   return (
     <div>
-      <h2>Checkliste: {id}</h2>
-      {/* Checklist-Infos, Abhaken usw. */}
-      <p>Alle Einträge und Schritte dieser Checkliste werden hier angezeigt.</p>
+      <h2>{t("checklist_title", { id })}</h2>
+      <p>{t("checklist_info")}</p>
     </div>
   );
 }
