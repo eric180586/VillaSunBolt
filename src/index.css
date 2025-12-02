@@ -1,99 +1,30 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
-/* Performance: Use will-change for animated elements */
-@keyframes shimmer {
-  0% {
-    transform: translateX(-100%);
-  }
-  100% {
-    transform: translateX(100%);
-  }
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  font-family: 'Inter', 'Arial', sans-serif;
+  background: #f4f6f8;
+  color: #222;
 }
 
-.animate-shimmer {
-  animation: shimmer 2s infinite;
-  will-change: transform;
+h1, h2, h3 {
+  color: #00416a;
 }
 
-@keyframes pulse-slow {
-  0%, 100% {
-    opacity: 1;
-    transform: scale(1);
-  }
-  50% {
-    opacity: 0.95;
-    transform: scale(1.02);
-  }
+.notifications-list {
+  background: #fff;
+  border-radius: 10px;
+  padding: 1.5rem;
+  margin: 2rem 0;
+  box-shadow: 0 0 16px 0 #0001;
 }
 
-.animate-pulse-slow {
-  animation: pulse-slow 3s ease-in-out infinite;
-  will-change: transform, opacity;
+.notification.unread {
+  font-weight: bold;
 }
 
-@keyframes glow {
-  0%, 100% {
-    box-shadow: 0 0 20px rgba(251, 146, 60, 0.5);
-  }
-  50% {
-    box-shadow: 0 0 40px rgba(251, 146, 60, 0.8), 0 0 60px rgba(251, 146, 60, 0.4);
-  }
-}
-
-.animate-glow {
-  animation: glow 2s ease-in-out infinite;
-  will-change: box-shadow;
-}
-
-/* Smooth fade-in animation for content */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.animate-fadeIn {
-  animation: fadeIn 0.3s ease-out;
-}
-
-/* Smooth scale animation for buttons */
-@keyframes scaleIn {
-  from {
-    transform: scale(0.95);
-    opacity: 0;
-  }
-  to {
-    transform: scale(1);
-    opacity: 1;
-  }
-}
-
-.animate-scaleIn {
-  animation: scaleIn 0.2s ease-out;
-}
-
-/* Smooth transitions */
-* {
-  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-/* Improve scrolling on mobile */
-@media (max-width: 768px) {
-  body {
-    -webkit-overflow-scrolling: touch;
-  }
-}
-
-/* Optimize font rendering */
-body {
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-rendering: optimizeLegibility;
+.connection-status-indicator {
+  position: relative;
+  top: 0.5rem;
+  left: 1rem;
 }
