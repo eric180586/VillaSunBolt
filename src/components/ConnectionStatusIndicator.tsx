@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 interface Props {
   status: "connected" | "reconnecting" | "disconnected";
@@ -6,15 +7,16 @@ interface Props {
 }
 
 export const ConnectionStatusIndicator: React.FC<Props> = ({ status, error }) => {
+  const { t } = useTranslation();
   let color = "green";
-  let text = "Live";
+  let text = t("status_live");
   if (status === "reconnecting") {
     color = "orange";
-    text = "Verbindung wird wiederhergestellt...";
+    text = t("status_reconnecting");
   }
   if (status === "disconnected") {
     color = "red";
-    text = "Offline – Bitte Verbindung prüfen!";
+    text = t("status_disconnected");
   }
   return (
     <div
