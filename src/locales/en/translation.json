@@ -1,0 +1,18 @@
+{
+  "dashboard_title": "Dashboard",
+  "dashboard_welcome": "Welcome! Here you can see your bonus progress and current tasks.",
+  "task_title": "Task: {{id}}",
+  "task_info": "All information about the selected task appears here.",
+  "howto_title": "How-To: {{id}}",
+  "howto_info": "Here you will find instructions and tips on this topic.",
+  "checklist_title": "Checklist: {{id}}",
+  "checklist_info": "All entries and steps of this checklist are displayed here.",
+  "notfound_title": "404 – Page not found",
+  "notfound_back": "Please check the URL or go back to the Dashboard.",
+  "notifications_title": "Notifications",
+  "notifications_none": "No notifications available.",
+  "header_title": "Hotel Bonus Employee App",
+  "status_live": "Live",
+  "status_reconnecting": "Reconnecting...",
+  "status_disconnected": "Offline – Please check your connection!"
+}
