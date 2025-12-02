@@ -1,4 +1,3 @@
-// hooks/useRealtimeSubscription.ts
 import { useEffect, useState } from 'react';
 import { supabase, RealtimeWatchdog, ChannelStatus } from '../lib/supabase';
 
