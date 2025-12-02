@@ -1,4 +1,3 @@
-// hooks/useNotifications.ts
 import { useEffect, useState } from "react";
 import {
   checkPushSupport,
