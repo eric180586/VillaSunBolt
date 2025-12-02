@@ -1,16 +1,12 @@
-// lib/supabase.ts
 import { createClient, SupabaseClient, RealtimeChannel } from '@supabase/supabase-js';
 
-// --- ENV Konfiguration ---
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
 const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
-// --- Singleton Supabase Client ---
 const supabase: SupabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
   realtime: { params: { eventsPerSecond: 10 } }
 });
 
-// --- Channel-Watchdog und Error-Monitor ---
 type ChannelStatus = "connected" | "reconnecting" | "disconnected";
 type WatchdogCallback = (status: ChannelStatus, error?: any) => void;
 
@@ -30,7 +26,6 @@ class RealtimeWatchdog {
     if (cb) this.cb = cb;
     channel.on('error', (err: any) => this.handleError(name, err));
     channel.on('close', () => this.handleDisconnect(name));
-    // Connect sofort testen
     if (channel.state !== 'joined') {
       this.status = "reconnecting";
       this.cb && this.cb(this.status);
