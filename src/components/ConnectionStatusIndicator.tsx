@@ -1,4 +1,3 @@
-// components/ConnectionStatusIndicator.tsx
 import React from "react";
 
 interface Props {
