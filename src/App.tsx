@@ -3,6 +3,8 @@ import { Routes, Route, useNavigate } from "react-router-dom";
 import { useRealtimeSubscription } from "./hooks/useRealtimeSubscription";
 import { Notifications } from "./components/Notifications";
 import { ConnectionStatusIndicator } from "./components/ConnectionStatusIndicator";
+import { useTranslation } from "react-i18next";
+import "./i18n";
 
 import Dashboard from "./routes/Dashboard";
 import TaskDetail from "./routes/TaskDetail";
@@ -10,12 +12,12 @@ import HowToDetail from "./routes/HowToDetail";
 import ChecklistDetail from "./routes/ChecklistDetail";
 import NotFound from "./routes/NotFound";
 
-// Hier könntest du initial Notifications aus Supabase/State holen!
 const initialNotifications = [
   // Beispiel: { id: "n1", type: "task", entityId: "t123", message: "Neue Aufgabe verfügbar!", timestamp: new Date().toISOString() }
 ];
 
 export default function App() {
+  const { t, i18n } = useTranslation();
   const tasks = useRealtimeSubscription("tasks-channel", "tasks", () => {});
   const howtos = useRealtimeSubscription("howto-channel", "howtos", () => {});
   const checklists = useRealtimeSubscription("checklists-channel", "checklists", () => {});
@@ -28,7 +30,6 @@ export default function App() {
       prev.map((n) => (n.id === id ? { ...n, read: true } : n))
     );
 
-  // Navigation nach Notification-Klick (Deep-Link)
   const navigate = useNavigate();
   const handleNotificationClick = (notification: any) => {
     if (notification.type === "task") {
@@ -41,7 +42,6 @@ export default function App() {
     markAsRead(notification.id);
   };
 
-  // Status für Statusanzeige aggregieren
   const status = [tasks.status, howtos.status, checklists.status, notificationsRealtime.status]
     .includes("disconnected")
     ? "disconnected"
@@ -56,10 +56,19 @@ export default function App() {
     checklists.error ||
     notificationsRealtime.error;
 
+  // Sprachwechsel-Handler
+  const handleLang = (e: React.ChangeEvent<HTMLSelectElement>) =>
+    i18n.changeLanguage(e.target.value);
+
   return (
     <div>
       <header>
-        <h1>Hotel Bonus Mitarbeiter App</h1>
+        <h1>{t("header_title")}</h1>
+        <select value={i18n.language} onChange={handleLang} style={{ marginRight: "1rem" }}>
+          <option value="de">Deutsch</option>
+          <option value="en">English</option>
+          <option value="km">ខ្មែរ (Khmer)</option>
+        </select>
         <ConnectionStatusIndicator status={status} error={error} />
       </header>
       <main>
