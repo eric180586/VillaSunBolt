@@ -1,14 +1,14 @@
 import React from "react";
 import { useParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 export default function HowToDetail() {
+  const { t } = useTranslation();
   const { id } = useParams<{ id: string }>();
-  // Hole HowTo-Details per ID (API/Hooks)
   return (
     <div>
-      <h2>How-To: {id}</h2>
-      {/* Detailinfos, Tutorials usw. */}
-      <p>Hier findest du Anleitungen und Tipps zu diesem Thema.</p>
+      <h2>{t("howto_title", { id })}</h2>
+      <p>{t("howto_info")}</p>
     </div>
   );
 }
