@@ -1,4 +1,3 @@
-// src/components/Notifications.tsx
 import React from "react";
 
 type Notification = {
