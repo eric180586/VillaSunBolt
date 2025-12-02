@@ -1,0 +1,18 @@
+{
+  "dashboard_title": "Dashboard",
+  "dashboard_welcome": "Willkommen! Hier siehst du deinen Bonusfortschritt und aktuelle Aufgaben.",
+  "task_title": "Aufgabe: {{id}}",
+  "task_info": "Hier erscheinen alle Infos zur gewählten Aufgabe.",
+  "howto_title": "How-To: {{id}}",
+  "howto_info": "Hier findest du Anleitungen und Tipps zu diesem Thema.",
+  "checklist_title": "Checkliste: {{id}}",
+  "checklist_info": "Alle Einträge und Schritte dieser Checkliste werden hier angezeigt.",
+  "notfound_title": "404 – Seite nicht gefunden",
+  "notfound_back": "Bitte prüfe die URL oder kehre zum Dashboard zurück.",
+  "notifications_title": "Benachrichtigungen",
+  "notifications_none": "Keine Benachrichtigungen vorhanden.",
+  "header_title": "Hotel Bonus Mitarbeiter App",
+  "status_live": "Live",
+  "status_reconnecting": "Verbindung wird wiederhergestellt...",
+  "status_disconnected": "Offline – Bitte Verbindung prüfen!"
+}
