@@ -1,4 +1,3 @@
-// lib/pushNotifications.ts
 export type PushStatus = "supported" | "not_supported" | "granted" | "denied" | "prompt" | "error";
 
 export async function checkPushSupport(): Promise<PushStatus> {
@@ -21,7 +20,6 @@ export async function requestPushPermission(): Promise<PushStatus> {
   }
 }
 
-// Registrierung Service Worker für Push (bei Vite/React: z.B. public/sw.js)
 export async function registerServiceWorker(): Promise<ServiceWorkerRegistration | null> {
   if ("serviceWorker" in navigator) {
     try {
@@ -47,7 +45,6 @@ export async function subscribeUserToPush(reg: ServiceWorkerRegistration): Promi
   }
 }
 
-// Unsubscribe Helper
 export async function unsubscribePush(reg: ServiceWorkerRegistration): Promise<boolean> {
   const sub = await reg.pushManager.getSubscription();
   if (sub) {
