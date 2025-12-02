@@ -1,10 +1,12 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 export default function NotFound() {
+  const { t } = useTranslation();
   return (
     <div>
-      <h2>404 – Seite nicht gefunden</h2>
-      <p>Bitte prüfe die URL oder kehre zum <a href="/">Dashboard</a> zurück.</p>
+      <h2>{t("notfound_title")}</h2>
+      <p>{t("notfound_back")}</p>
     </div>
   );
 }
