@@ -2,14 +2,15 @@
 
 import React from "react";
 import ReactDOM from "react-dom/client";
+import { BrowserRouter } from "react-router-dom";
 import App from "./App";
 import "./index.css";
-
-// Das ist der Einstiegspunkt für die gesamte App!
-// Stelle sicher, dass du im public/index.html ein <div id="root"></div> hast.
+import "./lib/i18n"; // <- Das ist der Sprachimport für DEINE Struktur!
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <App />
+    <BrowserRouter>
+      <App />
+    </BrowserRouter>
   </React.StrictMode>
 );
