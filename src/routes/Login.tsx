@@ -8,7 +8,6 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [mode, setMode] = useState<"login" | "register">("login");
-
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -17,22 +16,25 @@ export default function Login() {
     setLoading(true);
 
     try {
-      let result;
       if (mode === "login") {
-        result = await supabase.auth.signInWithPassword({ email, password });
+        const { data, error } = await supabase.auth.signInWithPassword({
+          email,
+          password,
+        });
+        if (error) throw error;
+        if (data.session) {
+          navigate("/dashboard");
+        }
       } else {
-        result = await supabase.auth.signUp({ email, password });
-      }
-
-      if (result.error) {
-        setError(result.error.message);
-      } else if (result.data?.user || result.data?.session) {
-        navigate("/dashboard");
-      } else if (mode === "register") {
-        setError("Bestätige deine E-Mail, um dich einzuloggen.");
+        const { error } = await supabase.auth.signUp({
+          email,
+          password,
+        });
+        if (error) throw error;
+        setError("Registrierung erfolgreich. Bestätige deine E-Mail.");
       }
     } catch (err: any) {
-      setError(err.message || "Unbekannter Fehler");
+      setError(err.message || "Fehler!");
     } finally {
       setLoading(false);
     }
