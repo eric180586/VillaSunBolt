@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Routes, Route, useNavigate } from "react-router-dom";
+import { Routes, Route, useNavigate, Navigate, useLocation } from "react-router-dom";
 import { useRealtimeSubscription } from "./hooks/useRealtimeSubscription";
 import { Notifications } from "./components/Notifications";
 import { ConnectionStatusIndicator } from "./components/ConnectionStatusIndicator";
@@ -11,10 +11,25 @@ import TaskDetail from "./routes/TaskDetail";
 import HowToDetail from "./routes/HowToDetail";
 import ChecklistDetail from "./routes/ChecklistDetail";
 import NotFound from "./routes/NotFound";
+import Login from "./routes/Login";
 
 const initialNotifications = [
-  // Beispiel: { id: "n1", type: "task", entityId: "t123", message: "Neue Aufgabe verfügbar!", timestamp: new Date().toISOString() }
+  // Beispiel: { id: "n1", ... }
 ];
+
+// HINZUGEFÜGT: SESSION ZUGRIFF
+function useSession() {
+  // Anpassbar an Supabase oder dein Auth-System!
+  return !!localStorage.getItem("sb-access-token");
+}
+
+// HINZUGEFÜGT: GESCHÜTZTE ROUTE
+function ProtectedRoute({ children }: { children: React.ReactNode }) {
+  const session = useSession();
+  const location = useLocation();
+  if (!session) return <Navigate to="/login" state={{ from: location }} replace />;
+  return <>{children}</>;
+}
 
 export default function App() {
   const { t, i18n } = useTranslation();
@@ -22,7 +37,6 @@ export default function App() {
   const howtos = useRealtimeSubscription("howto-channel", "howtos", () => {});
   const checklists = useRealtimeSubscription("checklists-channel", "checklists", () => {});
   const notificationsRealtime = useRealtimeSubscription("notifications-channel", "notifications", () => {});
-
   const [notifications, setNotifications] = useState(initialNotifications);
 
   const markAsRead = (id: string) =>
@@ -56,7 +70,6 @@ export default function App() {
     checklists.error ||
     notificationsRealtime.error;
 
-  // Sprachwechsel-Handler
   const handleLang = (e: React.ChangeEvent<HTMLSelectElement>) =>
     i18n.changeLanguage(e.target.value);
 
@@ -78,10 +91,41 @@ export default function App() {
           onClick={handleNotificationClick}
         />
         <Routes>
-          <Route path="/" element={<Dashboard />} />
-          <Route path="/tasks/:id" element={<TaskDetail />} />
-          <Route path="/howto/:id" element={<HowToDetail />} />
-          <Route path="/checklists/:id" element={<ChecklistDetail />} />
+          {/* LOGIN-ROUTE OHNE SCHUTZ */}
+          <Route path="/login" element={<Login />} />
+          {/* ALLES ANDERE GESCHÜTZT */}
+          <Route
+            path="/"
+            element={
+              <ProtectedRoute>
+                <Dashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/tasks/:id"
+            element={
+              <ProtectedRoute>
+                <TaskDetail />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/howto/:id"
+            element={
+              <ProtectedRoute>
+                <HowToDetail />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/checklists/:id"
+            element={
+              <ProtectedRoute>
+                <ChecklistDetail />
+              </ProtectedRoute>
+            }
+          />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </main>
