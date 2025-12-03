@@ -1,6 +1,17 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+
+@theme {
+  --color-beige-50: #FDF6EC;
+  --color-beige-100: #F5E7D7;
+  --color-beige-200: #E8D3B8;
+  --color-beige-300: #DDC1A0;
+  --color-beige-400: #CFA57E;
+  --color-beige-500: #C0915F;
+  --color-beige-600: #A47754;
+  --color-beige-700: #856043;
+  --color-beige-800: #6B4D36;
+  --color-beige-900: #59402C;
+}
 
 /* Optional: Body-Hintergrund für bessere Optik */
 body {

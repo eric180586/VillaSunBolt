@@ -53,3 +53,27 @@ export async function unsubscribePush(reg: ServiceWorkerRegistration): Promise<b
   }
   return false;
 }
+
+export async function subscribeToPushNotifications(userId: string): Promise<PushSubscription | null> {
+  const reg = await registerServiceWorker();
+  if (!reg) return null;
+
+  const subscription = await subscribeUserToPush(reg);
+  if (!subscription) return null;
+
+  return subscription;
+}
+
+export async function checkPushSubscription(): Promise<PushSubscription | null> {
+  if (!("serviceWorker" in navigator)) return null;
+
+  try {
+    const reg = await navigator.serviceWorker.getRegistration();
+    if (!reg || !reg.pushManager) return null;
+
+    const subscription = await reg.pushManager.getSubscription();
+    return subscription;
+  } catch {
+    return null;
+  }
+}
