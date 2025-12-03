@@ -1,166 +1,137 @@
-import { ReactNode, useState } from 'react';
-import { useAuth } from '../contexts/AuthContext';
-import { useNotifications } from '../hooks/useNotifications';
-import { useTranslation } from 'react-i18next';
+// src/Layout.tsx
+import { ReactNode } from "react";
 import {
   Home,
   CheckSquare,
-  Calendar,
-
-  StickyNote,
   Award,
-  Bell,
   User,
   Users,
   LogOut,
   Menu,
-  X,
-  Smile,
-  Shield,
-  TrendingUp,
-
+  Bell,
   BookOpen,
   MessageCircle,
-} from 'lucide-react';
+  TrendingUp,
+  Shield,
+  Calendar,
+  StickyNote,
+  Smile,
+} from "lucide-react";
+import { Link, useLocation } from "react-router-dom";
+import { useAuth } from "./contexts/AuthContext"; // optional, je nach deinem Stand
+import { useNotifications } from "./hooks/useNotifications"; // optional
+import { useTranslation } from "react-i18next";
 
 interface LayoutProps {
   children: ReactNode;
-  currentView: string;
-  onViewChange: (view: string) => void;
 }
 
-export function Layout({ children, currentView, onViewChange }: LayoutProps) {
-  const { profile, signOut } = useAuth();
-  const { unreadCount, requestPermission } = useNotifications();
-  const { t } = useTranslation();
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+export default function Layout({ children }: LayoutProps) {
+  const { t, i18n } = useTranslation();
+  // Optionales Auth-System, falls vorhanden
+  const { profile, signOut } = useAuth?.() || { profile: null, signOut: () => {} };
+  const { unreadCount } = useNotifications?.() || { unreadCount: 0 };
 
-  const isAdmin = profile?.role === 'admin';
+  const location = useLocation();
+  const isAdmin = profile?.role === "admin";
 
+  // Menü-Definition
   const menuItems = [
-    { id: 'dashboard', label: t('nav.dashboard'), icon: Home },
-    { id: 'tasks', label: t('nav.tasks'), icon: CheckSquare },
-    { id: 'patrol-rounds', label: t('nav.patrol'), icon: Shield },
-    { id: 'schedules', label: t('nav.schedules'), icon: Calendar },
-    { id: 'notes', label: t('nav.notes'), icon: StickyNote },
-    { id: 'chat', label: t('nav.chat'), icon: MessageCircle },
-    { id: 'how-to', label: t('nav.howTo'), icon: BookOpen },
-    { id: isAdmin ? 'points-manager' : 'leaderboard', label: isAdmin ? t('nav.pointsManager') : t('nav.leaderboard'), icon: Award },
+    { to: "/", label: t("nav.dashboard"), icon: Home },
+    { to: "/tasks", label: t("nav.tasks"), icon: CheckSquare },
+    { to: "/patrol", label: t("nav.patrol"), icon: Shield },
+    { to: "/schedules", label: t("nav.schedules"), icon: Calendar },
+    { to: "/notes", label: t("nav.notes"), icon: StickyNote },
+    { to: "/chat", label: t("nav.chat"), icon: MessageCircle },
+    { to: "/howto", label: t("nav.howTo"), icon: BookOpen },
+    {
+      to: isAdmin ? "/points-manager" : "/leaderboard",
+      label: isAdmin ? t("nav.pointsManager") : t("nav.leaderboard"),
+      icon: Award,
+    },
     ...(isAdmin
       ? [
-          { id: 'monthly-points', label: t('nav.monthlyPoints'), icon: TrendingUp },
-          { id: 'employees', label: t('nav.employees'), icon: Users },
-          { id: 'humor-settings', label: t('nav.humorSettings'), icon: Smile },
+          { to: "/monthly-points", label: t("nav.monthlyPoints"), icon: TrendingUp },
+          { to: "/employees", label: t("nav.employees"), icon: Users },
+          { to: "/humor-settings", label: t("nav.humorSettings"), icon: Smile },
         ]
       : []),
   ];
 
-  const handleViewChange = (view: string) => {
-    onViewChange(view);
-    setMobileMenuOpen(false);
-    if (view === 'notifications') {
-      requestPermission();
-    }
-  };
-
   return (
-    <div className="min-h-screen bg-beige-50">
-      <nav className="bg-white border-b border-beige-200 sticky top-0 z-50 shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center">
-              <button
-                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="lg:hidden p-2 rounded-lg hover:bg-gray-100"
-              >
-                {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-              </button>
-              <h1 className="text-xl font-bold text-gray-900 ml-2 lg:ml-0">
-                {t('nav.brand')}
-              </h1>
-            </div>
-
-            <div className="hidden lg:flex items-center space-x-1">
-              {menuItems.map((item) => {
-                const Icon = item.icon;
-                return (
-                  <button
-                    key={item.id}
-                    onClick={() => handleViewChange(item.id)}
-                    className={`flex items-center px-4 py-2 rounded-lg font-medium transition-colors ${
-                      currentView === item.id
-                        ? 'bg-beige-200 text-beige-800'
-                        : 'text-gray-700 hover:bg-beige-100'
-                    }`}
-                  >
-                    <Icon className="w-5 h-5 mr-2" />
-                    {item.label}
-                  </button>
-                );
-              })}
-            </div>
-
-            <div className="flex items-center space-x-2">
-              <button
-                onClick={() => handleViewChange('notifications')}
-                className="relative p-2 rounded-lg hover:bg-gray-100"
-              >
-                <Bell className="w-6 h-6 text-gray-700" />
-                {unreadCount > 0 && (
-                  <span className="absolute top-0 right-0 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
-                    {unreadCount}
-                  </span>
-                )}
-              </button>
-
-              <button
-                onClick={() => handleViewChange('profile')}
-                className="flex items-center space-x-2 p-2 rounded-lg hover:bg-gray-100"
-              >
-                <User className="w-6 h-6 text-gray-700" />
-                <span className="hidden sm:block text-sm font-medium text-gray-700">
-                  {profile?.full_name}
-                </span>
-              </button>
-
-              <button
-                onClick={() => signOut()}
-                className="p-2 rounded-lg hover:bg-gray-100 text-gray-700"
-              >
-                <LogOut className="w-6 h-6" />
-              </button>
-            </div>
-          </div>
+    <div className="min-h-screen flex bg-gray-50">
+      {/* Sidebar */}
+      <aside className="hidden md:flex md:flex-col w-64 bg-white border-r border-gray-200 p-6">
+        <div className="flex items-center mb-8">
+          <span className="text-2xl font-extrabold tracking-tight text-blue-700">Hotel Bonus App</span>
         </div>
-
-        {mobileMenuOpen && (
-          <div className="lg:hidden border-t border-gray-200 bg-white">
-            <div className="px-4 py-2 space-y-1">
-              {menuItems.map((item) => {
-                const Icon = item.icon;
-                return (
-                  <button
-                    key={item.id}
-                    onClick={() => handleViewChange(item.id)}
-                    className={`w-full flex items-center px-4 py-3 rounded-lg font-medium transition-colors ${
-                      currentView === item.id
-                        ? 'bg-beige-200 text-beige-800'
-                        : 'text-gray-700 hover:bg-beige-100'
-                    }`}
-                  >
-                    <Icon className="w-5 h-5 mr-3" />
-                    {item.label}
-                  </button>
-                );
-              })}
-            </div>
+        <nav className="flex-1 space-y-2">
+          {menuItems.map((item) => {
+            const Icon = item.icon;
+            const active = location.pathname === item.to || (item.to !== "/" && location.pathname.startsWith(item.to));
+            return (
+              <Link
+                key={item.to}
+                to={item.to}
+                className={`flex items-center px-4 py-2 rounded-lg transition-colors ${
+                  active ? "bg-blue-100 text-blue-700 font-bold" : "text-gray-700 hover:bg-gray-100"
+                }`}
+              >
+                <Icon className="w-5 h-5 mr-3" />
+                {item.label}
+              </Link>
+            );
+          })}
+        </nav>
+        <div className="mt-8 flex flex-col gap-3">
+          <Link to="/profile" className="flex items-center p-2 hover:bg-gray-100 rounded-lg">
+            <User className="w-5 h-5 mr-2" />
+            <span>{profile?.full_name || "Profil"}</span>
+          </Link>
+          <button
+            className="flex items-center p-2 hover:bg-red-100 rounded-lg text-red-600"
+            onClick={signOut}
+          >
+            <LogOut className="w-5 h-5 mr-2" />
+            Abmelden
+          </button>
+        </div>
+      </aside>
+      {/* Mobile Sidebar - kann später ausgebaut werden */}
+      <div className="md:hidden fixed z-50 top-0 left-0 w-full bg-white border-b border-gray-200 flex items-center px-4 h-16">
+        <span className="font-bold text-lg">Hotel Bonus App</span>
+        {/* TODO: Offcanvas-Menü für Mobile */}
+      </div>
+      {/* Main Content */}
+      <div className="flex-1 flex flex-col min-h-screen">
+        {/* Topbar */}
+        <header className="flex justify-between items-center bg-white shadow px-6 py-4">
+          <div className="flex items-center gap-4">
+            {/* Optional: Hamburger für mobile */}
           </div>
-        )}
-      </nav>
-
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {children}
-      </main>
+          <div className="flex items-center gap-4">
+            <button className="relative">
+              <Bell className="w-6 h-6" />
+              {unreadCount > 0 && (
+                <span className="absolute -top-1 -right-1 text-xs w-5 h-5 bg-red-500 text-white rounded-full flex items-center justify-center">
+                  {unreadCount}
+                </span>
+              )}
+            </button>
+            <select
+              value={i18n.language}
+              onChange={(e) => i18n.changeLanguage(e.target.value)}
+              className="border rounded p-1"
+            >
+              <option value="de">Deutsch</option>
+              <option value="en">English</option>
+              <option value="km">ភាសាខ្មែរ</option>
+            </select>
+          </div>
+        </header>
+        {/* Content */}
+        <main className="flex-1 p-6 bg-gray-50">{children}</main>
+      </div>
     </div>
   );
 }
