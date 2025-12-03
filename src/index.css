@@ -1,3 +1,27 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Custom App Styles */
+body {
+  @apply bg-gray-50 text-gray-900;
+  font-family: 'Inter', 'Roboto', Arial, sans-serif;
+}
+
+/* Optional: schöne Scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+  background: #f5f5f5;
+}
+::-webkit-scrollbar-thumb {
+  background: #d1d5db;
+  border-radius: 6px;
+}
+
+/* Beispiel für Branding */
+.bg-app-primary {
+  @apply bg-blue-600;
+}
+.text-app-primary {
+  @apply text-blue-600;
+}
